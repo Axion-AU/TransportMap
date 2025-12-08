@@ -1,0 +1,19 @@
+# Rust
+target/
+**/*.rs.bk
+
+# Node
+node_modules/
+dist/
+.env
+.env.local
+
+# Project Data
+gtfs/
+frontend/src/data/stops.json
+frontend/src/data/shapes.json
+frontend/src/data/routes.json
+
+# OS
+.DS_Store
+Thumbs.db
