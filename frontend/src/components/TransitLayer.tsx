@@ -166,8 +166,11 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                     eventHandlers={{
                         click: () => {
                             setSelectedStop(stop);
-                            // Smoothly center map on clicked station
-                            map.flyTo([stop.lat, stop.lon], map.getZoom(), {
+                            // Smoothly center map on clicked station with offset to avoid address searcher
+                            const point = map.latLngToContainerPoint([stop.lat, stop.lon]);
+                            point.y -= 80; // Offset upward to avoid address searcher blocking popup
+                            const newLatLng = map.containerPointToLatLng(point);
+                            map.flyTo(newLatLng, map.getZoom(), {
                                 duration: 0.5
                             });
                         }
@@ -235,8 +238,8 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                                     <div className="text-xs text-gray-400 mb-1">35%</div>
                                     <div className="font-bold text-lg">{stop.coverage_score.toFixed(0)}</div>
                                     <div className={`text - [10px] font - medium mt - 1 ${stop.coverage_score >= 85 ? 'text-green-600' :
-                                            stop.coverage_score >= 70 ? 'text-yellow-600' :
-                                                stop.coverage_score >= 50 ? 'text-orange-600' : 'text-red-600'
+                                        stop.coverage_score >= 70 ? 'text-yellow-600' :
+                                            stop.coverage_score >= 50 ? 'text-orange-600' : 'text-red-600'
                                         } `}>
                                         {stop.coverage_score >= 85 ? 'Excellent' :
                                             stop.coverage_score >= 70 ? 'Good' :
@@ -250,8 +253,8 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                                     <div className="text-xs text-gray-400 mb-1">40%</div>
                                     <div className="font-bold text-lg">{stop.frequency_score.toFixed(0)}</div>
                                     <div className={`text - [10px] font - medium mt - 1 ${stop.frequency_score >= 85 ? 'text-green-600' :
-                                            stop.frequency_score >= 70 ? 'text-yellow-600' :
-                                                stop.frequency_score >= 50 ? 'text-orange-600' : 'text-red-600'
+                                        stop.frequency_score >= 70 ? 'text-yellow-600' :
+                                            stop.frequency_score >= 50 ? 'text-orange-600' : 'text-red-600'
                                         } `}>
                                         {stop.frequency_score >= 85 ? 'Excellent' :
                                             stop.frequency_score >= 70 ? 'Good' :
@@ -265,8 +268,8 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                                     <div className="text-xs text-gray-400 mb-1">25%</div>
                                     <div className="font-bold text-lg">{(stop.reliability_score || 0).toFixed(0)}</div>
                                     <div className={`text - [10px] font - medium mt - 1 ${(stop.reliability_score || 0) >= 85 ? 'text-green-600' :
-                                            (stop.reliability_score || 0) >= 70 ? 'text-yellow-600' :
-                                                (stop.reliability_score || 0) >= 50 ? 'text-orange-600' : 'text-red-600'
+                                        (stop.reliability_score || 0) >= 70 ? 'text-yellow-600' :
+                                            (stop.reliability_score || 0) >= 50 ? 'text-orange-600' : 'text-red-600'
                                         } `}>
                                         {(stop.reliability_score || 0) >= 85 ? 'Excellent' :
                                             (stop.reliability_score || 0) >= 70 ? 'Good' :
