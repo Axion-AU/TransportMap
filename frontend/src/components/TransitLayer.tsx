@@ -1,5 +1,7 @@
+
 import { Marker, Popup, LayerGroup, useMapEvents, useMap, Polyline } from 'react-leaflet';
 import { useState, useEffect } from 'react';
+import { MapPin, Zap, Calendar, Users, BarChart3 } from 'lucide-react';
 import L from 'leaflet';
 import stopsData from '../data/stops.json';
 import shapesData from '../data/shapes.json';
@@ -91,8 +93,8 @@ const getIcon = (stop: Stop, viewMode: 'connectivity' | 'mode') => {
     return L.divIcon({
         className: 'custom-div-icon',
         html: `<div style="background-color: ${bgColor}; width: ${size}px; height: ${size}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-             ${showPictogram ? `<img src="${iconUrl}" style="width: ${size * 0.6}px; height: ${size * 0.6}px;" />` : ''}
-           </div>`,
+    ${showPictogram ? `<img src="${iconUrl}" style="width: ${size * 0.6}px; height: ${size * 0.6}px;" />` : ''}
+            </div>`,
         iconSize: [size, size],
         iconAnchor: [size / 2, size / 2],
         popupAnchor: [0, -size / 2]
@@ -218,7 +220,7 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                                     <div
                                         className="h-full rounded-full transition-all"
                                         style={{
-                                            width: `${stop.connectivity_score}%`,
+                                            width: `${stop.connectivity_score}% `,
                                             backgroundColor: stop.color
                                         }}
                                     />
@@ -232,10 +234,10 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                                     <div className="text-[10px] text-gray-500 uppercase tracking-wide mb-1">Coverage</div>
                                     <div className="text-xs text-gray-400 mb-1">35%</div>
                                     <div className="font-bold text-lg">{stop.coverage_score.toFixed(0)}</div>
-                                    <div className={`text-[10px] font-medium mt-1 ${stop.coverage_score >= 85 ? 'text-green-600' :
+                                    <div className={`text - [10px] font - medium mt - 1 ${stop.coverage_score >= 85 ? 'text-green-600' :
                                             stop.coverage_score >= 70 ? 'text-yellow-600' :
                                                 stop.coverage_score >= 50 ? 'text-orange-600' : 'text-red-600'
-                                        }`}>
+                                        } `}>
                                         {stop.coverage_score >= 85 ? 'Excellent' :
                                             stop.coverage_score >= 70 ? 'Good' :
                                                 stop.coverage_score >= 50 ? 'Fair' : 'Poor'}
@@ -247,10 +249,10 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                                     <div className="text-[10px] text-gray-500 uppercase tracking-wide mb-1">Frequency</div>
                                     <div className="text-xs text-gray-400 mb-1">40%</div>
                                     <div className="font-bold text-lg">{stop.frequency_score.toFixed(0)}</div>
-                                    <div className={`text-[10px] font-medium mt-1 ${stop.frequency_score >= 85 ? 'text-green-600' :
+                                    <div className={`text - [10px] font - medium mt - 1 ${stop.frequency_score >= 85 ? 'text-green-600' :
                                             stop.frequency_score >= 70 ? 'text-yellow-600' :
                                                 stop.frequency_score >= 50 ? 'text-orange-600' : 'text-red-600'
-                                        }`}>
+                                        } `}>
                                         {stop.frequency_score >= 85 ? 'Excellent' :
                                             stop.frequency_score >= 70 ? 'Good' :
                                                 stop.frequency_score >= 50 ? 'Fair' : 'Poor'}
@@ -262,10 +264,10 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                                     <div className="text-[10px] text-gray-500 uppercase tracking-wide mb-1">Reliability</div>
                                     <div className="text-xs text-gray-400 mb-1">25%</div>
                                     <div className="font-bold text-lg">{(stop.reliability_score || 0).toFixed(0)}</div>
-                                    <div className={`text-[10px] font-medium mt-1 ${(stop.reliability_score || 0) >= 85 ? 'text-green-600' :
+                                    <div className={`text - [10px] font - medium mt - 1 ${(stop.reliability_score || 0) >= 85 ? 'text-green-600' :
                                             (stop.reliability_score || 0) >= 70 ? 'text-yellow-600' :
                                                 (stop.reliability_score || 0) >= 50 ? 'text-orange-600' : 'text-red-600'
-                                        }`}>
+                                        } `}>
                                         {(stop.reliability_score || 0) >= 85 ? 'Excellent' :
                                             (stop.reliability_score || 0) >= 70 ? 'Good' :
                                                 (stop.reliability_score || 0) >= 50 ? 'Fair' : 'Poor'}
