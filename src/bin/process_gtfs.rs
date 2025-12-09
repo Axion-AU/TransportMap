@@ -85,6 +85,7 @@ struct ProcessedStop {
     color: String,
     route_ids: Vec<String>,
     nearby_stops: Vec<NearbyStop>,
+    patronage_annual: Option<u32>,  // Annual entries (Metro Train only)
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -259,6 +260,27 @@ fn main() -> Result<(), Box<dyn Error>> {
         (10, "Interstate"),
         (11, "SkyBus"),
     ]);
+
+    // Load patronage data (Metro Train stations only)
+    let mut patronage_map: HashMap<String, u32> = HashMap::new();
+    let patronage_path = "frontend/src/data/annual_metropolitan_train_station_entries_fy_2024_2025.csv";
+    if Path::new(&patronage_path).exists() {
+        if let Ok(mut rdr) = csv::Reader::from_path(&patronage_path) {
+            for result in rdr.records() {
+                if let Ok(record) = result {
+                    if record.len() >= 6 {
+                        if let (Some(stop_id), Some(annual_str)) = (record.get(1), record.get(5)) {
+                            if let Ok(annual) = annual_str.parse::<u32>() {
+                                patronage_map.insert(stop_id.to_string(), annual);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        println!("Loaded {} patronage records", patronage_map.len());
+    }
+
 
     let mut stops_map: HashMap<String, StopData> = HashMap::new();
     let mut child_to_parent: HashMap<String, String> = HashMap::new();
@@ -631,6 +653,15 @@ fn main() -> Result<(), Box<dyn Error>> {
                    else if connectivity < 70.0 { "#f1c40f".to_string() } 
                    else { "#2ecc71".to_string() };
 
+        // Join patronage data (Metro Train only)
+        let patronage_annual = if data.mode_id == 2 {
+            // Extract stop_id from composite id (format: "2-19842")
+            let stop_id_str = id.split('-').nth(1).unwrap_or("");
+            patronage_map.get(stop_id_str).cloned()
+        } else {
+            None
+        };
+
         final_stops.push(ProcessedStop {
             id: id.clone(),
             name: data.name.clone(),
@@ -646,6 +677,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             color,
             route_ids: data.routes.iter().cloned().collect(),
             nearby_stops: nearby_stops_map.remove(id).unwrap_or_default(),
+            patronage_annual,
         });
     }
 

@@ -27,6 +27,7 @@ interface Stop {
     color: string;
     route_ids: string[];
     nearby_stops: NearbyStop[];
+    patronage_annual?: number;
 }
 
 interface Route {
@@ -198,6 +199,19 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                                     <div className="font-medium">{(stop.reliability_score || 0).toFixed(0)}%</div>
                                 </div>
                             </div>
+
+                            {/* Patronage Data (Metro Train only) */}
+                            {stop.mode_id === 2 && stop.patronage_annual && (
+                                <div className="border-t border-gray-200 pt-2 mt-2 mb-2">
+                                    <div className="text-xs text-gray-500 mb-1">Daily Patronage</div>
+                                    <div className="font-medium text-sm">
+                                        ~{Math.round(stop.patronage_annual / 365).toLocaleString()} entries/day
+                                    </div>
+                                    <div className="text-xs text-gray-400">
+                                        {(stop.patronage_annual / 1000000).toFixed(1)}M annual
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="border-t border-gray-200 pt-2 mb-2">
                                 <div className="text-xs text-gray-500 mb-1">Routes Serving Stop</div>
