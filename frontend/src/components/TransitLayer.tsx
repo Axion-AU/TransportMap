@@ -161,7 +161,13 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                     position={[stop.lat, stop.lon]}
                     icon={getIcon(stop, viewMode)}
                     eventHandlers={{
-                        click: () => setSelectedStop(stop)
+                        click: () => {
+                            setSelectedStop(stop);
+                            // Smoothly center map on clicked station
+                            map.flyTo([stop.lat, stop.lon], map.getZoom(), {
+                                duration: 0.5
+                            });
+                        }
                     }}
                 >
                     <Popup>
@@ -181,11 +187,7 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                                 </div>
                                 <div>
                                     <div className="text-xs text-gray-500">Frequency (40%)</div>
-                                    <div className="font-medium">
-                                        {stop.average_wait_time > 60
-                                            ? '> 60 min'
-                                            : `~${stop.average_wait_time.toFixed(0)} min`}
-                                    </div>
+                                    <div className="font-medium">{stop.frequency_score.toFixed(0)}/100</div>
                                 </div>
                                 <div>
                                     <div className="text-xs text-gray-500">Coverage (35%)</div>

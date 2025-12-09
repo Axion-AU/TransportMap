@@ -309,13 +309,35 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         }
         
-        // Select representative date: 2nd Wednesday of longest service period
+        // Select representative date: 2nd Wednesday of longest service period (avoiding holidays)
         let repr_date = if let Some((_service_id, (start, end))) = service_dates.iter()
             .max_by_key(|(_, (start, end))| (*end - *start).num_days()) {
-            let candidate = find_nth_weekday(*start, Weekday::Wed, 2);
+            
+            // Try to find a suitable Wednesday (avoid major holidays)
+            let mut candidate = find_nth_weekday(*start, Weekday::Wed, 2);
+            
+            // Skip if near Christmas/New Year (Dec 20 - Jan 5) or other problematic dates
+            while candidate <= *end {
+                let month = candidate.month();
+                let day = candidate.day();
+                
+                // Check if date is in a holiday period
+                let is_holiday_period = 
+                    (month == 12 && day >= 20) ||  // Christmas period
+                    (month == 1 && day <= 5) ||    // New Year period
+                    (month == 4 && day >= 18 && day <= 22);  // Easter period (approximate)
+                
+                if !is_holiday_period {
+                    break;
+                }
+                
+                // Try next Wednesday
+                candidate = candidate + chrono::Duration::days(7);
+            }
+            
             if candidate <= *end { candidate } else { *start }
         } else {
-            // Fallback if no calendar data: use a default date mid-2025
+            // Fallback if no calendar data: use a default date mid-2025 (not near holidays)
             NaiveDate::from_ymd_opt(2025, 6, 11).unwrap()  // Wednesday, June 11, 2025
         };
         
