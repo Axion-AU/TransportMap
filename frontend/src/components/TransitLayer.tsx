@@ -49,6 +49,25 @@ const stops = stopsData as Stop[];
 const shapes = shapesData as unknown as Record<string, [number, number][]>;
 const routes = routesData as Record<string, Route>;
 
+// Metro Tunnel stations (Arden, Parkville, State Library, Town Hall, Anzac)
+const METRO_TUNNEL_STATIONS = new Set([
+    '2-vic:rail:ARN',  // Arden
+    '2-vic:rail:PKV',  // Parkville
+    '2-vic:rail:STL',  // State Library
+    '2-vic:rail:THL',  // Town Hall
+    '2-vic:rail:AZC',  // Anzac
+]);
+
+// Helper to check if a route is a Metro Tunnel route
+const isMetroTunnelRoute = (routeId: string): boolean => {
+    const route = routes[routeId];
+    if (!route) return false;
+    // Metro Tunnel route IDs: aus:vic:vic-02-CBE:, aus:vic:vic-02-PKM:, aus:vic:vic-02-SUY:
+    return routeId === 'aus:vic:vic-02-CBE:' ||
+        routeId === 'aus:vic:vic-02-PKM:' ||
+        routeId === 'aus:vic:vic-02-SUY:';
+};
+
 const getModeColor = (modeId: number) => {
     switch (modeId) {
         case 1: return '#8e44ad'; // Regional Train
@@ -142,6 +161,15 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                 const positions = shapes[routeId];
                 const route = routes[routeId];
                 if (!positions) return null;
+
+                // Filter routes based on station type:
+                // Metro Tunnel stations: show ONLY Metro Tunnel routes
+                // Other stations: show ONLY non-Metro Tunnel routes
+                const isMetroTunnelStation = METRO_TUNNEL_STATIONS.has(selectedStop.id);
+                const isMTRoute = isMetroTunnelRoute(routeId);
+
+                // Skip if mismatch
+                if (isMetroTunnelStation !== isMTRoute) return null;
 
                 const color = route ? route.color : getModeColor(selectedStop.mode_id);
 
