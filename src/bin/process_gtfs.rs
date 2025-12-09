@@ -107,6 +107,12 @@ struct StopData {
     weekday_peak_departures: Vec<f32>,
     weekday_offpeak_departures: Vec<f32>,
     weekend_departures: Vec<f32>,
+    
+    // Track which trips we've already recorded (to avoid duplicates across days)
+    recorded_peak_trips: HashSet<String>,
+    recorded_offpeak_trips: HashSet<String>,
+    recorded_weekend_trips: HashSet<String>,
+    
     active_days: HashSet<u8>,
 }
 
@@ -321,6 +327,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                     weekday_peak_departures: Vec::new(),
                     weekday_offpeak_departures: Vec::new(),
                     weekend_departures: Vec::new(),
+                    recorded_peak_trips: HashSet::new(),
+                    recorded_offpeak_trips: HashSet::new(),
+                    recorded_weekend_trips: HashSet::new(),
                     active_days: HashSet::new(),
                 });
             }
@@ -346,21 +355,28 @@ fn main() -> Result<(), Box<dyn Error>> {
                             for d in days { stop_data.active_days.insert(*d); }
                         }
 
-                        // Store departure times
+                        // Store departure times (only once per unique trip)
                         if let Some(hour) = parse_time(&record.arrival_time) {
                             let is_weekday = weekday_services.contains(service_id);
                             let is_weekend = weekend_services.contains(service_id);
 
                             if is_weekday {
                                 if (hour >= 7.0 && hour < 9.0) || (hour >= 16.0 && hour < 18.0) {
-                                    stop_data.weekday_peak_departures.push(hour);
+                                    // Only record if we haven't seen this trip before
+                                    if stop_data.recorded_peak_trips.insert(record.trip_id.clone()) {
+                                        stop_data.weekday_peak_departures.push(hour);
+                                    }
                                 } else if (hour >= 9.0 && hour < 16.0) || (hour >= 18.0 && hour < 22.0) {
-                                    stop_data.weekday_offpeak_departures.push(hour);
+                                    if stop_data.recorded_offpeak_trips.insert(record.trip_id.clone()) {
+                                        stop_data.weekday_offpeak_departures.push(hour);
+                                    }
                                 }
                             }
                             if is_weekend {
                                 if hour >= 7.0 && hour < 22.0 {
-                                    stop_data.weekend_departures.push(hour);
+                                    if stop_data.recorded_weekend_trips.insert(record.trip_id.clone()) {
+                                        stop_data.weekend_departures.push(hour);
+                                    }
                                 }
                             }
                         }
@@ -489,7 +505,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         raw_scores.insert(id.clone(), (freq_score, cov_score, rel_score, avg_wait));
         
         // Debug: Print for specific stops
-        if data.name.contains("Cobblebank") {
+        if data.name.contains("Cobblebank") || data.name.contains("Astley") {
             println!("DEBUG {}: Peak wait={:.1}min, OffPeak wait={:.1}min, Weekend wait={:.1}min, Avg={:.1}min", 
                 data.name, peak_wait, offpeak_wait, weekend_wait, avg_wait);
         }
