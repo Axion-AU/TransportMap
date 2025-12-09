@@ -681,7 +681,85 @@ fn main() -> Result<(), Box<dyn Error>> {
         });
     }
 
+    // Write standard JSON format
     fs::write(output_file, serde_json::to_string(&final_stops)?)?;
     println!("Processed {} stops with Three Keys scoring.", final_stops.len());
+    
+    // Write enriched GeoJSON format - chunked by mode for performance
+    write_geojson_chunked(&final_stops)?;
+    
+    Ok(())
+}
+
+
+// Write GeoJSON chunked by transport mode for better load performance
+fn write_geojson_chunked(stops: &[ProcessedStop]) -> Result<(), Box<dyn Error>> {
+    use geojson::{Feature, FeatureCollection, Geometry, Value};
+    use std::collections::HashMap;
+    
+    // Group stops by mode
+    let mut stops_by_mode: HashMap<u32, Vec<&ProcessedStop>> = HashMap::new();
+    for stop in stops {
+        stops_by_mode.entry(stop.mode_id).or_insert_with(Vec::new).push(stop);
+    }
+    
+    // Mode names for file naming
+    let mode_names: HashMap<u32, &str> = [
+        (1, "regional_train"),
+        (2, "metro_train"),
+        (3, "metro_tram"),
+        (4, "metro_bus"),
+        (5, "regional_coach"),
+        (6, "regional_bus"),
+        (11, "skybus"),
+    ].iter().cloned().collect();
+    
+    // Write a separate GeoJSON file for each mode
+    for (mode_id, mode_stops) in stops_by_mode.iter() {
+        let mode_name = mode_names.get(mode_id).unwrap_or(&"unknown");
+        let filename = format!("frontend/src/data/stops_{}.geojson", mode_name);
+        
+        let features: Vec<Feature> = mode_stops.iter().map(|stop| {
+            let geometry = Geometry::new(Value::Point(vec![stop.lon, stop.lat]));
+            
+            let mut properties = serde_json::Map::new();
+            properties.insert("id".to_string(), serde_json::json!(stop.id));
+            properties.insert("name".to_string(), serde_json::json!(stop.name));
+            properties.insert("mode_id".to_string(), serde_json::json!(stop.mode_id));
+            properties.insert("mode_name".to_string(), serde_json::json!(stop.mode_name));
+            properties.insert("frequency_score".to_string(), serde_json::json!(stop.frequency_score));
+            properties.insert("average_wait_time".to_string(), serde_json::json!(stop.average_wait_time));
+            properties.insert("coverage_score".to_string(), serde_json::json!(stop.coverage_score));
+            properties.insert("reliability_score".to_string(), serde_json::json!(stop.reliability_score));
+            properties.insert("connectivity_score".to_string(), serde_json::json!(stop.connectivity_score));
+            properties.insert("color".to_string(), serde_json::json!(stop.color));
+            properties.insert("route_ids".to_string(), serde_json::json!(stop.route_ids));
+            properties.insert("nearby_stops".to_string(), serde_json::json!(stop.nearby_stops));
+            
+            if let Some(patronage) = stop.patronage_annual {
+                properties.insert("patronage_annual".to_string(), serde_json::json!(patronage));
+            }
+            
+            Feature {
+                bbox: None,
+                geometry: Some(geometry),
+                id: None,
+                properties: Some(properties),
+                foreign_members: None,
+            }
+        }).collect();
+        
+        let feature_collection = FeatureCollection {
+            bbox: None,
+            features,
+            foreign_members: None,
+        };
+        
+        let geojson_string = serde_json::to_string_pretty(&feature_collection)?;
+        fs::write(&filename, geojson_string)?;
+        
+        println!("  Wrote {} {} stops to {}", mode_stops.len(), mode_name, filename);
+    }
+    
     Ok(())
 }

@@ -1,0 +1,6009 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.18960249,
+          -38.35403334
+        ]
+      },
+      "properties": {
+        "average_wait_time": 340.6454772949219,
+        "color": "#e74c3c",
+        "connectivity_score": 24.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 16.5,
+        "id": "2-vic:rail:MRO",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Morradoo Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-STY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.8835883,
+          -37.84272637
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.5256042480469,
+        "color": "#f1c40f",
+        "connectivity_score": 48.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:NPT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Newport Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WER:",
+          "aus:vic:vic-02-WIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.9161975,
+          -37.7560117
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4181823730469,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:ESD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Essendon Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99629909,
+          -37.91513441
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.057861328125,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:MBN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Middle Brighton Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SHM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.10034527,
+          -37.82315506
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0243835449219,
+        "color": "#f1c40f",
+        "connectivity_score": 46.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:UNN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Union Railway Station ",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.03699513,
+          -37.91742457
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.5273132324219,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:BEN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Bentleigh Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.36607374,
+          -38.05083135
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.7333984375,
+        "color": "#f1c40f",
+        "connectivity_score": 40.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 56.5,
+        "id": "2-vic:rail:BFD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Beaconsfield Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.07618607,
+          -37.89419074
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.6277770996094,
+        "color": "#f1c40f",
+        "connectivity_score": 48.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:HUG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Hughesdale Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CBE:",
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.03547003,
+          -37.92514919
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.55303955078125,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:PAT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Patterson Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.88398479,
+          -37.80180266
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.49383544921875,
+        "color": "#f1c40f",
+        "connectivity_score": 41.9857177734375,
+        "coverage_score": 10.0,
+        "frequency_score": 60.5,
+        "id": "2-vic:rail:WFY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "West Footscray Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.28059898,
+          -38.09953731
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.9093322753906,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:CBE",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Cranbourne Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.94330601,
+          -37.6019248
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.62939453125,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:CGB",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Craigieburn Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.0418718,
+          -37.948425
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.5679016113281,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:HIG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Highett Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99445143,
+          -37.79915782
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.4754943847656,
+        "color": "#f1c40f",
+        "connectivity_score": 48.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:VPK",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Victoria Park Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:",
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.1228096,
+          -38.07653027
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0024719238281,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:CAR",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Carrum Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.26813639,
+          -37.84173004
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.77032470703125,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:BAY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Bayswater Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.06701257,
+          -37.64905033
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.46051025390625,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:SMG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "South Morang Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.06939324,
+          -37.87692101
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.6543273925781,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:EMV",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "East Malvern Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.09066203,
+          -37.87440222
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.6058349609375,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:HOL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Holmesglen Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.92182074,
+          -37.77530609
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4064025878906,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:ASV",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Ascot Vale Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00824163,
+          -37.77918729
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.8580017089844,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:DEN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Dennis Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.06737487,
+          -37.89019832
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.6206970214844,
+        "color": "#f1c40f",
+        "connectivity_score": 48.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:MRB",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Murrumbeena Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CBE:",
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99234221,
+          -37.83844935
+        ]
+      },
+      "properties": {
+        "average_wait_time": 300.5164489746094,
+        "color": "#f1c40f",
+        "connectivity_score": 56.28571319580078,
+        "coverage_score": 40.0,
+        "frequency_score": 70.0,
+        "id": "2-vic:rail:SYR",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "South Yarra Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CBE:",
+          "aus:vic:vic-02-SHM:",
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.93540368,
+          -37.63823121
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.6239929199219,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:RXP",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Roxburgh Park Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.22183746,
+          -38.37423454
+        ]
+      },
+      "properties": {
+        "average_wait_time": 339.8272705078125,
+        "color": "#e74c3c",
+        "connectivity_score": 24.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 16.5,
+        "id": "2-vic:rail:STY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Stony Point Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-STY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.93052444,
+          -37.79378022
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4616394042969,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:KEN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Kensington Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99527721,
+          -37.76986537
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4145202636719,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:NCE",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Northcote Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.94151017,
+          -37.80630984
+        ]
+      },
+      "properties": {
+        "average_wait_time": 300.5005798339844,
+        "color": "#f1c40f",
+        "connectivity_score": 59.78571319580078,
+        "coverage_score": 50.0,
+        "frequency_score": 70.0,
+        "id": "2-vic:rail:NME",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "North Melbourne Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WIL:",
+          "aus:vic:vic-02-CGB:",
+          "aus:vic:vic-02-UFD:",
+          "aus:vic:vic-02-SUY:",
+          "aus:vic:vic-02-WER:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.25019091,
+          -37.81196804
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.6033630371094,
+        "color": "#f1c40f",
+        "connectivity_score": 40.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 56.5,
+        "id": "2-vic:rail:RWE",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Ringwood East Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.48637907,
+          -38.08061397
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.83917236328125,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:PKM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Pakenham Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00699582,
+          -37.71688492
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.19189453125,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:RES",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Reservoir Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.34541666,
+          -38.03998037
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.8212890625,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:BEW",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Berwick Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.08765936,
+          -38.00658295
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.02691650390625,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:MOR",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Mordialloc Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.28048737,
+          -37.79530018
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.719970703125,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:CDN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Croydon Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.03961342,
+          -37.90321167
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.5353088378906,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:OMD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Ormond Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.9191607,
+          -37.76570666
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.39739990234375,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:MPD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Moonee Ponds Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.92897847,
+          -37.78732767
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4561767578125,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:NKT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Newmarket Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.89147208,
+          -37.8025047
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4866943359375,
+        "color": "#f1c40f",
+        "connectivity_score": 41.9857177734375,
+        "coverage_score": 10.0,
+        "frequency_score": 60.5,
+        "id": "2-vic:rail:MFY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Middle Footscray Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.11209016,
+          -37.87360339
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.6005859375,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:JOR",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Jordanville Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.34582227,
+          -37.75721264
+        ]
+      },
+      "properties": {
+        "average_wait_time": 306.1522216796875,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:LIL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Lilydale Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.77418099,
+          -37.70111071
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.5531311035156,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:WGS",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Watergardens Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.2697768,
+          -38.01774038
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.5952453613281,
+        "color": "#f1c40f",
+        "connectivity_score": 40.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 56.5,
+        "id": "2-vic:rail:HLM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Hallam Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.19220824,
+          -37.81816668
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.51239013671875,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:MCH",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Mitcham Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.9632775,
+          -37.80943693
+        ]
+      },
+      "properties": {
+        "average_wait_time": 300.4358825683594,
+        "color": "#2ecc71",
+        "connectivity_score": 77.28571319580078,
+        "coverage_score": 100.0,
+        "frequency_score": 70.0,
+        "id": "2-vic:rail:STL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "State Library Railway Station",
+        "nearby_stops": [
+          {
+            "distance": 93.1632153859374,
+            "id": "2-vic:rail:MCE",
+            "mode_name": "Metro Train",
+            "name": "Melbourne Central Railway Station"
+          }
+        ],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.04222285,
+          -37.88971946
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.5132751464844,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:GHY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Glen Huntly Railway Station ",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.08134376,
+          -37.86196753
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.0882263183594,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:ASH",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Ashburton Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-ALM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.66111801,
+          -37.89937805
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.2469787597656,
+        "color": "#f1c40f",
+        "connectivity_score": 40.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 56.5,
+        "id": "2-vic:rail:WER",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Werribee Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WER:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.92731571,
+          -37.74359132
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4168395996094,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:SME",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Strathmore Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.88993371,
+          -37.81585044
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.7087097167969,
+        "color": "#f1c40f",
+        "connectivity_score": 46.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:YVE",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Yarraville Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WER:",
+          "aus:vic:vic-02-WIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.13537493,
+          -38.12175231
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.06671142578125,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:KAN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Kananook Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00261908,
+          -37.90478832
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.07769775390625,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:NBN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "North Brighton Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SHM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.03125493,
+          -37.77839363
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.87847900390625,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:ALP",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Alphington Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.79373807,
+          -37.72927934
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.5661315917969,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:KPL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Keilor Plains Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.84095773,
+          -37.86784231
+        ]
+      },
+      "properties": {
+        "average_wait_time": 306.3179626464844,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:SHE",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Seaholme Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WER:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.92151877,
+          -37.71794973
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4364013671875,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:OKP",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Oak Park Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.96068404,
+          -37.76124203
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.70489501953125,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:ASY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Anstey Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.97279042,
+          -37.83331103
+        ]
+      },
+      "properties": {
+        "average_wait_time": 601.3724365234375,
+        "color": "#e74c3c",
+        "connectivity_score": 32.9857177734375,
+        "coverage_score": 10.0,
+        "frequency_score": 38.0,
+        "id": "2-vic:rail:AZC",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Anzac Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.08379338,
+          -37.71095798
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.7799072265625,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:WAT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Watsonia Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.18597988,
+          -38.30565853
+        ]
+      },
+      "properties": {
+        "average_wait_time": 341.5318298339844,
+        "color": "#e74c3c",
+        "connectivity_score": 24.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 16.5,
+        "id": "2-vic:rail:HST",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Hastings Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-STY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00277256,
+          -37.72840277
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4678649902344,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:REG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Regent Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.92546901,
+          -37.79953087
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.71197509765625,
+        "color": "#f1c40f",
+        "connectivity_score": 46.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:SKN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "South Kensington Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WIL:",
+          "aus:vic:vic-02-WER:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.09729471,
+          -37.62297489
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.47857666015625,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:HWS",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Hawkstowe Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.03676929,
+          -37.93447096
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.2570495605469,
+        "color": "#f1c40f",
+        "connectivity_score": 44.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:MRN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Moorabbin Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.13953396,
+          -38.152034
+        ]
+      },
+      "properties": {
+        "average_wait_time": 332.1611328125,
+        "color": "#e74c3c",
+        "connectivity_score": 21.985715866088867,
+        "coverage_score": 10.0,
+        "frequency_score": 10.5,
+        "id": "2-vic:rail:LWA",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Leawarra Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-STY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.96260489,
+          -37.80993896
+        ]
+      },
+      "properties": {
+        "average_wait_time": 300.4358825683594,
+        "color": "#2ecc71",
+        "connectivity_score": 77.28571319580078,
+        "coverage_score": 100.0,
+        "frequency_score": 70.0,
+        "id": "2-vic:rail:MCE",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Melbourne Central Railway Station",
+        "nearby_stops": [
+          {
+            "distance": 93.1632153859374,
+            "id": "2-vic:rail:STL",
+            "mode_name": "Metro Train",
+            "name": "State Library Railway Station"
+          }
+        ],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:",
+          "aus:vic:vic-02-HBE:",
+          "aus:vic:vic-02-SUY:",
+          "aus:vic:vic-02-ALM:",
+          "aus:vic:vic-02-CBE:",
+          "aus:vic:vic-02-CGB:",
+          "aus:vic:vic-02-GWY:",
+          "aus:vic:vic-02-MDD:",
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.10793589,
+          -37.70371477
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.75701904296875,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:GRN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Greensborough Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.80005045,
+          -37.74486131
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.55712890625,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:SAB",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "St Albans Railway Station (St Albans)",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.16282634,
+          -37.95648655
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.9364929199219,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:SNP",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Sandown Park Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-CBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.95887432,
+          -37.700678
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.7326354980469,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:GOW",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Gowrie Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.96054503,
+          -37.71462129
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.7071838378906,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:FAK",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Fawkner Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00214206,
+          -37.84459087
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.36151123046875,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:HKN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Hawksburn Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.17624492,
+          -38.22534196
+        ]
+      },
+      "properties": {
+        "average_wait_time": 342.8272705078125,
+        "color": "#e74c3c",
+        "connectivity_score": 24.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 16.5,
+        "id": "2-vic:rail:SVE",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Somerville Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-STY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.93932328,
+          -37.78813995
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.71826171875,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:FBD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Flemington Bridge Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.02264711,
+          -37.83465462
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.7625732421875,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:HEY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Heyington Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00052198,
+          -37.73867424
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.1669921875,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:PRE",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Preston Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.90532331,
+          -37.86775292
+        ]
+      },
+      "properties": {
+        "average_wait_time": 306.06427001953125,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:WIL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Williamstown Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.12616228,
+          -38.14299007
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.6733703613281,
+        "color": "#f1c40f",
+        "connectivity_score": 46.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:FKN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Frankston Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:",
+          "aus:vic:vic-02-STY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.05455793,
+          -37.96664989
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.1433410644531,
+        "color": "#f1c40f",
+        "connectivity_score": 44.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:CTM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Cheltenham Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.77261667,
+          -37.86369404
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.4588317871094,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:LAV",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Laverton Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WER:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00089787,
+          -37.88475311
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0433654785156,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:ELS",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Elsternwick Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SHM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.03355161,
+          -37.83992894
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.7604675292969,
+        "color": "#f1c40f",
+        "connectivity_score": 41.9857177734375,
+        "coverage_score": 10.0,
+        "frequency_score": 60.5,
+        "id": "2-vic:rail:KYG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Kooyong Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.28470457,
+          -37.86040238
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.872314453125,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:BOR",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Boronia Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.3124024,
+          -37.78474883
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.7297058105469,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:MLK",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Mooroolbark Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.10758338,
+          -38.03653574
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0846252441406,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:EDI",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Edithvale Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.82964474,
+          -37.8671476
+        ]
+      },
+      "properties": {
+        "average_wait_time": 306.35638427734375,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:ALT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Altona Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WER:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.94673994,
+          -37.66607779
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.77618408203125,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:UFD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Upfield Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.20404332,
+          -38.36612338
+        ]
+      },
+      "properties": {
+        "average_wait_time": 340.23638916015625,
+        "color": "#e74c3c",
+        "connectivity_score": 24.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 16.5,
+        "id": "2-vic:rail:CPT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Crib Point Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-STY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.22896846,
+          -37.81588648
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.42840576171875,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:RWD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Ringwood Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.76080944,
+          -37.86660595
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.3628845214844,
+        "color": "#f1c40f",
+        "connectivity_score": 40.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 56.5,
+        "id": "2-vic:rail:ACF",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Aircraft Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WER:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.98915355,
+          -37.92648432
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0264587402344,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:BBH",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Brighton Beach Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SHM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.86294494,
+          -37.7992509
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.079345703125,
+        "color": "#f1c40f",
+        "connectivity_score": 40.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 56.5,
+        "id": "2-vic:rail:TOT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Tottenham Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99240708,
+          -37.78321711
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.42254638671875,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:RUS",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Rushall Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.30753019,
+          -37.8926717
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.9747314453125,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:UFG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Upper Ferntree Gully Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99203517,
+          -37.85605308
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0541076660156,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:WIN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Windsor Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SHM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.41098723,
+          -38.06614572
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.7668762207031,
+        "color": "#f1c40f",
+        "connectivity_score": 40.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 56.5,
+        "id": "2-vic:rail:OFC",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Officer Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.81135895,
+          -37.76008529
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.56170654296875,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:GIN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Ginifer Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.02289866,
+          -37.82182601
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.7698669433594,
+        "color": "#f1c40f",
+        "connectivity_score": 50.18571472167969,
+        "coverage_score": 30.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:HAW",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Hawthorn Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-ALM:",
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.03847598,
+          -37.77496341
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.8996887207031,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:DBN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Darebin Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99142278,
+          -37.81494896
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.64617919921875,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:WRM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "West Richmond Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:",
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.26351137,
+          -38.07900048
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.8540954589844,
+        "color": "#f1c40f",
+        "connectivity_score": 40.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 56.5,
+        "id": "2-vic:rail:MPK",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Merinda Park Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.50635689,
+          -38.08441136
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.0392150878906,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:EPH",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "East Pakenham Railway Station ",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.12151574,
+          -37.71529624
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.01702880859375,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:MMY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Montmorency Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.04252478,
+          -37.87745946
+        ]
+      },
+      "properties": {
+        "average_wait_time": 300.7237854003906,
+        "color": "#f1c40f",
+        "connectivity_score": 52.78571319580078,
+        "coverage_score": 30.0,
+        "frequency_score": 70.0,
+        "id": "2-vic:rail:CFD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Caulfield Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CBE:",
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.01427887,
+          -37.68033809
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.34521484375,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:TSN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Thomastown Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.12053436,
+          -37.92468255
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.6368408203125,
+        "color": "#f1c40f",
+        "connectivity_score": 48.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:CLA",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Clayton Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-CBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.04542519,
+          -37.76889674
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.3692321777344,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:IVA",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Ivanhoe Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00456136,
+          -37.95033018
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.054931640625,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:SHM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Sandringham Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SHM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.05165466,
+          -37.85327908
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.7675476074219,
+        "color": "#f1c40f",
+        "connectivity_score": 41.9857177734375,
+        "coverage_score": 10.0,
+        "frequency_score": 60.5,
+        "id": "2-vic:rail:GAR",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Gardiner Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.9172204,
+          -37.70453633
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4269714355469,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:GRY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Glenroy Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99250026,
+          -37.81039836
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.65582275390625,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:NRM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "North Richmond Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:",
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.88906947,
+          -37.85733348
+        ]
+      },
+      "properties": {
+        "average_wait_time": 306.23553466796875,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:NWN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "North Williamstown Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.95566511,
+          -37.8119815
+        ]
+      },
+      "properties": {
+        "average_wait_time": 300.4657287597656,
+        "color": "#2ecc71",
+        "connectivity_score": 77.28571319580078,
+        "coverage_score": 100.0,
+        "frequency_score": 70.0,
+        "id": "2-vic:rail:FGS",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Flagstaff Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-ALM:",
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:",
+          "aus:vic:vic-02-CGB:",
+          "aus:vic:vic-02-SUY:",
+          "aus:vic:vic-02-HBE:",
+          "aus:vic:vic-02-GWY:",
+          "aus:vic:vic-02-MDD:",
+          "aus:vic:vic-02-CBE:",
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.09212201,
+          -37.64403391
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.5078430175781,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:MMR",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Middle Gorge Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.08830787,
+          -37.90037214
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.6212158203125,
+        "color": "#f1c40f",
+        "connectivity_score": 48.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:OAK",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Oakleigh Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-CBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.03643883,
+          -37.82146682
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.6219787597656,
+        "color": "#f1c40f",
+        "connectivity_score": 52.18571472167969,
+        "coverage_score": 30.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:GFE",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Glenferrie Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:",
+          "aus:vic:vic-02-ALM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.8328782,
+          -37.78853633
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.53466796875,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:SUN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Sunshine Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.303993,
+          -38.02777361
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.6634216308594,
+        "color": "#f1c40f",
+        "connectivity_score": 40.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 56.5,
+        "id": "2-vic:rail:NWA",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Narre Warren Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.92093868,
+          -37.74720985
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4372253417969,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:GBV",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Glenbervie Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.17802653,
+          -38.33739032
+        ]
+      },
+      "properties": {
+        "average_wait_time": 341.0545654296875,
+        "color": "#e74c3c",
+        "connectivity_score": 24.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 16.5,
+        "id": "2-vic:rail:BIT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Bittern Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-STY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.13881033,
+          -37.93847284
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.8943786621094,
+        "color": "#f1c40f",
+        "connectivity_score": 48.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:WTL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Westall Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CBE:",
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.43779101,
+          -38.07129047
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.9909973144531,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:CDA",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Cardinia Road Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.95230127,
+          -37.78119293
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.8394470214844,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:RPK",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Royal Park Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.08122424,
+          -37.82448518
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.8705749511719,
+        "color": "#f1c40f",
+        "connectivity_score": 45.4857177734375,
+        "coverage_score": 20.0,
+        "frequency_score": 60.5,
+        "id": "2-vic:rail:CBY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Canterbury Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99923319,
+          -37.7806207
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.8645935058594,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:WTG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Westgarth Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.10236432,
+          -37.91101734
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.644775390625,
+        "color": "#f1c40f",
+        "connectivity_score": 48.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:HUN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Huntingdale Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CBE:",
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99016426,
+          -37.82407446
+        ]
+      },
+      "properties": {
+        "average_wait_time": 300.17193603515625,
+        "color": "#2ecc71",
+        "connectivity_score": 70.28571319580078,
+        "coverage_score": 80.0,
+        "frequency_score": 70.0,
+        "id": "2-vic:rail:RMD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Richmond Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:",
+          "aus:vic:vic-02-FKN:",
+          "aus:vic:vic-02-SHM:",
+          "aus:vic:vic-02-CBE:",
+          "aus:vic:vic-02-ALM:",
+          "aus:vic:vic-02-GWY:",
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.15001354,
+          -37.82007075
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.74102783203125,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:BBN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Blackburn Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.19160028,
+          -37.97825454
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.2440185546875,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:YMN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Yarraman Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CBE:",
+          "aus:vic:vic-02-PKM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.16052609,
+          -38.19404306
+        ]
+      },
+      "properties": {
+        "average_wait_time": 335.20001220703125,
+        "color": "#e74c3c",
+        "connectivity_score": 24.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 16.5,
+        "id": "2-vic:rail:BXR",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Baxter Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-STY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.01932554,
+          -37.85645238
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.3619689941406,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:ARM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Armadale Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.19201689,
+          -37.63939817
+        ]
+      },
+      "properties": {
+        "average_wait_time": 308.56951904296875,
+        "color": "#e74c3c",
+        "connectivity_score": 32.78571319580078,
+        "coverage_score": 10.0,
+        "frequency_score": 37.5,
+        "id": "2-vic:rail:HBE",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Hurstbridge Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99705619,
+          -37.764101
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4200744628906,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:CXT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Croxton Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.1748915,
+          -37.82061218
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.55126953125,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:NWG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Nunawading Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.91585052,
+          -37.69513079
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.418212890625,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:JAC",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Jacana Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99525782,
+          -37.87596086
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0500183105469,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:RIP",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Ripponlea Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SHM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.0582249,
+          -37.85930842
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.7571105957031,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:GIR",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Glen Iris Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.74744472,
+          -37.86986533
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.35498046875,
+        "color": "#f1c40f",
+        "connectivity_score": 40.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 56.5,
+        "id": "2-vic:rail:WLD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Williams Landing Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WER:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.05857506,
+          -37.88624148
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.62066650390625,
+        "color": "#f1c40f",
+        "connectivity_score": 48.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:CNE",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Carnegie Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-CBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.89567157,
+          -37.80900514
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.7259216308594,
+        "color": "#f1c40f",
+        "connectivity_score": 46.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:SEN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Seddon Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WIL:",
+          "aus:vic:vic-02-WER:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.06614029,
+          -37.7428786
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.3977966308594,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:ROS",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Rosanna Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.98985992,
+          -37.84951848
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0742492675781,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:PRA",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Prahran Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SHM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00150445,
+          -37.9379864
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.08941650390625,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:HAM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Hampton Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SHM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.04864786,
+          -37.95813507
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.5777893066406,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:SOU",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Southland Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.96284055,
+          -37.73352285
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.73638916015625,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:BAT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Batman Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00755515,
+          -37.82756022
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.4383239746094,
+        "color": "#f1c40f",
+        "connectivity_score": 55.68571472167969,
+        "coverage_score": 40.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:BLY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Burnley Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:",
+          "aus:vic:vic-02-LIL:",
+          "aus:vic:vic-02-ALM:",
+          "aus:vic:vic-02-BEG:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.98409834,
+          -37.81652702
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.4687194824219,
+        "color": "#f1c40f",
+        "connectivity_score": 48.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:JLI",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Jolimont-MCG Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:",
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.10214962,
+          -38.02722019
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0336608886719,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:ASP",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Aspendale Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.04584366,
+          -37.82239831
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.8140563964844,
+        "color": "#f1c40f",
+        "connectivity_score": 50.18571472167969,
+        "coverage_score": 30.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:AUB",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Auburn Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-ALM:",
+          "aus:vic:vic-02-LIL:",
+          "aus:vic:vic-02-BEG:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.14978071,
+          -37.87622062
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.6478576660156,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:SYN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Syndal Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.89448368,
+          -37.86398189
+        ]
+      },
+      "properties": {
+        "average_wait_time": 306.08929443359375,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:WBH",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Williamstown Beach Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.12142893,
+          -37.81922165
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.7261047363281,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:BOX",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Box Hill Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-LIL:",
+          "aus:vic:vic-02-BEG:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.01719317,
+          -37.66585075
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4586181640625,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:LAL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Lalor Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.06068552,
+          -37.75707293
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4017639160156,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:HDB",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Heidelberg Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.90202006,
+          -37.80141343
+        ]
+      },
+      "properties": {
+        "average_wait_time": 300.8835754394531,
+        "color": "#f1c40f",
+        "connectivity_score": 52.78571319580078,
+        "coverage_score": 30.0,
+        "frequency_score": 70.0,
+        "id": "2-vic:rail:FSY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Footscray Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:",
+          "aus:vic:vic-02-WIL:",
+          "aus:vic:vic-02-WER:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.91961322,
+          -37.68304926
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4476013183594,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:BMS",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Broadmeadows Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.71982218,
+          -37.62696051
+        ]
+      },
+      "properties": {
+        "average_wait_time": 306.1246643066406,
+        "color": "#e74c3c",
+        "connectivity_score": 36.9857177734375,
+        "coverage_score": 10.0,
+        "frequency_score": 48.0,
+        "id": "2-vic:rail:DRT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Diggers Rest Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.88593345,
+          -37.83063888
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.6941833496094,
+        "color": "#f1c40f",
+        "connectivity_score": 46.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:SPT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Spotswood Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WER:",
+          "aus:vic:vic-02-WIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.06819025,
+          -37.82589419
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.8529052734375,
+        "color": "#f1c40f",
+        "connectivity_score": 45.4857177734375,
+        "coverage_score": 20.0,
+        "frequency_score": 60.5,
+        "id": "2-vic:rail:ECM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "East Camberwell Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-LIL:",
+          "aus:vic:vic-02-BEG:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.21397044,
+          -37.8188232
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.57818603515625,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:HTD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Heatherdale Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.95954246,
+          -37.79987386
+        ]
+      },
+      "properties": {
+        "average_wait_time": 601.4896850585938,
+        "color": "#e74c3c",
+        "connectivity_score": 31.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 34.0,
+        "id": "2-vic:rail:PKV",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Parkville Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.07555959,
+          -37.84398457
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.935791015625,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:HWL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Hartwell Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-ALM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.96333634,
+          -37.74234502
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.75860595703125,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:COB",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Coburg Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.9935121,
+          -37.86948773
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0622253417969,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:BCV",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Balaclava Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SHM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.18161453,
+          -37.66396792
+        ]
+      },
+      "properties": {
+        "average_wait_time": 308.3690490722656,
+        "color": "#e74c3c",
+        "connectivity_score": 32.78571319580078,
+        "coverage_score": 10.0,
+        "frequency_score": 37.5,
+        "id": "2-vic:rail:WTT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Wattle Glen Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.82470361,
+          -37.77765281
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.52886962890625,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:ALB",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Albion Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.96709126,
+          -37.81699161
+        ]
+      },
+      "properties": {
+        "average_wait_time": 299.947509765625,
+        "color": "#2ecc71",
+        "connectivity_score": 77.28571319580078,
+        "coverage_score": 100.0,
+        "frequency_score": 70.0,
+        "id": "2-vic:rail:THL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Town Hall Railway Station",
+        "nearby_stops": [
+          {
+            "distance": 146.4796702722776,
+            "id": "2-vic:rail:FSS",
+            "mode_name": "Metro Train",
+            "name": "Flinders Street Railway Station"
+          }
+        ],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.16205755,
+          -37.87950407
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.7321472167969,
+        "color": "#f1c40f",
+        "connectivity_score": 41.9857177734375,
+        "coverage_score": 10.0,
+        "frequency_score": 60.5,
+        "id": "2-vic:rail:GWY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Glen Waverley Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.29525126,
+          -37.88169799
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.9940490722656,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:FTG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Ferntree Gully Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.04173374,
+          -37.84936553
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.80731201171875,
+        "color": "#f1c40f",
+        "connectivity_score": 41.9857177734375,
+        "coverage_score": 10.0,
+        "frequency_score": 60.5,
+        "id": "2-vic:rail:TGA",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Tooronga Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.08051107,
+          -37.85156328
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.91802978515625,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:BWD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Burwood Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-ALM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.05394269,
+          -37.76358553
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.9130859375,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:EAG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Eaglemont Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.05869718,
+          -37.82656714
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.260498046875,
+        "color": "#f1c40f",
+        "connectivity_score": 52.18571472167969,
+        "coverage_score": 30.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:CAM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Camberwell Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-ALM:",
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.95871691,
+          -37.77498702
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.875,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:JWL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Jewell Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.92819562,
+          -37.73075596
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.44061279296875,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:PVL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Pascoe Vale Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99857152,
+          -37.75505179
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4432373046875,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:TBY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Thornbury Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99706569,
+          -37.82639995
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.3341979980469,
+        "color": "#f1c40f",
+        "connectivity_score": 54.885711669921875,
+        "coverage_score": 40.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:ERM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "East Richmond Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:",
+          "aus:vic:vic-02-ALM:",
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.20972537,
+          -37.98996792
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.9338684082031,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:DNG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Dandenong Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-CBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00416843,
+          -37.89669508
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0597229003906,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:GVE",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Gardenvale Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SHM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.96131355,
+          -37.72093389
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.7197265625,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:MYN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Merlynston Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.96182303,
+          -37.75448484
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.5906066894531,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:MLD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Moreland Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.18640071,
+          -38.259815
+        ]
+      },
+      "properties": {
+        "average_wait_time": 342.2136535644531,
+        "color": "#e74c3c",
+        "connectivity_score": 24.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 16.5,
+        "id": "2-vic:rail:TAB",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Tyabb Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-STY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.1201058,
+          -38.06547485
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0592041015625,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:BON",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Bonbeach Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.92604123,
+          -37.66111042
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.5977783203125,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:CLO",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Coolaroo Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CGB:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.10095293,
+          -37.60254907
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.50885009765625,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:MDD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Mernda Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.33133336,
+          -37.90369097
+        ]
+      },
+      "properties": {
+        "average_wait_time": 306.3981018066406,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:UPW",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Upwey Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.06914332,
+          -37.7260123
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.3914794921875,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:MCD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Macleod Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.24925211,
+          -38.05734985
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.8495788574219,
+        "color": "#f1c40f",
+        "connectivity_score": 40.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 56.5,
+        "id": "2-vic:rail:LBK",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Lynbrook Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-CBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.93616633,
+          -37.79426673
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.724609375,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:MAC",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Macaulay Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.94120851,
+          -37.80122194
+        ]
+      },
+      "properties": {
+        "average_wait_time": 601.524169921875,
+        "color": "#e74c3c",
+        "connectivity_score": 31.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 34.0,
+        "id": "2-vic:rail:ARN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Arden Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.95958654,
+          -37.76772055
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.8174743652344,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:BWK",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Brunswick Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-UFD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.34299458,
+          -37.90811849
+        ]
+      },
+      "properties": {
+        "average_wait_time": 306.3222351074219,
+        "color": "#e74c3c",
+        "connectivity_score": 36.9857177734375,
+        "coverage_score": 10.0,
+        "frequency_score": 48.0,
+        "id": "2-vic:rail:TCM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Tecoma Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.1280441,
+          -37.87526408
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.64373779296875,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:MWY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Mount Waverley Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00015503,
+          -37.74556212
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4405822753906,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:BEL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Bell Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.95277706,
+          -37.8186631
+        ]
+      },
+      "properties": {
+        "average_wait_time": 300.2551574707031,
+        "color": "#2ecc71",
+        "connectivity_score": 77.28571319580078,
+        "coverage_score": 100.0,
+        "frequency_score": 70.0,
+        "id": "2-vic:rail:SSS",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Southern Cross Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-CBE:",
+          "aus:vic:vic-02-ALM:",
+          "aus:vic:vic-02-MDD:",
+          "aus:vic:vic-02-GWY:",
+          "aus:vic:vic-02-UFD:",
+          "aus:vic:vic-02-HBE:",
+          "aus:vic:vic-02-WER:",
+          "aus:vic:vic-02-WIL:",
+          "aus:vic:vic-02-CGB:",
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:",
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.1166795,
+          -38.05329032
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0559997558594,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:CSA",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Chelsea Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.973119,
+          -37.811337
+        ]
+      },
+      "properties": {
+        "average_wait_time": 300.465576171875,
+        "color": "#2ecc71",
+        "connectivity_score": 77.28571319580078,
+        "coverage_score": 100.0,
+        "frequency_score": 70.0,
+        "id": "2-vic:rail:PAR",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Parliament Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-ALM:",
+          "aus:vic:vic-02-LIL:",
+          "aus:vic:vic-02-UFD:",
+          "aus:vic:vic-02-CBE:",
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-SUY:",
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-MDD:",
+          "aus:vic:vic-02-CGB:",
+          "aus:vic:vic-02-HBE:",
+          "aus:vic:vic-02-GWY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.01188382,
+          -37.69487012
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4246826171875,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:KPK",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Keon Park Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.15345183,
+          -37.94950878
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.9298400878906,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:SPG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Springvale Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-CBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.81349356,
+          -37.86516348
+        ]
+      },
+      "properties": {
+        "average_wait_time": 306.54010009765625,
+        "color": "#e74c3c",
+        "connectivity_score": 36.78571319580078,
+        "coverage_score": 10.0,
+        "frequency_score": 47.5,
+        "id": "2-vic:rail:WTO",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Westona Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WER:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.06580232,
+          -37.98277704
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.078125,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:MEN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Mentone Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.01390858,
+          -37.85077381
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.3710632324219,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:TOR",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Toorak Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.15853819,
+          -37.67337905
+        ]
+      },
+      "properties": {
+        "average_wait_time": 308.3325500488281,
+        "color": "#e74c3c",
+        "connectivity_score": 32.78571319580078,
+        "coverage_score": 10.0,
+        "frequency_score": 37.5,
+        "id": "2-vic:rail:DCK",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Diamond Creek Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.96696435,
+          -37.81830513
+        ]
+      },
+      "properties": {
+        "average_wait_time": 299.947509765625,
+        "color": "#2ecc71",
+        "connectivity_score": 77.28571319580078,
+        "coverage_score": 100.0,
+        "frequency_score": 70.0,
+        "id": "2-vic:rail:FSS",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Flinders Street Railway Station",
+        "nearby_stops": [
+          {
+            "distance": 146.4796702722776,
+            "id": "2-vic:rail:THL",
+            "mode_name": "Metro Train",
+            "name": "Town Hall Railway Station"
+          }
+        ],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SHM:",
+          "aus:vic:vic-02-WIL:",
+          "aus:vic:vic-02-CBE:",
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:",
+          "aus:vic:vic-02-CGB:",
+          "aus:vic:vic-02-FKN:",
+          "aus:vic:vic-02-SUY:",
+          "aus:vic:vic-02-UFD:",
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-ALM:",
+          "aus:vic:vic-02-HBE:",
+          "aus:vic:vic-02-GWY:",
+          "aus:vic:vic-02-WER:",
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.03107934,
+          -37.65217784
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.3929138183594,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:EPP",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Epping Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.35529128,
+          -37.9091021
+        ]
+      },
+      "properties": {
+        "average_wait_time": 306.2035827636719,
+        "color": "#e74c3c",
+        "connectivity_score": 36.9857177734375,
+        "coverage_score": 10.0,
+        "frequency_score": 48.0,
+        "id": "2-vic:rail:BEG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Belgrave Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.0169053,
+          -37.77917126
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.8804016113281,
+        "color": "#f1c40f",
+        "connectivity_score": 41.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 59.5,
+        "id": "2-vic:rail:FFD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Fairfield Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.24455538,
+          -37.82832227
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.87628173828125,
+        "color": "#e74c3c",
+        "connectivity_score": 36.9857177734375,
+        "coverage_score": 10.0,
+        "frequency_score": 48.0,
+        "id": "2-vic:rail:HMT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Heathmont Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99374967,
+          -37.80452593
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.65777587890625,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:CWD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Collingwood Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:",
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.08864793,
+          -37.82429952
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.850341796875,
+        "color": "#f1c40f",
+        "connectivity_score": 45.4857177734375,
+        "coverage_score": 20.0,
+        "frequency_score": 60.5,
+        "id": "2-vic:rail:CHM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Chatham Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-LIL:",
+          "aus:vic:vic-02-BEG:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.06295083,
+          -37.86895684
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.6610107421875,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:DLG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Darling Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-GWY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.72798098,
+          -37.57928396
+        ]
+      },
+      "properties": {
+        "average_wait_time": 306.0653076171875,
+        "color": "#e74c3c",
+        "connectivity_score": 36.9857177734375,
+        "coverage_score": 10.0,
+        "frequency_score": 48.0,
+        "id": "2-vic:rail:SUY",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Sunbury Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-SUY:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.1282304,
+          -38.10402104
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0911560058594,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:SEA",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Seaford Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.17632482,
+          -37.96661867
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.9625549316406,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:NPK",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Noble Park Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-CBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.02929394,
+          -37.8662533
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.6513977050781,
+        "color": "#f1c40f",
+        "connectivity_score": 52.18571472167969,
+        "coverage_score": 30.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:MAL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Malvern Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-PKM:",
+          "aus:vic:vic-02-FKN:",
+          "aus:vic:vic-02-CBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.14782202,
+          -37.71354967
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.0108947753906,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:ELT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Eltham Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00951662,
+          -37.70789754
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.39691162109375,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:RUT",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Ruthven Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.9954167,
+          -37.78865745
+        ]
+      },
+      "properties": {
+        "average_wait_time": 301.47802734375,
+        "color": "#f1c40f",
+        "connectivity_score": 48.68571472167969,
+        "coverage_score": 20.0,
+        "frequency_score": 68.5,
+        "id": "2-vic:rail:CHL",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Clifton Hill Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-HBE:",
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.03829897,
+          -37.91030903
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.5126953125,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:MCK",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "McKinnon Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.06964598,
+          -37.83150543
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.121337890625,
+        "color": "#f1c40f",
+        "connectivity_score": 40.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 56.0,
+        "id": "2-vic:rail:RIV",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Riversdale Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-ALM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.07632682,
+          -37.99307882
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.0218505859375,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:PKD",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Parkdale Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-FKN:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.70074704,
+          -37.88338025
+        ]
+      },
+      "properties": {
+        "average_wait_time": 304.32501220703125,
+        "color": "#f1c40f",
+        "connectivity_score": 40.38571548461914,
+        "coverage_score": 10.0,
+        "frequency_score": 56.5,
+        "id": "2-vic:rail:HCG",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Hoppers Crossing Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-WER:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.14070271,
+          -37.82078023
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.18902587890625,
+        "color": "#f1c40f",
+        "connectivity_score": 47.885711669921875,
+        "coverage_score": 20.0,
+        "frequency_score": 66.5,
+        "id": "2-vic:rail:LAB",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Laburnum Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-BEG:",
+          "aus:vic:vic-02-LIL:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.07965567,
+          -37.86832039
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.1746826171875,
+        "color": "#f1c40f",
+        "connectivity_score": 40.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 56.0,
+        "id": "2-vic:rail:ALM",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Alamein Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-ALM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.07029756,
+          -37.83571565
+        ]
+      },
+      "properties": {
+        "average_wait_time": 305.0787353515625,
+        "color": "#e74c3c",
+        "connectivity_score": 38.585716247558594,
+        "coverage_score": 10.0,
+        "frequency_score": 52.0,
+        "id": "2-vic:rail:WSN",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Willison Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-ALM:"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99297248,
+          -37.77784668
+        ]
+      },
+      "properties": {
+        "average_wait_time": 303.4308776855469,
+        "color": "#f1c40f",
+        "connectivity_score": 43.18571472167969,
+        "coverage_score": 10.0,
+        "frequency_score": 63.5,
+        "id": "2-vic:rail:MER",
+        "mode_id": 2,
+        "mode_name": "Metro Train",
+        "name": "Merri Railway Station",
+        "nearby_stops": [],
+        "reliability_score": 57.142860412597656,
+        "route_ids": [
+          "aus:vic:vic-02-MDD:"
+        ]
+      }
+    }
+  ]
+}

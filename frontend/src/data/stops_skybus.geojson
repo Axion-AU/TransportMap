@@ -1,0 +1,1114 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.95172491,
+          -37.81604041
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.9625244140625,
+        "color": "#f1c40f",
+        "connectivity_score": 50.257144927978516,
+        "coverage_score": 20.0,
+        "frequency_score": 63.5,
+        "id": "11-23183",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Skybus Coach Terminal/Spencer St",
+        "nearby_stops": [
+          {
+            "distance": 32.74595242257121,
+            "id": "11-23173",
+            "mode_name": "SkyBus",
+            "name": "Skybus Coach Terminal/Spencer St"
+          },
+          {
+            "distance": 102.0208927388442,
+            "id": "11-23175",
+            "mode_name": "SkyBus",
+            "name": "Skybus Coach Terminal/Spencer St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-Ska-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.95190011,
+          -37.81627776
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.9625244140625,
+        "color": "#f1c40f",
+        "connectivity_score": 50.257144927978516,
+        "coverage_score": 20.0,
+        "frequency_score": 63.5,
+        "id": "11-23173",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Skybus Coach Terminal/Spencer St",
+        "nearby_stops": [
+          {
+            "distance": 32.74595242257121,
+            "id": "11-23183",
+            "mode_name": "SkyBus",
+            "name": "Skybus Coach Terminal/Spencer St"
+          },
+          {
+            "distance": 74.1314321960481,
+            "id": "11-23175",
+            "mode_name": "SkyBus",
+            "name": "Skybus Coach Terminal/Spencer St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SKY-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.0691287,
+          -37.98184043
+        ]
+      },
+      "properties": {
+        "average_wait_time": 323.0389099121094,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-9629",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Rogers St/Balcombe Rd",
+        "nearby_stops": [
+          {
+            "distance": 16.391374321467755,
+            "id": "11-9349",
+            "mode_name": "SkyBus",
+            "name": "Rogers St/Balcombe Rd"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.12623613,
+          -38.14411769
+        ]
+      },
+      "properties": {
+        "average_wait_time": 323.54559326171875,
+        "color": "#e74c3c",
+        "connectivity_score": 27.957143783569336,
+        "coverage_score": 10.0,
+        "frequency_score": 16.5,
+        "id": "11-21220",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Frankston Railway Station/Fletcher Rd",
+        "nearby_stops": [],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.66430318,
+          -37.90114444
+        ]
+      },
+      "properties": {
+        "average_wait_time": 348.6166687011719,
+        "color": "#e74c3c",
+        "connectivity_score": 25.557144165039062,
+        "coverage_score": 10.0,
+        "frequency_score": 10.5,
+        "id": "11-5184",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Werribee RSL/Synnot St",
+        "nearby_stops": [
+          {
+            "distance": 33.28550231705589,
+            "id": "11-7183",
+            "mode_name": "SkyBus",
+            "name": "Werribee RSL/Synnot St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-Ska-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00316753,
+          -37.90553659
+        ]
+      },
+      "properties": {
+        "average_wait_time": 321.2718505859375,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-20400",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "North Brighton Station/Bay St",
+        "nearby_stops": [
+          {
+            "distance": 121.15286462308944,
+            "id": "11-3633",
+            "mode_name": "SkyBus",
+            "name": "North Brighton Station/Bay St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.98193743,
+          -37.8637296
+        ]
+      },
+      "properties": {
+        "average_wait_time": 322.75,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-1109",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Inkerman St/Barkly St",
+        "nearby_stops": [
+          {
+            "distance": 98.89666333625543,
+            "id": "11-910",
+            "mode_name": "SkyBus",
+            "name": "Fawkner St/Barkly St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99315733,
+          -37.90391539
+        ]
+      },
+      "properties": {
+        "average_wait_time": 321.06304931640625,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-3245",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Bay St/New St",
+        "nearby_stops": [
+          {
+            "distance": 24.234650539011813,
+            "id": "11-1414",
+            "mode_name": "SkyBus",
+            "name": "Bay St/New St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.47343213,
+          -38.02635181
+        ]
+      },
+      "properties": {
+        "average_wait_time": 347.36669921875,
+        "color": "#e74c3c",
+        "connectivity_score": 25.557144165039062,
+        "coverage_score": 10.0,
+        "frequency_score": 10.5,
+        "id": "11-40284",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Avalon Airport/Outside Terminal",
+        "nearby_stops": [
+          {
+            "distance": 0.0,
+            "id": "11-40272",
+            "mode_name": "SkyBus",
+            "name": "Avalon Airport/Outside Terminal"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-Ska-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99562469,
+          -37.89178266
+        ]
+      },
+      "properties": {
+        "average_wait_time": 320.8424377441406,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-20394",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Head St/New St",
+        "nearby_stops": [
+          {
+            "distance": 18.311848204725955,
+            "id": "11-3749",
+            "mode_name": "SkyBus",
+            "name": "Head St/New St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.08414652,
+          -37.71090063
+        ]
+      },
+      "properties": {
+        "average_wait_time": 314.3101806640625,
+        "color": "#e74c3c",
+        "connectivity_score": 32.757144927978516,
+        "coverage_score": 10.0,
+        "frequency_score": 28.5,
+        "id": "11-20668",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Watsonia Station/Greensborough Hwy",
+        "nearby_stops": [],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-box-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.03701573,
+          -37.93675503
+        ]
+      },
+      "properties": {
+        "average_wait_time": 322.7250061035156,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-48787",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "938 Nepean Hwy",
+        "nearby_stops": [
+          {
+            "distance": 254.39405345874997,
+            "id": "11-14948",
+            "mode_name": "SkyBus",
+            "name": "Moorabbin Station/Nepean Hwy"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.84914341,
+          -37.67232219
+        ]
+      },
+      "properties": {
+        "average_wait_time": 300.5461730957031,
+        "color": "#f1c40f",
+        "connectivity_score": 59.85714340209961,
+        "coverage_score": 40.0,
+        "frequency_score": 70.0,
+        "id": "11-48578",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Melbourne Airport T4 Skybus/Service Rd",
+        "nearby_stops": [
+          {
+            "distance": 160.2054442718123,
+            "id": "11-45513",
+            "mode_name": "SkyBus",
+            "name": "Melbourne Airport T3 Skybus/Arrival Dr"
+          },
+          {
+            "distance": 373.28822443095623,
+            "id": "11-45511",
+            "mode_name": "SkyBus",
+            "name": "Melbourne Airport T1 Skybus/Arrival Dr"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-box-mjp-1",
+          "11-SK4-mjp-1",
+          "11-SUN-mjp-1",
+          "11-SKY-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.12214065,
+          -37.8198278
+        ]
+      },
+      "properties": {
+        "average_wait_time": 313.2362060546875,
+        "color": "#e74c3c",
+        "connectivity_score": 34.55714416503906,
+        "coverage_score": 10.0,
+        "frequency_score": 33.0,
+        "id": "11-19648",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Box Hill Bus Station/Station St",
+        "nearby_stops": [],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-box-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.12498897,
+          -37.78402348
+        ]
+      },
+      "properties": {
+        "average_wait_time": 314.8602294921875,
+        "color": "#e74c3c",
+        "connectivity_score": 32.757144927978516,
+        "coverage_score": 10.0,
+        "frequency_score": 28.5,
+        "id": "11-19488",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Doncaster Shopping Centre/Williamsons Rd",
+        "nearby_stops": [],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-box-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.95254257,
+          -37.81646016
+        ]
+      },
+      "properties": {
+        "average_wait_time": 302.9625244140625,
+        "color": "#f1c40f",
+        "connectivity_score": 50.257144927978516,
+        "coverage_score": 20.0,
+        "frequency_score": 63.5,
+        "id": "11-23175",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Skybus Coach Terminal/Spencer St",
+        "nearby_stops": [
+          {
+            "distance": 74.1314321960481,
+            "id": "11-23173",
+            "mode_name": "SkyBus",
+            "name": "Skybus Coach Terminal/Spencer St"
+          },
+          {
+            "distance": 102.0208927388442,
+            "id": "11-23183",
+            "mode_name": "SkyBus",
+            "name": "Skybus Coach Terminal/Spencer St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SKY-mjp-1",
+          "11-Ska-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.84874128,
+          -37.67093605
+        ]
+      },
+      "properties": {
+        "average_wait_time": 300.5461730957031,
+        "color": "#f1c40f",
+        "connectivity_score": 59.85714340209961,
+        "coverage_score": 40.0,
+        "frequency_score": 70.0,
+        "id": "11-45513",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Melbourne Airport T3 Skybus/Arrival Dr",
+        "nearby_stops": [
+          {
+            "distance": 160.2054442718123,
+            "id": "11-48578",
+            "mode_name": "SkyBus",
+            "name": "Melbourne Airport T4 Skybus/Service Rd"
+          },
+          {
+            "distance": 279.4355297845446,
+            "id": "11-45511",
+            "mode_name": "SkyBus",
+            "name": "Melbourne Airport T1 Skybus/Arrival Dr"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SKY-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99327749,
+          -37.90409768
+        ]
+      },
+      "properties": {
+        "average_wait_time": 321.06304931640625,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-1414",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Bay St/New St",
+        "nearby_stops": [
+          {
+            "distance": 24.234650539011813,
+            "id": "11-3245",
+            "mode_name": "SkyBus",
+            "name": "Bay St/New St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00029689,
+          -37.88511238
+        ]
+      },
+      "properties": {
+        "average_wait_time": 320.6550598144531,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-3752",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Elsternwick Station/20 Horne St",
+        "nearby_stops": [
+          {
+            "distance": 24.02485625757872,
+            "id": "11-894",
+            "mode_name": "SkyBus",
+            "name": "Elsternwick Station/Horne St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.98222007,
+          -37.88211832
+        ]
+      },
+      "properties": {
+        "average_wait_time": 320.3798522949219,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-1100",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Broadway/Glen Huntly Rd",
+        "nearby_stops": [
+          {
+            "distance": 94.25839463219964,
+            "id": "11-901",
+            "mode_name": "SkyBus",
+            "name": "Ormond Rd/Glen Huntly Rd"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.85068092,
+          -37.66933128
+        ]
+      },
+      "properties": {
+        "average_wait_time": 300.5461730957031,
+        "color": "#f1c40f",
+        "connectivity_score": 59.85714340209961,
+        "coverage_score": 40.0,
+        "frequency_score": 70.0,
+        "id": "11-45511",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Melbourne Airport T1 Skybus/Arrival Dr",
+        "nearby_stops": [
+          {
+            "distance": 279.4355297845446,
+            "id": "11-45513",
+            "mode_name": "SkyBus",
+            "name": "Melbourne Airport T3 Skybus/Arrival Dr"
+          },
+          {
+            "distance": 373.28822443095623,
+            "id": "11-48578",
+            "mode_name": "SkyBus",
+            "name": "Melbourne Airport T4 Skybus/Service Rd"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SUN-mjp-1",
+          "11-SKY-mjp-1",
+          "11-box-mjp-1",
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.11621266,
+          -38.05194011
+        ]
+      },
+      "properties": {
+        "average_wait_time": 322.97943115234375,
+        "color": "#e74c3c",
+        "connectivity_score": 27.957143783569336,
+        "coverage_score": 10.0,
+        "frequency_score": 16.5,
+        "id": "11-42273",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Chelsea Railway Station/Station St",
+        "nearby_stops": [],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.03619656,
+          -37.93461459
+        ]
+      },
+      "properties": {
+        "average_wait_time": 322.7250061035156,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-14948",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Moorabbin Station/Nepean Hwy",
+        "nearby_stops": [
+          {
+            "distance": 254.39405345874997,
+            "id": "11-48787",
+            "mode_name": "SkyBus",
+            "name": "938 Nepean Hwy"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.99546678,
+          -37.89173491
+        ]
+      },
+      "properties": {
+        "average_wait_time": 320.8424377441406,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-3749",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Head St/New St",
+        "nearby_stops": [
+          {
+            "distance": 18.311848204725955,
+            "id": "11-20394",
+            "mode_name": "SkyBus",
+            "name": "Head St/New St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.05318677,
+          -37.95779576
+        ]
+      },
+      "properties": {
+        "average_wait_time": 322.7138977050781,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-20986",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Southland Shopping Centre/Karen St ",
+        "nearby_stops": [],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.12158025,
+          -38.14234913
+        ]
+      },
+      "properties": {
+        "average_wait_time": 323.66766357421875,
+        "color": "#e74c3c",
+        "connectivity_score": 27.957143783569336,
+        "coverage_score": 10.0,
+        "frequency_score": 16.5,
+        "id": "11-48784",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Quest/435-437 Nepean Hwy",
+        "nearby_stops": [],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.98159669,
+          -37.86455283
+        ]
+      },
+      "properties": {
+        "average_wait_time": 322.75,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-910",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Fawkner St/Barkly St",
+        "nearby_stops": [
+          {
+            "distance": 98.89666333625543,
+            "id": "11-1109",
+            "mode_name": "SkyBus",
+            "name": "Inkerman St/Barkly St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00029138,
+          -37.88489601
+        ]
+      },
+      "properties": {
+        "average_wait_time": 320.6550598144531,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-894",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Elsternwick Station/Horne St",
+        "nearby_stops": [
+          {
+            "distance": 24.02485625757872,
+            "id": "11-3752",
+            "mode_name": "SkyBus",
+            "name": "Elsternwick Station/20 Horne St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.66452422,
+          -37.90134708
+        ]
+      },
+      "properties": {
+        "average_wait_time": 348.6166687011719,
+        "color": "#e74c3c",
+        "connectivity_score": 25.557144165039062,
+        "coverage_score": 10.0,
+        "frequency_score": 10.5,
+        "id": "11-7183",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Werribee RSL/Synnot St",
+        "nearby_stops": [
+          {
+            "distance": 33.28550231705589,
+            "id": "11-5184",
+            "mode_name": "SkyBus",
+            "name": "Werribee RSL/Synnot St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-Ska-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.06904072,
+          -37.98172183
+        ]
+      },
+      "properties": {
+        "average_wait_time": 323.0389099121094,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-9349",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Rogers St/Balcombe Rd",
+        "nearby_stops": [
+          {
+            "distance": 16.391374321467755,
+            "id": "11-9629",
+            "mode_name": "SkyBus",
+            "name": "Rogers St/Balcombe Rd"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.00207641,
+          -37.90550906
+        ]
+      },
+      "properties": {
+        "average_wait_time": 321.2718505859375,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-3633",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "North Brighton Station/Bay St",
+        "nearby_stops": [
+          {
+            "distance": 121.15286462308944,
+            "id": "11-20400",
+            "mode_name": "SkyBus",
+            "name": "North Brighton Station/Bay St"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.98304453,
+          -37.8823217
+        ]
+      },
+      "properties": {
+        "average_wait_time": 320.3798522949219,
+        "color": "#e74c3c",
+        "connectivity_score": 30.35714340209961,
+        "coverage_score": 10.0,
+        "frequency_score": 22.5,
+        "id": "11-901",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Ormond Rd/Glen Huntly Rd",
+        "nearby_stops": [
+          {
+            "distance": 94.25839463219964,
+            "id": "11-1100",
+            "mode_name": "SkyBus",
+            "name": "Broadway/Glen Huntly Rd"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SK4-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.83321726,
+          -37.78742513
+        ]
+      },
+      "properties": {
+        "average_wait_time": 309.691650390625,
+        "color": "#e74c3c",
+        "connectivity_score": 36.95714569091797,
+        "coverage_score": 10.0,
+        "frequency_score": 39.0,
+        "id": "11-18766",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Sunshine Station/Dickson St",
+        "nearby_stops": [],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-SUN-mjp-1"
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.47343213,
+          -38.02635181
+        ]
+      },
+      "properties": {
+        "average_wait_time": 347.36669921875,
+        "color": "#e74c3c",
+        "connectivity_score": 25.557144165039062,
+        "coverage_score": 10.0,
+        "frequency_score": 10.5,
+        "id": "11-40272",
+        "mode_id": 11,
+        "mode_name": "SkyBus",
+        "name": "Avalon Airport/Outside Terminal",
+        "nearby_stops": [
+          {
+            "distance": 0.0,
+            "id": "11-40284",
+            "mode_name": "SkyBus",
+            "name": "Avalon Airport/Outside Terminal"
+          }
+        ],
+        "reliability_score": 71.42857360839844,
+        "route_ids": [
+          "11-Ska-mjp-1"
+        ]
+      }
+    }
+  ]
+}
