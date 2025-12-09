@@ -103,11 +103,11 @@ struct StopData {
     routes: HashSet<String>,
     is_parent: bool,
     
-    // Metrics - Use HashSets to avoid double counting
-    weekday_peak_trips: HashSet<String>,    // trip_ids
-    weekday_offpeak_trips: HashSet<String>, // trip_ids
-    weekend_trips: HashSet<String>,         // trip_ids
-    active_days: HashSet<u8>, // 0=Mon, 6=Sun
+    // Store actual departure times (hours since midnight)
+    weekday_peak_departures: Vec<f32>,
+    weekday_offpeak_departures: Vec<f32>,
+    weekend_departures: Vec<f32>,
+    active_days: HashSet<u8>,
 }
 
 fn parse_time(time_str: &str) -> Option<f32> {
@@ -117,6 +117,63 @@ fn parse_time(time_str: &str) -> Option<f32> {
     let m: f32 = parts[1].parse().ok()?;
     Some(h + m / 60.0)
 }
+
+// Calculate average headway from actual departure times
+fn calculate_average_headway(mut departures: Vec<f32>) -> Option<f32> {
+    if departures.len() < 2 {
+        return None;
+    }
+    
+    // Sort departure times
+    departures.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    
+    // Calculate gaps between consecutive departures
+    let mut headways = Vec::new();
+    for i in 1..departures.len() {
+        let gap_hours = departures[i] - departures[i - 1];
+        let gap_minutes = gap_hours * 60.0;
+        headways.push(gap_minutes);
+    }
+    
+    // Return average headway
+    let sum: f32 = headways.iter().sum();
+    Some(sum / headways.len() as f32)
+}
+
+// Convert average headway to average wait time
+fn calculate_average_wait_time(departures: Vec<f32>) -> f32 {
+    match calculate_average_headway(departures) {
+        Some(avg_headway) => avg_headway / 2.0,  // Average wait = half the headway
+        None => 999.0,  // No service
+    }
+}
+
+// Convert wait time to a 0-100 score
+fn wait_time_to_score(wait_minutes: f32) -> f32 {
+    if wait_minutes >= 999.0 {
+        return 0.0;
+    }
+    
+    // Score tiers based on wait time
+    if wait_minutes < 2.5 {
+        100.0
+    } else if wait_minutes < 5.0 {
+        95.0
+    } else if wait_minutes < 7.5 {
+        85.0
+    } else if wait_minutes < 10.0 {
+        75.0
+    } else if wait_minutes < 15.0 {
+        60.0
+    } else if wait_minutes < 20.0 {
+        45.0
+    } else if wait_minutes < 30.0 {
+        30.0
+    } else {
+        15.0
+    }
+}
+
 
 fn main() -> Result<(), Box<dyn Error>> {
     let gtfs_root = "gtfs";
@@ -261,9 +318,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                     trip_count: 0,
                     routes: HashSet::new(),
                     is_parent: is_station,
-                    weekday_peak_trips: HashSet::new(),
-                    weekday_offpeak_trips: HashSet::new(),
-                    weekend_trips: HashSet::new(),
+                    weekday_peak_departures: Vec::new(),
+                    weekday_offpeak_departures: Vec::new(),
+                    weekend_departures: Vec::new(),
                     active_days: HashSet::new(),
                 });
             }
@@ -289,21 +346,21 @@ fn main() -> Result<(), Box<dyn Error>> {
                             for d in days { stop_data.active_days.insert(*d); }
                         }
 
+                        // Store departure times
                         if let Some(hour) = parse_time(&record.arrival_time) {
                             let is_weekday = weekday_services.contains(service_id);
                             let is_weekend = weekend_services.contains(service_id);
 
                             if is_weekday {
                                 if (hour >= 7.0 && hour < 9.0) || (hour >= 16.0 && hour < 18.0) {
-                                    stop_data.weekday_peak_trips.insert(record.trip_id.clone());
+                                    stop_data.weekday_peak_departures.push(hour);
                                 } else if (hour >= 9.0 && hour < 16.0) || (hour >= 18.0 && hour < 22.0) {
-                                    stop_data.weekday_offpeak_trips.insert(record.trip_id.clone());
+                                    stop_data.weekday_offpeak_departures.push(hour);
                                 }
                             }
                             if is_weekend {
                                 if hour >= 7.0 && hour < 22.0 {
-                                    stop_data.weekday_offpeak_trips.insert(record.trip_id.clone());
-                                    stop_data.weekend_trips.insert(record.trip_id.clone());
+                                    stop_data.weekend_departures.push(hour);
                                 }
                             }
                         }
@@ -345,7 +402,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut max_freq = 0.0;
     let mut max_cov = 0.0;
-    let mut raw_scores: HashMap<String, (f32, f32, f32)> = HashMap::new(); // (freq, cov, rel)
+    let mut raw_scores: HashMap<String, (f32, f32, f32, f32)> = HashMap::new(); // (freq_score, cov, rel, avg_wait)
     let mut nearby_stops_map: HashMap<String, Vec<NearbyStop>> = HashMap::new();
 
     for id in &active_stops {
@@ -353,9 +410,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         let grid_x = (data.lon / grid_size).floor() as i32;
         let grid_y = (data.lat / grid_size).floor() as i32;
 
-        let mut cluster_peak_trips: HashSet<String> = HashSet::new();
-        let mut cluster_offpeak_trips: HashSet<String> = HashSet::new();
-        let mut cluster_weekend_trips: HashSet<String> = HashSet::new();
+        // Collect all departure times from nearby stops
+        let mut cluster_peak_deps = Vec::new();
+        let mut cluster_offpeak_deps = Vec::new();
+        let mut cluster_weekend_deps = Vec::new();
         let mut cluster_routes = HashSet::new();
         let mut nearby = Vec::new();
         let mut max_days_active = data.active_days.len();
@@ -365,7 +423,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 if let Some(neighbors) = grid.get(&(grid_x + dx, grid_y + dy)) {
                     for neighbor_id in neighbors {
                         if let Some(neighbor) = stops_map.get(neighbor_id) {
-                            // Only cluster stops of the SAME mode (don't mix trains and buses!)
+                            // Only cluster stops of the SAME mode
                             if neighbor.mode_id != data.mode_id {
                                 continue;
                             }
@@ -375,17 +433,15 @@ fn main() -> Result<(), Box<dyn Error>> {
                             let dist_sq = d_lat*d_lat + d_lon*d_lon;
                             
                             if dist_sq < grid_size*grid_size {
-                                // Merge HashSets to avoid double-counting
-                                for trip_id in &neighbor.weekday_peak_trips {
-                                    cluster_peak_trips.insert(trip_id.clone());
+                                // Extend departure time vectors (cheap - just f32 values)
+                                cluster_peak_deps.extend(&neighbor.weekday_peak_departures);
+                                cluster_offpeak_deps.extend(&neighbor.weekday_offpeak_departures);
+                                cluster_weekend_deps.extend(&neighbor.weekend_departures);
+                                
+                                for r in &neighbor.routes { 
+                                    cluster_routes.insert(r.clone()); 
                                 }
-                                for trip_id in &neighbor.weekday_offpeak_trips {
-                                    cluster_offpeak_trips.insert(trip_id.clone());
-                                }
-                                for trip_id in &neighbor.weekend_trips {
-                                    cluster_weekend_trips.insert(trip_id.clone());
-                                }
-                                for r in &neighbor.routes { cluster_routes.insert(r.clone()); }
+                                
                                 if neighbor.active_days.len() > max_days_active {
                                     max_days_active = neighbor.active_days.len();
                                 }
@@ -408,48 +464,44 @@ fn main() -> Result<(), Box<dyn Error>> {
         nearby.sort_by(|a, b| a.distance.partial_cmp(&b.distance).unwrap());
         nearby_stops_map.insert(id.clone(), nearby);
 
-        // Calculate trips per hour from unique trip counts
-        // Important: Trip IDs are unique per day, so we need to divide by service days
-        // Weekday services run 5 days (Mon-Fri), weekend services run 2 days (Sat-Sun)
-        let daily_peak_trips = cluster_peak_trips.len() as f32 / 5.0;        // Divide by 5 weekdays
-        let daily_offpeak_trips = cluster_offpeak_trips.len() as f32 / 5.0;  // Divide by 5 weekdays  
-        let daily_weekend_trips = cluster_weekend_trips.len() as f32 / 2.0;  // Divide by 2 weekend days
+        // Calculate TRUE average wait times from departure gaps
+        let peak_wait = calculate_average_wait_time(cluster_peak_deps);
+        let offpeak_wait = calculate_average_wait_time(cluster_offpeak_deps);
+        let weekend_wait = calculate_average_wait_time(cluster_weekend_deps);
+
+        // Convert wait times to scores
+        let peak_score = wait_time_to_score(peak_wait);
+        let offpeak_score = wait_time_to_score(offpeak_wait);
+        let weekend_score = wait_time_to_score(weekend_wait);
+
+        // Weighted frequency score
+        let freq_score = (peak_score * 0.3) + (offpeak_score * 0.4) + (weekend_score * 0.3);
         
-        let peak_per_hr = daily_peak_trips / 4.0;      // 4 hrs of peak (7-9am + 4-6pm)
-        let offpeak_per_hr = daily_offpeak_trips / 11.0; // 11 hrs of off-peak
-        let weekend_per_hr = daily_weekend_trips / 30.0; // 30 hrs over weekend
+        // Overall average wait (for display)
+        let avg_wait = (peak_wait * 0.3) + (offpeak_wait * 0.4) + (weekend_wait * 0.3);
 
-        let weighted_freq = (peak_per_hr * 0.3) + (offpeak_per_hr * 0.4) + (weekend_per_hr * 0.3);
+        let cov_score = (cluster_routes.len() as f32 * 10.0).min(100.0);
+        let rel_score = (max_days_active as f32 / 7.0) * 100.0;
 
-        let cov = cluster_routes.len() as f32;
-        let rel = (max_days_active as f32 / 7.0) * 100.0;
-
-        if weighted_freq > max_freq { max_freq = weighted_freq; }
-        if cov > max_cov { max_cov = cov; }
+        if freq_score > max_freq { max_freq = freq_score; }
+        if cov_score > max_cov { max_cov = cov_score; }
         
-        raw_scores.insert(id.clone(), (weighted_freq, cov, rel));
+        raw_scores.insert(id.clone(), (freq_score, cov_score, rel_score, avg_wait));
         
         // Debug: Print for specific stops
         if data.name.contains("Cobblebank") {
-            println!("DEBUG {}: Peak trips={}, OffPeak={}, Weekend={}, Weighted Freq={:.2}/hr", 
-                data.name, cluster_peak_trips.len(), cluster_offpeak_trips.len(), 
-                cluster_weekend_trips.len(), weighted_freq);
+            println!("DEBUG {}: Peak wait={:.1}min, OffPeak wait={:.1}min, Weekend wait={:.1}min, Avg={:.1}min", 
+                data.name, peak_wait, offpeak_wait, weekend_wait, avg_wait);
         }
     }
 
     let mut final_stops = Vec::new();
     for id in &active_stops {
         let data = stops_map.get(id).unwrap();
-        let (raw_freq, raw_cov, rel_score) = raw_scores.get(id).unwrap();
-        
-        let freq_score = (raw_freq.ln() / max_freq.ln()) * 100.0;
-        // Wait Time = Headway / 2 = (60 / trips_per_hour) / 2 = 30 / trips_per_hour
-        let avg_wait = if *raw_freq > 0.0 { 30.0 / raw_freq } else { 999.0 };
-
-        let cov_score_capped = (*raw_cov * 10.0).min(100.0);
+        let (freq_score, cov_score, rel_score, avg_wait) = raw_scores.get(id).unwrap();
         
         // Three Keys Formula: Freq(40%) + Cov(35%) + Rel(25%)
-        let connectivity = (freq_score * 0.4) + (cov_score_capped * 0.35) + (rel_score * 0.25);
+        let connectivity = (freq_score * 0.4) + (cov_score * 0.35) + (rel_score * 0.25);
         
         let color = if connectivity < 40.0 { "#e74c3c".to_string() } 
                    else if connectivity < 70.0 { "#f1c40f".to_string() } 
@@ -462,9 +514,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             lon: data.lon,
             mode_id: data.mode_id,
             mode_name: data.mode_name.clone(),
-            frequency_score: freq_score,
-            average_wait_time: avg_wait,
-            coverage_score: cov_score_capped,
+            frequency_score: *freq_score,
+            average_wait_time: *avg_wait,
+            coverage_score: *cov_score,
             reliability_score: *rel_score,
             connectivity_score: connectivity,
             color,
