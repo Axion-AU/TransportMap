@@ -4,6 +4,7 @@ use std::error::Error;
 use std::fs;
 use std::path::Path;
 use std::io;
+use chrono::{NaiveDate, Datelike, Weekday};
 
 #[derive(Debug, Deserialize)]
 struct GtfsStop {
@@ -56,6 +57,8 @@ struct GtfsCalendar {
     friday: u8,
     saturday: u8,
     sunday: u8,
+    start_date: String,  // YYYYMMDD format
+    end_date: String,    // YYYYMMDD format
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -180,6 +183,65 @@ fn wait_time_to_score(wait_minutes: f32) -> f32 {
     }
 }
 
+// Parse GTFS date format (YYYYMMDD) to NaiveDate
+fn parse_gtfs_date(date_str: &str) -> Option<NaiveDate> {
+    if date_str.len() != 8 {
+        return None;
+    }
+    let year: i32 = date_str[0..4].parse().ok()?;
+    let month: u32 = date_str[4..6].parse().ok()?;
+    let day: u32 = date_str[6..8].parse().ok()?;
+    NaiveDate::from_ymd_opt(year, month, day)
+}
+
+// Find nth occurrence of a weekday after start_date
+fn find_nth_weekday(start_date: NaiveDate, target_weekday: Weekday, n: usize) -> NaiveDate {
+    let mut date = start_date;
+    let mut count = 0;
+    
+    loop {
+        if date.weekday() == target_weekday {
+            count += 1;
+            if count == n {
+                return date;
+            }
+        }
+        date = date.succ_opt().unwrap();
+    }
+}
+
+// Check if a service is active on a specific date
+fn is_service_active(
+    service_id: &str,
+    date: NaiveDate,
+    service_dates: &HashMap<String, (NaiveDate, NaiveDate)>,
+    service_days: &HashMap<String, HashSet<u8>>
+) -> bool {
+    // Check if service has date range
+    if let Some((start, end)) = service_dates.get(service_id) {
+        if date < *start || date > *end {
+            return false;
+        }
+    }
+    
+    // Check if weekday is active
+    if let Some(active_days) = service_days.get(service_id) {
+        let weekday_num = match date.weekday() {
+            Weekday::Mon => 0,
+            Weekday::Tue => 1,
+            Weekday::Wed => 2,
+            Weekday::Thu => 3,
+            Weekday::Fri => 4,
+            Weekday::Sat => 5,
+            Weekday::Sun => 6,
+        };
+        return active_days.contains(&weekday_num);
+    }
+    
+    false
+}
+
+
 
 fn main() -> Result<(), Box<dyn Error>> {
     let gtfs_root = "gtfs";
@@ -211,8 +273,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         println!("Processing Mode {}: {}", mode_id, mode_name);
 
-        // 0. Load Calendar (Service IDs -> Active Days)
+        // 0. Load Calendar (Service IDs -> Active Days + Date Ranges)
         let mut service_days: HashMap<String, HashSet<u8>> = HashMap::new();
+        let mut service_dates: HashMap<String, (NaiveDate, NaiveDate)> = HashMap::new();
         let mut weekday_services = HashSet::new();
         let mut weekend_services = HashSet::new();
         
@@ -236,9 +299,27 @@ fn main() -> Result<(), Box<dyn Error>> {
                 if record.saturday == 1 || record.sunday == 1 {
                     weekend_services.insert(record.service_id.clone());
                 }
+               
+                // Parse date range
+                if let (Some(start), Some(end)) = (parse_gtfs_date(&record.start_date), parse_gtfs_date(&record.end_date)) {
+                    service_dates.insert(record.service_id.clone(), (start, end));
+                }
+                
                 service_days.insert(record.service_id.clone(), days);
             }
         }
+        
+        // Select representative date: 2nd Wednesday of longest service period
+        let repr_date = if let Some((_service_id, (start, end))) = service_dates.iter()
+            .max_by_key(|(_, (start, end))| (*end - *start).num_days()) {
+            let candidate = find_nth_weekday(*start, Weekday::Wed, 2);
+            if candidate <= *end { candidate } else { *start }
+        } else {
+            // Fallback if no calendar data: use a default date mid-2025
+            NaiveDate::from_ymd_opt(2025, 6, 11).unwrap()  // Wednesday, June 11, 2025
+        };
+        
+        println!("  Representative date: {}", repr_date);
 
         // 1. Load Routes
         let mut valid_routes = HashSet::new();
@@ -346,6 +427,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 let target_id = child_to_parent.get(&unique_stop_id).unwrap_or(&unique_stop_id);
 
                 if let Some((route_id, service_id)) = trip_info.get(&record.trip_id) {
+                    // CRITICAL: Only process trips active on representative date
+                    if !is_service_active(service_id, repr_date, &service_dates, &service_days) {
+                        continue;
+                    }
+                    
                     if let Some(stop_data) = stops_map.get_mut(target_id) {
                         stop_data.trip_count += 1;
                         stop_data.routes.insert(route_id.clone());
