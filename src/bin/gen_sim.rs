@@ -1,13 +1,13 @@
-use transport_inequality::gtfs_processor::driver;
 use transport_inequality::simulation;
 use std::error::Error;
 use std::fs;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    driver::run_processing("gtfs")?;
+    println!("Running Bus Grid Simulation (Standalone)...");
     
-    // Run Simulation Generation
-    println!("Running Bus Grid Simulation...");
+    // Ensure output directory exists (it should, but good practice)
+    fs::create_dir_all("frontend/public/data")?;
+
     let sim = simulation::generate_bus_grid("frontend/public/data/dtp_managed_roads.geojson")?;
     
     // Save output
@@ -16,5 +16,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         serde_json::to_string(&sim)?
     )?;
     
+    println!("Done! Output saved to frontend/public/data/simulated_bus_grid.json");
     Ok(())
 }

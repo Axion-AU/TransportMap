@@ -1,4 +1,5 @@
 use crate::models::TransportOption;
+use wasm_bindgen::prelude::*;
 
 pub struct ConnectivityCalculator;
 
@@ -18,6 +19,7 @@ impl ConnectivityCalculator {
     }
 }
 
+#[wasm_bindgen]
 pub fn calculate_parking_score(drive_time: f32, arrival_time_mins: u32, fill_time_mins: u32) -> f32 {
     // 1. Accessibility Score: Shorter drive is better
     // Typically <20 min drive is required
@@ -38,12 +40,19 @@ pub fn calculate_parking_score(drive_time: f32, arrival_time_mins: u32, fill_tim
     access_component + (availability_factor * 100.0 * 0.5)
 }
 
+#[wasm_bindgen]
 pub fn calculate_walk_score(minutes: f32, freq_score: f32, coverage_score: f32) -> f32 {
     let walk_component = (100.0 - minutes * 5.0).max(0.0) * 0.4; // 5 min = 75pts, 15 min = 25pts
     let freq_component = freq_score * 0.4;
     let cov_component = coverage_score * 0.2;
     
     walk_component + freq_component + cov_component
+}
+
+#[wasm_bindgen]
+pub fn calculate_connectivity_score(val: JsValue) -> f32 {
+    let options: Vec<TransportOption> = serde_wasm_bindgen::from_value(val).unwrap_or(vec![]);
+    ConnectivityCalculator::calculate_total_score(&options)
 }
 
 #[cfg(test)]
