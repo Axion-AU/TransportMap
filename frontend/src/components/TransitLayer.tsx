@@ -1,72 +1,21 @@
 
 import { Marker, Popup, LayerGroup, useMapEvents, useMap, Polyline } from 'react-leaflet';
 import { useState, useEffect } from 'react';
-import { MapPin, Zap, Calendar, Users, BarChart3 } from 'lucide-react';
+import type { Stop, Route } from '../types';
+import { StopPopup } from './StopPopup';
+
 import L from 'leaflet';
-import stopsData from '../data/stops.json';
-import shapesData from '../data/shapes.json';
-import routesData from '../data/routes.json';
-
-interface NearbyStop {
-    id: string;
-    name: string;
-    mode_name: string;
-    distance: number;
-}
-
-interface Stop {
-    id: string;
-    name: string;
-    lat: number;
-    lon: number;
-    mode_id: number;
-    mode_name: string;
-    frequency_score: number;
-    average_wait_time: number;
-    coverage_score: number;
-    reliability_score: number;
-    connectivity_score: number;
-    color: string;
-    route_ids: string[];
-    nearby_stops: NearbyStop[];
-    patronage_annual?: number;
-}
-
-interface Route {
-    id: string;
-    short_name: string;
-    long_name: string;
-    color: string;
-    mode_id: number;
-}
 
 interface TransitLayerProps {
     viewMode: 'connectivity' | 'mode';
 }
 
-const stops = stopsData as Stop[];
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const shapes = shapesData as unknown as Record<string, [number, number][]>;
-const routes = routesData as Record<string, Route>;
+
 
 // Metro Tunnel stations (Arden, Parkville, State Library, Town Hall, Anzac)
-const METRO_TUNNEL_STATIONS = new Set([
-    '2-vic:rail:ARN',  // Arden
-    '2-vic:rail:PKV',  // Parkville
-    '2-vic:rail:STL',  // State Library
-    '2-vic:rail:THL',  // Town Hall
-    '2-vic:rail:AZC',  // Anzac
-]);
 
-// Helper to check if a route is a Metro Tunnel route
-const isMetroTunnelRoute = (routeId: string): boolean => {
-    const route = routes[routeId];
-    if (!route) return false;
-    // Metro Tunnel route IDs: aus:vic:vic-02-CBE:, aus:vic:vic-02-PKM:, aus:vic:vic-02-SUY:
-    return routeId === 'aus:vic:vic-02-CBE:' ||
-        routeId === 'aus:vic:vic-02-PKM:' ||
-        routeId === 'aus:vic:vic-02-SUY:';
-};
+
+
 
 const getModeColor = (modeId: number) => {
     switch (modeId) {
@@ -79,6 +28,13 @@ const getModeColor = (modeId: number) => {
         case 11: return '#e74c3c'; // SkyBus
         default: return '#7f8c8d';
     }
+};
+
+const getScoreColor = (score: number) => {
+    if (score >= 85) return '#10b981'; // Emerald 500
+    if (score >= 70) return '#10b981'; // Emerald 500 (matching ConnectivityPin logic >70 is good)
+    if (score >= 50) return '#f59e0b'; // Amber 500
+    return '#ef4444'; // Red 500
 };
 
 const getIcon = (stop: Stop, viewMode: 'connectivity' | 'mode') => {
@@ -106,26 +62,246 @@ const getIcon = (stop: Stop, viewMode: 'connectivity' | 'mode') => {
         default: iconUrl = '/transport_pictograms/PICTO_MODE_Bus.svg';
     }
 
-    const bgColor = viewMode === 'connectivity' ? stop.color : getModeColor(stop.mode_id);
-    const showPictogram = viewMode === 'mode'; // Only show pictogram in Mode view
+    // Color Logic
+    const bgColor = viewMode === 'connectivity'
+        ? getScoreColor(stop.final_score) // Use score color
+        : getModeColor(stop.mode_id);     // Use mode/line color
+
+    const showPictogram = viewMode === 'mode' || size >= 32; // Show pictogram if mode view OR strictly large hub
 
     return L.divIcon({
         className: 'custom-div-icon',
         html: `<div style="background-color: ${bgColor}; width: ${size}px; height: ${size}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-    ${showPictogram ? `<img src="${iconUrl}" style="width: ${size * 0.6}px; height: ${size * 0.6}px;" />` : ''}
-            </div>`,
+            ${showPictogram ? `<img src="${iconUrl}" style="width: ${size * 0.6}px; height: ${size * 0.6}px;" />` : ''}
+        </div>`,
         iconSize: [size, size],
         iconAnchor: [size / 2, size / 2],
         popupAnchor: [0, -size / 2]
     });
 };
 
+
+
 const TransitLayer = ({ viewMode }: TransitLayerProps) => {
     const map = useMap();
+    const [stops, setStops] = useState<Stop[]>([]);
+    const [shapes, setShapes] = useState<Record<string, [number, number][]>>({});
+    const [routes, setRoutes] = useState<Record<string, Route>>({});
+    const [loading, setLoading] = useState(true);
     const [visibleStops, setVisibleStops] = useState<Stop[]>([]);
     const [selectedStop, setSelectedStop] = useState<Stop | null>(null);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                console.log('Fetching transit data...');
+                const [
+                    metroTrainRes,
+                    metroTramRes,
+                    metroBusRes,
+                    regionalTrainRes,
+                    regionalCoachRes,
+                    regionalBusRes,
+                    skybusRes,
+                    shapesRes,
+                    routesRes
+                ] = await Promise.all([
+                    fetch('/data/stops_metro_train.geojson'),
+                    fetch('/data/stops_metro_tram.geojson'),
+                    fetch('/data/stops_metro_bus.geojson'),
+                    fetch('/data/stops_regional_train.geojson'),
+                    fetch('/data/stops_regional_coach.geojson'),
+                    fetch('/data/stops_regional_bus.geojson'),
+                    fetch('/data/stops_skybus.geojson'),
+                    fetch('/data/shapes.json'),
+                    fetch('/data/routes.json')
+                ]);
+
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const parseGeoJSONStops = async (res: Response): Promise<Stop[]> => {
+                    const data = await res.json();
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    return data.features.map((f: any) => ({
+                        id: f.properties.id,
+                        name: f.properties.name,
+                        lat: f.geometry.coordinates[1],
+                        lon: f.geometry.coordinates[0],
+                        mode_id: f.properties.mode_id,
+                        mode_name: f.properties.mode_name,
+
+                        frequency_score: f.properties.frequency_score || 0,
+                        headway_score: f.properties.headway_score || 0,
+                        service_span_score: f.properties.service_span_score || 0,
+                        reliability_score: f.properties.reliability_score || 0,
+
+                        coverage_score: f.properties.coverage_score || 0,
+                        network_coverage_score: f.properties.network_coverage_score || 0,
+                        local_coverage_score: f.properties.local_coverage_score || 0,
+
+                        connectivity_score: f.properties.connectivity_score || 0,
+                        base_score: f.properties.base_score || 0,
+                        final_score: f.properties.final_score || 0,
+
+                        // New Network Coverage Components
+                        hub_reachability_score: f.properties.hub_reachability_score || 0,
+                        cbd_direct_score: f.properties.cbd_direct_score || 0,
+                        orbital_directness_score: f.properties.orbital_directness_score || 0,
+                        connectivity_tier: f.properties.connectivity_tier || '-',
+
+                        freq_penalty_multiplier: f.properties.freq_penalty_multiplier || 1.0,
+                        catch_penalty_multiplier: f.properties.catch_penalty_multiplier || 1.0,
+
+                        average_wait_time: f.properties.average_wait_time || 0,
+                        color: f.properties.color || '#999',
+                        route_ids: f.properties.route_ids || [],
+                        shape_ids: f.properties.shape_ids || [],
+                        nearby_stops: f.properties.nearby_stops || [],
+                        patronage_annual: f.properties.patronage_annual,
+
+                        // Inter-Modality Bonus
+                        intermodal_bonus: f.properties.intermodal_bonus || 0,
+                        intermodal_breakdown: f.properties.intermodal_breakdown || [],
+                        connected_modes: f.properties.connected_modes || [],
+                        train_stops_nearby: f.properties.train_stops_nearby || [],
+                        tram_stops_nearby: f.properties.tram_stops_nearby || [],
+                        bus_stops_nearby: f.properties.bus_stops_nearby || []
+                    }));
+                };
+
+                const rawStops = [
+                    ...(await parseGeoJSONStops(metroTrainRes)),
+                    ...(await parseGeoJSONStops(metroTramRes)),
+                    ...(await parseGeoJSONStops(metroBusRes)),
+                    ...(await parseGeoJSONStops(regionalTrainRes)),
+                    ...(await parseGeoJSONStops(regionalCoachRes)),
+                    ...(await parseGeoJSONStops(regionalBusRes)),
+                    ...(await parseGeoJSONStops(skybusRes))
+                ];
+
+                // Deduplicate / Chunk Stops
+                const deduplicateStops = (stops: Stop[]) => {
+                    const grouped = new Map<string, Stop[]>();
+
+                    stops.forEach(stop => {
+                        // Strip stop numbers like " #123" or " #124A" from end of string
+                        const name = stop.name.replace(/\s+#\d+[A-Za-z]*$/, '').toLowerCase().trim();
+
+                        let modeKey = stop.mode_id.toString();
+                        // Group Regional (1) and Metro (2) trains together
+                        if (stop.mode_id === 1 || stop.mode_id === 2) {
+                            modeKey = "train_combined";
+                        }
+
+                        const key = `${name}_${modeKey} `;
+                        if (!grouped.has(key)) grouped.set(key, []);
+                        grouped.get(key)?.push(stop);
+                    });
+
+                    const mergedStops: Stop[] = [];
+
+                    grouped.forEach((group) => {
+                        if (group.length === 1) {
+                            mergedStops.push(group[0]);
+                        } else {
+                            // Sort group to prioritize Metro (2) over Regional (1) for icon/styling
+                            // Descending sort by mode_id (2 comes before 1) works if we want Metro first behavior? 
+                            // Actually pure logic: 2 (Metro) > 1 (Regional).
+                            group.sort((a, b) => {
+                                // Prioritize Metro (2)
+                                if (a.mode_id === 2 && b.mode_id !== 2) return -1;
+                                if (b.mode_id === 2 && a.mode_id !== 2) return 1;
+                                return 0;
+                            });
+
+                            // Sub-cluster by distance
+                            const subClusters: Stop[][] = [];
+
+                            group.forEach(s => {
+                                let added = false;
+                                for (const cluster of subClusters) {
+                                    // Check distance to first in cluster
+                                    const dLat = s.lat - cluster[0].lat;
+                                    const dLon = s.lon - cluster[0].lon;
+                                    const dist = Math.sqrt(dLat * dLat + dLon * dLon) * 111000;
+                                    if (dist < 400) { // 400m threshold
+                                        cluster.push(s);
+                                        added = true;
+                                        break;
+                                    }
+                                }
+                                if (!added) subClusters.push([s]);
+                            });
+
+                            // Create merged stop for each subcluster
+                            subClusters.forEach(cluster => {
+                                if (cluster.length === 1) {
+                                    mergedStops.push(cluster[0]);
+                                    return;
+                                }
+
+                                const avgLat = cluster.reduce((sum, s) => sum + s.lat, 0) / cluster.length;
+                                const avgLon = cluster.reduce((sum, s) => sum + s.lon, 0) / cluster.length;
+
+                                // Best Mode Logic: Pick the stop with the HIGHEST score as the representative
+                                // This ensures 'Watergardens' shows the Metro score (High) not the VLine score (Low)
+                                const bestStop = cluster.reduce((prev, current) =>
+                                    (prev.final_score > current.final_score) ? prev : current
+                                );
+
+                                // Union arrays
+                                const allRoutes = new Set<string>();
+                                const allShapes = new Set<string>();
+                                cluster.forEach(s => {
+                                    s.route_ids.forEach(id => allRoutes.add(id));
+                                    s.shape_ids?.forEach(id => allShapes.add(id));
+                                });
+
+                                mergedStops.push({
+                                    ...bestStop, // Inherit all scores/properties from the Best stop
+                                    lat: avgLat,
+                                    lon: avgLon,
+
+                                    // Override aggregations
+                                    route_ids: Array.from(allRoutes),
+                                    shape_ids: Array.from(allShapes),
+
+                                    // Store all stops in cluster for detailed breakdown
+                                    sub_stops: cluster,
+
+                                    // Update Name if mixed modes
+                                    mode_name: cluster.some(s => s.mode_id !== bestStop.mode_id)
+                                        ? `${bestStop.mode_name} / Interchange`
+                                        : bestStop.mode_name
+                                });
+                            });
+                        }
+                    });
+
+                    return mergedStops;
+                };
+
+                const allStops = deduplicateStops(rawStops);
+
+                const shapesData = await shapesRes.json();
+                const routesData = await routesRes.json();
+
+                setStops(allStops);
+                setShapes(shapesData);
+                setRoutes(routesData);
+                setLoading(false);
+                console.log('Data loaded successfully:', allStops.length, 'stops');
+            } catch (err) {
+                console.error('Error loading transit data:', err);
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     const updateVisibleStops = () => {
+        if (loading || stops.length === 0) return;
+
         const bounds = map.getBounds();
         const zoom = map.getZoom();
 
@@ -152,38 +328,51 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
 
     useEffect(() => {
         updateVisibleStops();
-    }, []);
+    }, [stops, loading]); // Update when data loads
+
+    if (loading) return null; // Or a loader component
 
     return (
         <LayerGroup>
             {/* Render Lines for Selected Stop */}
             {selectedStop && selectedStop.route_ids.map(routeId => {
-                const positions = shapes[routeId];
                 const route = routes[routeId];
-                if (!positions) return null;
+                if (!route) return null;
 
-                // Filter routes based on station type:
-                // Metro Tunnel stations: show ONLY Metro Tunnel routes
-                // Other stations: show ONLY non-Metro Tunnel routes
-                const isMetroTunnelStation = METRO_TUNNEL_STATIONS.has(selectedStop.id);
-                const isMTRoute = isMetroTunnelRoute(routeId);
+                // Find shapes that belong to this route AND serve the selected stop
+                const relevantShapes: string[] = [];
 
-                // Skip if mismatch
-                if (isMetroTunnelStation !== isMTRoute) return null;
+                if (route.shape_ids && selectedStop.shape_ids) {
+                    // New logic: Check distinct shapes
+                    route.shape_ids.forEach(shapeId => {
+                        if (selectedStop.shape_ids?.includes(shapeId)) {
+                            relevantShapes.push(shapeId);
+                        }
+                    });
+                } else {
+                    // Fallback logic using route mapping (legacy)
+                    // If shapes were keyed by routeId (old behavior), this would work. 
+                    // But now shapes are keyed by shapeId. 
+                    // So we try to use the routeId as a shapeId directly just in case.
+                    relevantShapes.push(routeId);
+                }
 
-                const color = route ? route.color : getModeColor(selectedStop.mode_id);
+                return relevantShapes.map(shapeId => {
+                    const positions = shapes[shapeId];
+                    if (!positions) return null;
 
-                return (
-                    <Polyline
-                        key={routeId}
-                        positions={positions}
-                        pathOptions={{
-                            color: color,
-                            weight: 4,
-                            opacity: 0.8
-                        }}
-                    />
-                );
+                    return (
+                        <Polyline
+                            key={shapeId}
+                            positions={positions}
+                            pathOptions={{
+                                color: route.color,
+                                weight: 4,
+                                opacity: 0.8
+                            }}
+                        />
+                    );
+                });
             })}
 
             {visibleStops.map(stop => (
@@ -192,11 +381,12 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                     position={[stop.lat, stop.lon]}
                     icon={getIcon(stop, viewMode)}
                     eventHandlers={{
-                        click: () => {
+                        click: (e) => {
+                            L.DomEvent.stopPropagation(e.originalEvent);
                             setSelectedStop(stop);
                             // Smoothly center map on clicked station with offset to avoid address searcher
                             const point = map.latLngToContainerPoint([stop.lat, stop.lon]);
-                            point.y -= 80; // Offset upward to avoid address searcher blocking popup
+                            point.y -= 200; // Increased offset upward to avoid address searcher blocking popup
                             const newLatLng = map.containerPointToLatLng(point);
                             map.flyTo(newLatLng, map.getZoom(), {
                                 duration: 0.5
@@ -204,161 +394,12 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                         }
                     }}
                 >
-                    <Popup>
-                        <div className="text-sm min-w-[280px] max-w-[320px]">
-                            {/* Header with Pictogram */}
-                            <div className="flex items-start gap-3 mb-3 pb-3 border-b border-gray-200">
-                                <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center"
-                                    style={{ backgroundColor: getModeColor(stop.mode_id) }}>
-                                    <img
-                                        src={(() => {
-                                            switch (stop.mode_id) {
-                                                case 1: return '/transport_pictograms/PICTO_MODE_RegionalTrain.svg';
-                                                case 2: return '/transport_pictograms/PICTO_MODE_Train.svg';
-                                                case 3: return '/transport_pictograms/PICTO_MODE_Tram.svg';
-                                                case 4: return '/transport_pictograms/PICTO_MODE_Bus.svg';
-                                                case 5: return '/transport_pictograms/PICTO_MODE_Coach.svg';
-                                                case 6: return '/transport_pictograms/PICTO_MODE_Bus.svg';
-                                                case 11: return '/transport_pictograms/PICTO_MODE_SkyBus.svg';
-                                                default: return '/transport_pictograms/PICTO_MODE_Bus.svg';
-                                            }
-                                        })()}
-                                        alt={stop.mode_name}
-                                        className="w-7 h-7"
-                                    />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <div className="font-bold text-base leading-tight mb-1">{stop.name}</div>
-                                    <div className="text-xs text-gray-600">{stop.mode_name}</div>
-                                </div>
-                            </div>
-
-                            {/* Connectivity Score - Prominent */}
-                            <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: stop.color + '15' }}>
-                                <div className="text-xs text-gray-600 mb-1">Station Score</div>
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-2xl font-bold" style={{ color: stop.color }}>
-                                        {stop.connectivity_score.toFixed(0)}
-                                    </span>
-                                    <span className="text-gray-500">/100</span>
-                                    <span className="ml-auto text-xs font-medium" style={{ color: stop.color }}>
-                                        {stop.connectivity_score >= 85 ? 'Excellent' :
-                                            stop.connectivity_score >= 70 ? 'Good' :
-                                                stop.connectivity_score >= 50 ? 'Fair' : 'Poor'}
-                                    </span>
-                                </div>
-                                <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full rounded-full transition-all"
-                                        style={{
-                                            width: `${stop.connectivity_score}% `,
-                                            backgroundColor: stop.color
-                                        }}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Three Keys Grid */}
-                            <div className="grid grid-cols-3 gap-2 mb-4">
-                                {/* Coverage */}
-                                <div className="p-2 rounded-lg bg-gray-50 border border-gray-200">
-                                    <div className="text-[10px] text-gray-500 uppercase tracking-wide mb-1">Coverage</div>
-                                    <div className="text-xs text-gray-400 mb-1">35%</div>
-                                    <div className="font-bold text-lg">{stop.coverage_score.toFixed(0)}</div>
-                                    <div className={`text - [10px] font - medium mt - 1 ${stop.coverage_score >= 85 ? 'text-green-600' :
-                                        stop.coverage_score >= 70 ? 'text-yellow-600' :
-                                            stop.coverage_score >= 50 ? 'text-orange-600' : 'text-red-600'
-                                        } `}>
-                                        {stop.coverage_score >= 85 ? 'Excellent' :
-                                            stop.coverage_score >= 70 ? 'Good' :
-                                                stop.coverage_score >= 50 ? 'Fair' : 'Poor'}
-                                    </div>
-                                </div>
-
-                                {/* Frequency */}
-                                <div className="p-2 rounded-lg bg-gray-50 border border-gray-200">
-                                    <div className="text-[10px] text-gray-500 uppercase tracking-wide mb-1">Frequency</div>
-                                    <div className="text-xs text-gray-400 mb-1">40%</div>
-                                    <div className="font-bold text-lg">{stop.frequency_score.toFixed(0)}</div>
-                                    <div className={`text - [10px] font - medium mt - 1 ${stop.frequency_score >= 85 ? 'text-green-600' :
-                                        stop.frequency_score >= 70 ? 'text-yellow-600' :
-                                            stop.frequency_score >= 50 ? 'text-orange-600' : 'text-red-600'
-                                        } `}>
-                                        {stop.frequency_score >= 85 ? 'Excellent' :
-                                            stop.frequency_score >= 70 ? 'Good' :
-                                                stop.frequency_score >= 50 ? 'Fair' : 'Poor'}
-                                    </div>
-                                </div>
-
-                                {/* Reliability */}
-                                <div className="p-2 rounded-lg bg-gray-50 border border-gray-200">
-                                    <div className="text-[10px] text-gray-500 uppercase tracking-wide mb-1">Reliability</div>
-                                    <div className="text-xs text-gray-400 mb-1">25%</div>
-                                    <div className="font-bold text-lg">{(stop.reliability_score || 0).toFixed(0)}</div>
-                                    <div className={`text - [10px] font - medium mt - 1 ${(stop.reliability_score || 0) >= 85 ? 'text-green-600' :
-                                        (stop.reliability_score || 0) >= 70 ? 'text-yellow-600' :
-                                            (stop.reliability_score || 0) >= 50 ? 'text-orange-600' : 'text-red-600'
-                                        } `}>
-                                        {(stop.reliability_score || 0) >= 85 ? 'Excellent' :
-                                            (stop.reliability_score || 0) >= 70 ? 'Good' :
-                                                (stop.reliability_score || 0) >= 50 ? 'Fair' : 'Poor'}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Patronage Data (Metro Train only) */}
-                            {stop.mode_id === 2 && stop.patronage_annual && (
-                                <div className="mb-4 p-3 rounded-lg bg-blue-50 border border-blue-200">
-                                    <div className="text-xs font-medium text-blue-900 mb-2">📊 Daily Patronage</div>
-                                    <div className="font-bold text-base text-blue-900">
-                                        ~{Math.round(stop.patronage_annual / 365).toLocaleString()} entries/day
-                                    </div>
-                                    <div className="text-xs text-blue-700 mt-1">
-                                        {(stop.patronage_annual / 1000000).toFixed(1)}M annual (validates score)
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Routes Serving Stop */}
-                            <div className="mb-3">
-                                <div className="text-xs text-gray-500 mb-2">Routes Serving Stop</div>
-                                <div className="flex flex-wrap gap-1 max-h-[60px] overflow-y-auto">
-                                    {stop.route_ids.map(rid => {
-                                        const route = routes[rid];
-                                        if (!route) return null;
-                                        return (
-                                            <span
-                                                key={rid}
-                                                className="px-2 py-1 rounded text-xs text-white font-medium"
-                                                style={{ backgroundColor: route.color }}
-                                                title={route.long_name}
-                                            >
-                                                {route.short_name || route.long_name}
-                                            </span>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            {/* Nearby Connections */}
-                            {stop.nearby_stops && stop.nearby_stops.length > 0 && (
-                                <div className="pt-3 border-t border-gray-200">
-                                    <div className="text-xs text-gray-500 mb-2">Nearby Connections (&lt;400m)</div>
-                                    <div className="space-y-1 max-h-[80px] overflow-y-auto">
-                                        {stop.nearby_stops.map(nearby => (
-                                            <div key={nearby.id} className="flex justify-between text-xs">
-                                                <span className="truncate max-w-[180px]" title={nearby.name}>{nearby.name}</span>
-                                                <span className="text-gray-400 ml-2 flex-shrink-0">{nearby.mode_name} ({Math.round(nearby.distance)}m)</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                    <Popup autoPan={false}>
+                        <StopPopup stop={stop} routes={routes} />
                     </Popup>
-                </Marker>
+                </Marker >
             ))}
-        </LayerGroup>
+        </LayerGroup >
     );
 };
 

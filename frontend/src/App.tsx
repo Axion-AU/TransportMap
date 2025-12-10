@@ -6,6 +6,7 @@ import Controls from './components/Controls';
 import Layout from './components/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
 import AboutPage from './pages/AboutPage';
+import Methodology from './pages/Methodology';
 import AddressSearch from './components/AddressSearch';
 
 function MapPage() {
@@ -30,6 +31,7 @@ function App() {
           <Routes>
             <Route path="/" element={<MapPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/methodology" element={<Methodology />} />
           </Routes>
         </Layout>
       </BrowserRouter>
