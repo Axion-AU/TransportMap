@@ -14,4 +14,14 @@ export default defineConfig({
       allow: ['..'],
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom', 'leaflet', 'react-leaflet'],
+          lucide: ['lucide-react'] // Large icon set
+        },
+      },
+    },
+  },
 })
