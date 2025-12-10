@@ -17,3 +17,8 @@ frontend/src/data/routes.json
 # OS
 .DS_Store
 Thumbs.db
+
+# Data (Public) - Large files
+frontend/public/data/*.geojson
+!frontend/public/data/annual_metropolitan_train_station_entries_fy_2024_2025.csv
+!frontend/public/data/monthly_public_transport_patronage_by_mode.csv
