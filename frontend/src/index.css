@@ -1,4 +1,10 @@
+@import "@fontsource/barlow/400.css";
+@import "@fontsource/barlow/600.css";
+@import "@fontsource/barlow-condensed/700.css";
+@import "@fontsource/barlow-condensed/900.css";
+@import "@fontsource/space-mono/700.css";
 @import "tailwindcss";
+@import "./config/theme.css";
 
 html,
 body,
@@ -8,12 +14,19 @@ body,
   padding: 0;
 }
 
+body {
+  background: #1A0029;
+  color: #FFFFFF;
+  font-family: "Barlow", system-ui, sans-serif;
+  line-height: 1.5;
+}
+
 .leaflet-container {
   width: 100%;
   height: 100%;
 }
 
-/* Fix popup visibility over address search bar */
+/* Keep map popups above the address search bar */
 .leaflet-pane.leaflet-popup-pane {
   z-index: 2500 !important;
 }

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Placeholder Fusion rings favicon: spectrum rings on brand purple.
+       Swap for the official asset before launch. -->
+  <rect width="64" height="64" rx="6" fill="#5C006B"/>
+  <circle cx="32" cy="32" r="24" stroke="#D428D4" stroke-width="4" fill="none"/>
+  <circle cx="32" cy="32" r="16" stroke="#7B3FE4" stroke-width="4" fill="none"/>
+  <circle cx="32" cy="32" r="8" stroke="#00DDB8" stroke-width="4" fill="none"/>
+</svg>

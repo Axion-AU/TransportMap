@@ -6,10 +6,11 @@ import type { ReactNode } from 'react';
 
 interface MapProps {
     viewMode: 'connectivity' | 'mode';
+    showShapes?: boolean;
     children?: ReactNode;
 }
 
-const Map = ({ viewMode, children }: MapProps) => {
+const Map = ({ viewMode, showShapes = false, children }: MapProps) => {
     // Melbourne coordinates
     const position: [number, number] = [-37.8136, 144.9631];
 
@@ -19,7 +20,7 @@ const Map = ({ viewMode, children }: MapProps) => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                 url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
             />
-            <TransitLayer viewMode={viewMode} />
+            <TransitLayer viewMode={viewMode} showShapes={showShapes} />
             <ConnectivityPin />
             {children}
         </MapContainer>

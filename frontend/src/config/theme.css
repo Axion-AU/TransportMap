@@ -1,0 +1,95 @@
+/*
+ * Reclaim design system tokens (Fusion Party Australia).
+ * Dark-first. One accent per layout zone. Spectrum gradient is identity-only.
+ */
+
+@theme {
+  /* Purple depth scale */
+  --color-purple-900: #1A0029; /* page background */
+  --color-surface-raised: #2E004D;
+  --color-fusion-purple: #5C006B; /* brand purple: feature cards, quote blocks, duotone */
+
+  /* Accent spectrum */
+  --color-magenta: #D428D4; /* primary CTA, emphasis, live data */
+  --color-violet: #7B3FE4;  /* secondary interactive, focus ring */
+  --color-blue: #4A7AEB;    /* links, data neutral */
+  --color-cyan: #0BB8D4;    /* highlight, positive data secondary */
+  --color-teal: #00DDB8;    /* data positive, success */
+
+  /* Score band colours (data zone). Warm mid-bands extend the system;
+     no negative data colour is defined in Reclaim. */
+  --color-band-stranded: #D428D4;
+  --color-band-poor: #E4573F;
+  --color-band-patchy: #E8A33D;
+  --color-band-decent: #4A7AEB;
+  --color-band-good: #00DDB8;
+
+  /* Ink on dark */
+  --color-ink: #FFFFFF;
+  --color-ink-soft: rgba(255, 255, 255, 0.72);
+  --color-ink-faint: rgba(255, 255, 255, 0.45);
+
+  /* Borders: translucent white, never grey */
+  --color-border-subtle: rgba(255, 255, 255, 0.10);
+  --color-border-strong: rgba(255, 255, 255, 0.20);
+
+  /* Type */
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-body: "Barlow", system-ui, sans-serif;
+  --font-data: "Space Mono", ui-monospace, monospace;
+
+  /* Near-sharp corners */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+/* Display type is always uppercase and tight. */
+.type-display {
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+}
+
+.type-overline {
+  font-family: var(--font-body);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+}
+
+.type-data {
+  font-family: var(--font-data);
+  font-weight: 700;
+}
+
+/* Spectrum divider: reserved for identity moments and heavy section breaks. */
+.spectrum-line {
+  height: 1px;
+  background: linear-gradient(90deg, #D428D4, #7B3FE4, #4A7AEB, #0BB8D4, #00DDB8);
+}
+
+/* Interaction states */
+.pressable {
+  transition: filter 180ms var(--ease-out), transform 120ms var(--ease-out);
+}
+.pressable:hover {
+  filter: brightness(1.12);
+}
+.pressable:active {
+  transform: scale(0.97);
+}
+:focus-visible {
+  outline: 2px solid #7B3FE4;
+  outline-offset: 3px;
+}
+
+/* Hero CTA glow, the only permitted glow. */
+.cta-glow {
+  box-shadow: 0 0 24px rgba(212, 40, 212, 0.35);
+}
