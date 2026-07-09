@@ -1,13 +1,23 @@
 {
-  "name": "frontend",
+  "name": "fusion-transport-score",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "predev": "tsx scripts/ensure-data.mjs",
     "dev": "vite",
-    "build": "NODE_OPTIONS='--max-old-space-size=8192' tsc -b && vite build",
+    "gen:fixture": "tsx scripts/gen-fixture.mjs",
+    "build:data": "tsx scripts/build-data.mjs",
+    "build:client": "vite build --outDir dist/client",
+    "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
+    "build:og": "tsx scripts/generate-og.mjs",
+    "prerender": "tsx scripts/prerender.mjs",
+    "check": "tsx scripts/check-voice.mjs && tsx scripts/check-compliance.mjs",
+    "check:voice": "tsx scripts/check-voice.mjs",
+    "test": "vitest run",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "build": "npm run build:data && NODE_OPTIONS='--max-old-space-size=8192' tsc -b && npm run build:client && npm run build:server && npm run build:og && npm run prerender && npm run check",
+    "preview": "vite preview --outDir dist/client"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
@@ -19,10 +29,10 @@
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^7.10.1",
-    "tailwindcss": "^4.1.17",
-    "transport_inequality": "file:../pkg"
+    "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^24.10.1",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
@@ -32,7 +42,10 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "satori": "^0.12.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.2.2",
-    "vite": "^5.2.0"
+    "vite": "^5.2.0",
+    "vitest": "^2.1.9"
   }
 }
