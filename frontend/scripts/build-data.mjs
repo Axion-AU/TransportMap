@@ -22,7 +22,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { suburbScore, band, LEAGUE_TABLE_MIN_STOPS, distanceMeters } from '../src/lib/scoring.ts';
+import { suburbScore, band, LEAGUE_TABLE_MIN_STOPS, distanceMeters, VIABILITY_THRESHOLD } from '../src/lib/scoring.ts';
 import { verdictFor, modeNounFor } from '../src/lib/verdict.ts';
 import { geohashEncode } from '../src/lib/geo.ts';
 
@@ -183,7 +183,7 @@ function main() {
             lon: suburbStops.reduce((s, x) => s + x.lon, 0) / suburbStops.length,
         };
         const viableModeIds = [...new Set(
-            suburbStops.filter(s => s.final_score > 50).map(s => s.mode_id),
+            suburbStops.filter(s => s.final_score > VIABILITY_THRESHOLD).map(s => s.mode_id),
         )];
         const modeNoun = modeNounFor(viableModeIds.length > 0 ? viableModeIds : [...new Set(suburbStops.map(s => s.mode_id))]);
         const verdict = verdictFor(scoreBand, {

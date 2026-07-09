@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import type { ReactNode } from 'react';
 import manifest from '../data/generated/manifest.json';
 import { usePageMeta } from '../lib/meta';
 import { BAND_COLORS, BAND_LABELS, BAND_THRESHOLDS } from '../lib/scoring';
@@ -21,7 +22,7 @@ const ACCENT_TEXT: Record<Accent, string> = {
     teal: 'text-teal',
 };
 
-const Section = ({ title, part, accent, children }: { title: string; part: string; accent: Accent; children: React.ReactNode }) => (
+const Section = ({ title, part, accent, children }: { title: string; part: string; accent: Accent; children: ReactNode }) => (
     <section className={`space-y-4 bg-surface-raised border border-border-subtle ${ACCENT_BORDER[accent]} border-t-2 rounded-[4px] p-6 md:p-8`}>
         <p className={`type-overline ${ACCENT_TEXT[accent]}`}>{part}</p>
         <h2 className="type-display text-3xl text-ink">{title}</h2>
@@ -29,14 +30,14 @@ const Section = ({ title, part, accent, children }: { title: string; part: strin
     </section>
 );
 
-const Formula = ({ children }: { children: React.ReactNode }) => (
+const Formula = ({ children }: { children: ReactNode }) => (
     <pre className="bg-purple-900 border border-border-subtle rounded-[4px] p-4 overflow-x-auto type-data text-sm text-cyan">{children}</pre>
 );
 
-const Th = ({ children }: { children: React.ReactNode }) => (
+const Th = ({ children }: { children: ReactNode }) => (
     <th className="py-2 px-3 text-left type-overline text-ink-faint">{children}</th>
 );
-const Td = ({ children, mono = false }: { children: React.ReactNode; mono?: boolean }) => (
+const Td = ({ children, mono = false }: { children: ReactNode; mono?: boolean }) => (
     <td className={`py-2 px-3 ${mono ? 'type-data' : ''}`}>{children}</td>
 );
 

@@ -55,10 +55,14 @@ const LeagueTablePage = () => {
     const embedSnippet = `<iframe src="${site.origin}/embed/suburbs" width="100%" height="720" style="border:0" title="The 20 worst served suburbs in Melbourne, ranked by Transport Score"></iframe>`;
 
     const copyEmbed = async () => {
-        await navigator.clipboard.writeText(embedSnippet);
-        setCopied(true);
-        track('share_clicked', { suburb: 'league-table', channel: 'embed' });
-        setTimeout(() => setCopied(false), 2000);
+        try {
+            await navigator.clipboard.writeText(embedSnippet);
+            setCopied(true);
+            track('share_clicked', { suburb: 'league-table', channel: 'embed' });
+            setTimeout(() => setCopied(false), 2000);
+        } catch {
+            /* clipboard unavailable (unsupported or insecure context); no-op */
+        }
     };
 
     return (
