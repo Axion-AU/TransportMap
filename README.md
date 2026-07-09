@@ -13,13 +13,17 @@ The scoring engine rates every Melbourne public transport stop on frequency, cov
 
 1. Download the PTV GTFS feed from Data Vic (<https://discover.data.vic.gov.au/dataset/gtfs-schedule>) and unzip it into `gtfs/` at the repo root so each mode sits at `gtfs/<mode_id>/google_transit/` (1 regional train, 2 metro train, 3 metro tram, 4 metro bus, 5 regional coach, 6 regional bus, 11 SkyBus).
 2. Run the processor: `cargo run --release --bin process_gtfs`. It writes `frontend/public/data/stops_*.geojson`, `routes.json`, and `shapes.json`.
-3. Build the site: `cd frontend && npm install && npm run build`. The build derives suburb aggregates, prerenders every suburb page, generates share images, and runs the compliance checks.
+3. Build the site: `cd frontend && npm install && npm run build`. The build derives suburb aggregates, shards the route-line geometry into per-mode files under 25MB, prerenders every suburb page, generates share images, and runs the compliance checks. A freshly generated `shapes.json` is automatically promoted into `frontend/data-src/` and removed from the public dir once sharded.
 
 If the scored GeoJSON files are absent, the build generates a clearly labelled sample dataset so development can proceed. Sample builds show a banner on every page, mark every page `noindex`, and watermark every share image. Never deploy a sample build.
 
 ## Compliance gates
 
 The build fails if any generated page or share image is missing the electoral authorisation line, or if any copy contains an em-dash or a negate-then-correct construction. See `frontend/scripts/check-voice.mjs` and `frontend/scripts/check-compliance.mjs`.
+
+## Deploying
+
+`dist/client` is a plain static site (every page is prerendered HTML with client-side hydration) and runs on any static host. For Cloudflare Workers specifically, see `frontend/README.md`'s "Deploy to Cloudflare Workers" section: `cd frontend && npm run deploy:workers`.
 
 ## Launch checklist
 

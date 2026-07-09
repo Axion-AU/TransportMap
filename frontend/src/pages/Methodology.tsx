@@ -1,16 +1,36 @@
 import { Link } from 'react-router-dom';
 import manifest from '../data/generated/manifest.json';
 import { usePageMeta } from '../lib/meta';
+import { BAND_COLORS, BAND_LABELS, BAND_THRESHOLDS } from '../lib/scoring';
 
-const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <section className="space-y-4">
-        <h2 className="type-display text-3xl border-b border-border-subtle pb-2">{title}</h2>
+type Accent = 'magenta' | 'violet' | 'blue' | 'cyan' | 'teal';
+
+const ACCENT_BORDER: Record<Accent, string> = {
+    magenta: 'border-t-magenta',
+    violet: 'border-t-violet',
+    blue: 'border-t-blue',
+    cyan: 'border-t-cyan',
+    teal: 'border-t-teal',
+};
+
+const ACCENT_TEXT: Record<Accent, string> = {
+    magenta: 'text-magenta',
+    violet: 'text-violet',
+    blue: 'text-blue',
+    cyan: 'text-cyan',
+    teal: 'text-teal',
+};
+
+const Section = ({ title, part, accent, children }: { title: string; part: string; accent: Accent; children: React.ReactNode }) => (
+    <section className={`space-y-4 bg-surface-raised border border-border-subtle ${ACCENT_BORDER[accent]} border-t-2 rounded-[4px] p-6 md:p-8`}>
+        <p className={`type-overline ${ACCENT_TEXT[accent]}`}>{part}</p>
+        <h2 className="type-display text-3xl text-ink">{title}</h2>
         {children}
     </section>
 );
 
 const Formula = ({ children }: { children: React.ReactNode }) => (
-    <pre className="bg-surface-raised border border-border-subtle rounded-[4px] p-4 overflow-x-auto type-data text-sm text-cyan">{children}</pre>
+    <pre className="bg-purple-900 border border-border-subtle rounded-[4px] p-4 overflow-x-auto type-data text-sm text-cyan">{children}</pre>
 );
 
 const Th = ({ children }: { children: React.ReactNode }) => (
@@ -19,6 +39,17 @@ const Th = ({ children }: { children: React.ReactNode }) => (
 const Td = ({ children, mono = false }: { children: React.ReactNode; mono?: boolean }) => (
     <td className={`py-2 px-3 ${mono ? 'type-data' : ''}`}>{children}</td>
 );
+
+const Divider = () => <div className="spectrum-line" />;
+
+// Worst band first, matching how the rest of the site frames a result:
+// the number you got before the explanation of how you could do better.
+const BANDS_WORST_FIRST = [...BAND_THRESHOLDS].reverse();
+
+function bandUpperBound(index: number): number {
+    const next = BANDS_WORST_FIRST[index + 1];
+    return next ? next.min - 1 : 100;
+}
 
 /**
  * Ground truth for every number the site displays. The per-stop formulas
@@ -33,7 +64,7 @@ const Methodology = () => {
     );
 
     return (
-        <div className="max-w-3xl mx-auto px-5 py-10 md:py-16 space-y-12 text-ink-soft leading-relaxed">
+        <div className="max-w-3xl mx-auto px-5 py-10 md:py-16 space-y-8 text-ink-soft leading-relaxed">
             <header className="space-y-4">
                 <p className="type-overline text-magenta">Show your working</p>
                 <h1 className="type-display text-5xl md:text-6xl text-ink">Methodology</h1>
@@ -44,7 +75,9 @@ const Methodology = () => {
                 </p>
             </header>
 
-            <Section title="Data">
+            <Divider />
+
+            <Section title="Data" part="Part 01" accent="magenta">
                 <ul className="space-y-2 list-disc pl-5">
                     <li>
                         <strong className="text-ink">Source:</strong> the Public Transport Victoria GTFS
@@ -77,7 +110,31 @@ const Methodology = () => {
                 )}
             </Section>
 
-            <Section title="The per-stop score, 0 to 100">
+            <Section title="The score bands" part="Part 02" accent="violet">
+                <p>
+                    Every result, suburb page, and share image is labelled with one of these five
+                    bands. The thresholds below are the exact numbers the site uses, not a rough guide.
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                    {BANDS_WORST_FIRST.map(({ band, min }, i) => {
+                        const upper = bandUpperBound(i);
+                        return (
+                            <div
+                                key={band}
+                                className="bg-purple-900 border border-border-subtle rounded-[4px] p-4"
+                                style={{ borderTop: `2px solid ${BAND_COLORS[band]}` }}
+                            >
+                                <div className="type-data text-3xl mb-1" style={{ color: BAND_COLORS[band] }}>
+                                    {min}{upper < 100 ? `–${upper}` : '+'}
+                                </div>
+                                <div className="type-display text-lg text-ink">{BAND_LABELS[band]}</div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </Section>
+
+            <Section title="The per-stop score, 0 to 100" part="Part 03" accent="blue">
                 <p>
                     Each stop earns a base score from two equally weighted keys, then multiplicative
                     penalties are applied. Penalties only reduce; the ceiling is 100.
@@ -93,7 +150,7 @@ headway_score = peak * 0.6 + offpeak * 0.25 + weekend * 0.15`}</Formula>
                     Peak means weekdays 7 to 9am and 4 to 6pm; off peak is 9am to 4pm and 6 to 10pm;
                     weekend is 7am to 10pm.
                 </p>
-                <div className="bg-surface-raised border border-border-subtle rounded-[4px] overflow-x-auto">
+                <div className="bg-purple-900 border border-border-subtle rounded-[4px] overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead><tr className="border-b border-border-strong"><Th>Average wait</Th><Th>Headway score</Th></tr></thead>
                         <tbody className="divide-y divide-border-subtle">
@@ -134,7 +191,7 @@ local        = walk_catchment * 0.5 + feeder * 0.3 + active_transport * 0.2`}</F
                     punish weak links, keyed on the blended headway score and the local coverage
                     score respectively.
                 </p>
-                <div className="bg-surface-raised border border-border-subtle rounded-[4px] overflow-x-auto">
+                <div className="bg-purple-900 border border-border-subtle rounded-[4px] overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead><tr className="border-b border-border-strong"><Th>Trigger score</Th><Th>Multiplier</Th></tr></thead>
                         <tbody className="divide-y divide-border-subtle">
@@ -147,7 +204,7 @@ local        = walk_catchment * 0.5 + feeder * 0.3 + active_transport * 0.2`}</F
                 </div>
             </Section>
 
-            <Section title="From stops to your result">
+            <Section title="From stops to your result" part="Part 04" accent="cyan">
                 <p>
                     Address results score everything within an 800m walk. Suburb pages score all of
                     the suburb's stops. Both use the same aggregation:
@@ -176,7 +233,7 @@ no viable routes  = best available stop score, capped at 49`}</Formula>
                 </p>
             </Section>
 
-            <Section title="What we do not score">
+            <Section title="What we do not score" part="Part 05" accent="teal">
                 <ul className="space-y-2 list-disc pl-5">
                     <li><strong className="text-ink">Fares:</strong> a service you cannot catch is unusable at any price. Fares appear on this site only as cost anchors, sourced and dated where shown.</li>
                     <li><strong className="text-ink">Real-time punctuality:</strong> the score measures the promise of the timetable, which is the generous reading. Reliability here means days-of-service consistency, and that is a proxy, stated plainly.</li>
@@ -184,7 +241,9 @@ no viable routes  = best available stop score, capped at 49`}</Formula>
                 </ul>
             </Section>
 
-            <Section title="Known limitations">
+            <Divider />
+
+            <Section title="Known limitations" part="Part 06" accent="magenta">
                 <ul className="space-y-2 list-disc pl-5">
                     <li>Walking distances are straight-line, so barriers like freeways and rivers can flatter a stop's true catchment.</li>
                     <li>Suburb attribution from stop names is a heuristic; the build reports its failure rate ({manifest.unattributedPct}% unattributed in this build) and fails above 5%.</li>
@@ -193,27 +252,39 @@ no viable routes  = best available stop score, capped at 49`}</Formula>
                 </ul>
             </Section>
 
-            <Section title="Changelog">
-                <ul className="space-y-2 list-disc pl-5 text-sm">
-                    <li>
-                        <span className="type-data text-ink">2026.07</span> Suburb aggregation, league
-                        table, and address catchment published. Distance calculation now applies
-                        cosine-of-latitude correction; the previous map tool overstated east-west
-                        distances by about 25% at Melbourne's latitude, which made 800m catchments
-                        too generous east to west.
+            <Section title="Changelog" part="Part 07" accent="violet">
+                <ul className="space-y-3 text-sm">
+                    <li className="flex gap-3">
+                        <span className="type-data text-ink shrink-0">2026.07</span>
+                        <span>
+                            Suburb aggregation, league table, and address catchment published.
+                            Distance calculation now applies cosine-of-latitude correction; the
+                            previous map tool overstated east-west distances by about 25% at
+                            Melbourne's latitude, which made 800m catchments too generous east
+                            to west.
+                        </span>
                     </li>
-                    <li>
-                        <span className="type-data text-ink">2025.12</span> Per-stop scoring engine:
-                        two-key framework (frequency, coverage), penalty multipliers, intermodal
-                        bonus, night network bonus.
+                    <li className="flex gap-3">
+                        <span className="type-data text-ink shrink-0">2025.12</span>
+                        <span>
+                            Per-stop scoring engine: two-key framework (frequency, coverage),
+                            penalty multipliers, intermodal bonus, night network bonus.
+                        </span>
                     </li>
                 </ul>
             </Section>
 
-            <p className="text-sm">
-                Check a suburb against this page any time from its score card, or start at the{' '}
-                <Link to="/" className="text-blue">lookup</Link>.
-            </p>
+            <div className="text-center pt-4">
+                <p className="text-sm mb-4">
+                    Check a suburb against this page any time, straight from its score card.
+                </p>
+                <Link
+                    to="/"
+                    className="pressable inline-block px-6 py-3 bg-magenta text-white font-semibold rounded-[4px]"
+                >
+                    Look up your suburb
+                </Link>
+            </div>
         </div>
     );
 };

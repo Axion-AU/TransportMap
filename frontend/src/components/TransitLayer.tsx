@@ -8,7 +8,7 @@ import L from 'leaflet';
 
 interface TransitLayerProps {
     viewMode: 'connectivity' | 'mode';
-    /** Route shapes are ~90MB; only fetched when the user opts in. */
+    /** Route shapes are sharded by mode; only fetched when the user opts in, and then only the shard(s) a selected stop needs. */
     showShapes?: boolean;
 }
 
@@ -84,10 +84,31 @@ const getIcon = (stop: Stop, viewMode: 'connectivity' | 'mode') => {
 
 
 
+/** Given a selected stop, the shapeIds its routes actually serve. */
+const relevantShapeIdsFor = (stop: Stop, routes: Record<string, Route>): string[] => {
+    const ids: string[] = [];
+    for (const routeId of stop.route_ids) {
+        const route = routes[routeId];
+        if (!route) continue;
+        if (route.shape_ids && stop.shape_ids) {
+            for (const shapeId of route.shape_ids) {
+                if (stop.shape_ids.includes(shapeId)) ids.push(shapeId);
+            }
+        } else {
+            // Legacy fallback: shapes once keyed directly by routeId.
+            ids.push(routeId);
+        }
+    }
+    return ids;
+};
+
 const TransitLayer = ({ viewMode, showShapes = false }: TransitLayerProps) => {
     const map = useMap();
     const [stops, setStops] = useState<Stop[]>([]);
+    // Route line geometry, fetched a shard at a time as stops are selected.
     const [shapes, setShapes] = useState<Record<string, [number, number][]>>({});
+    const [shapeManifest, setShapeManifest] = useState<Record<string, string> | null>(null);
+    const [loadedShards, setLoadedShards] = useState<Set<string>>(new Set());
     const [routes, setRoutes] = useState<Record<string, Route>>({});
     const [loading, setLoading] = useState(true);
     const [visibleStops, setVisibleStops] = useState<Stop[]>([]);
@@ -324,15 +345,47 @@ const TransitLayer = ({ viewMode, showShapes = false }: TransitLayerProps) => {
         click: () => setSelectedStop(null) // Deselect on map click
     });
 
-    // Route shapes load on demand: the file is huge and most sessions never need it.
+    // Shape data is sharded by mode (~10-20MB each) instead of one ~90MB
+    // blob. Fetch the small manifest once the user opts in, then fetch only
+    // the shard(s) a selected stop's routes actually need.
     useEffect(() => {
-        if (!showShapes || Object.keys(shapes).length > 0) return;
-        fetch('/data/shapes.json')
-            .then(res => res.json())
-            .then(setShapes)
-            .catch(err => console.error('Error loading route shapes:', err));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [showShapes]);
+        if (!showShapes || shapeManifest !== null) return;
+        fetch('/data/shapes/manifest.json')
+            .then(res => (res.ok ? res.json() : {}))
+            .then(setShapeManifest)
+            .catch(err => {
+                console.error('Error loading shape manifest:', err);
+                setShapeManifest({});
+            });
+    }, [showShapes, shapeManifest]);
+
+    useEffect(() => {
+        if (!showShapes || !selectedStop || !shapeManifest) return;
+
+        const neededShapeIds = relevantShapeIdsFor(selectedStop, routes);
+        const shardsToFetch = new Set<string>();
+        for (const shapeId of neededShapeIds) {
+            const shard = shapeManifest[shapeId];
+            if (shard && !loadedShards.has(shard)) shardsToFetch.add(shard);
+        }
+        if (shardsToFetch.size === 0) return;
+
+        Promise.all(
+            [...shardsToFetch].map(shard =>
+                fetch(`/data/shapes/${shard}`)
+                    .then(res => (res.ok ? res.json() : {}))
+                    .catch(err => {
+                        console.error(`Error loading shape shard ${shard}:`, err);
+                        return {};
+                    }),
+            ),
+        ).then(shardResults => {
+             
+            setShapes(prev => Object.assign({}, prev, ...shardResults));
+             
+            setLoadedShards(prev => new Set([...prev, ...shardsToFetch]));
+        });
+    }, [showShapes, selectedStop, shapeManifest, routes, loadedShards]);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect -- recompute viewport stops once data arrives
@@ -344,45 +397,26 @@ const TransitLayer = ({ viewMode, showShapes = false }: TransitLayerProps) => {
 
     return (
         <LayerGroup>
-            {/* Render Lines for Selected Stop */}
-            {showShapes && selectedStop && selectedStop.route_ids.map(routeId => {
-                const route = routes[routeId];
-                if (!route) return null;
+            {/* Render lines for the selected stop, from whichever shards have loaded so far */}
+            {showShapes && selectedStop && relevantShapeIdsFor(selectedStop, routes).map(shapeId => {
+                const positions = shapes[shapeId];
+                if (!positions) return null;
 
-                // Find shapes that belong to this route AND serve the selected stop
-                const relevantShapes: string[] = [];
+                const route = selectedStop.route_ids
+                    .map(rid => routes[rid])
+                    .find(r => r?.shape_ids?.includes(shapeId));
 
-                if (route.shape_ids && selectedStop.shape_ids) {
-                    // New logic: Check distinct shapes
-                    route.shape_ids.forEach(shapeId => {
-                        if (selectedStop.shape_ids?.includes(shapeId)) {
-                            relevantShapes.push(shapeId);
-                        }
-                    });
-                } else {
-                    // Fallback logic using route mapping (legacy)
-                    // If shapes were keyed by routeId (old behavior), this would work. 
-                    // But now shapes are keyed by shapeId. 
-                    // So we try to use the routeId as a shapeId directly just in case.
-                    relevantShapes.push(routeId);
-                }
-
-                return relevantShapes.map(shapeId => {
-                    const positions = shapes[shapeId];
-                    if (!positions) return null;
-
-                    return (
-                        <Polyline
-                            key={shapeId}
-                            positions={positions}
-                            pathOptions={{
-                                color: route.color,
-                                weight: 4,
-                                opacity: 0.8
-                            }}
-                        />
-                    );
-                });
+                return (
+                    <Polyline
+                        key={shapeId}
+                        positions={positions}
+                        pathOptions={{
+                            color: route?.color ?? '#999',
+                            weight: 4,
+                            opacity: 0.8
+                        }}
+                    />
+                );
             })}
 
             {visibleStops.map(stop => (

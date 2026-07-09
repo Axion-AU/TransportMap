@@ -23,3 +23,8 @@ if (!fs.existsSync(path.join(GENERATED, 'suburb-index.json')) || !fs.existsSync(
     console.log('[ensure-data] deriving suburb data.');
     execFileSync('npx', ['tsx', path.join(__dirname, 'build-data.mjs')], { stdio: 'inherit' });
 }
+
+if (!fs.existsSync(path.join(DATA_DIR, 'shapes', 'manifest.json'))) {
+    console.log('[ensure-data] sharding route line shapes.');
+    execFileSync('npx', ['tsx', path.join(__dirname, 'split-shapes.mjs')], { stdio: 'inherit' });
+}
