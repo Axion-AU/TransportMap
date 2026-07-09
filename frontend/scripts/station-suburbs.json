@@ -1,0 +1,17 @@
+{
+  "_comment": "Curated station name to suburb map for stations whose name does not match their suburb. Used by build-data.mjs when a stop name has no trailing (Suburb) and ends in Station. Extend as the QA report surfaces gaps.",
+  "Southern Cross": "Docklands",
+  "Flinders Street": "Melbourne",
+  "Melbourne Central": "Melbourne",
+  "Parliament": "Melbourne",
+  "Flagstaff": "Melbourne",
+  "Jolimont-MCG": "East Melbourne",
+  "North Melbourne": "West Melbourne",
+  "Anzac": "Melbourne",
+  "Town Hall": "Melbourne",
+  "State Library": "Melbourne",
+  "Arden": "North Melbourne",
+  "Parkville": "Parkville",
+  "Showgrounds": "Ascot Vale",
+  "Flemington Racecourse": "Flemington"
+}
