@@ -27,7 +27,7 @@ const MapPage = () => {
                         checked={showShapes}
                         onChange={(e) => setShowShapes(e.target.checked)}
                     />
-                    Load route lines (90MB, wifi recommended)
+                    Show route lines for the selected stop
                 </label>
             </div>
             <Legend viewMode={viewMode} onInfoClick={() => { }} />

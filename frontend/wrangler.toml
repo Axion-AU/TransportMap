@@ -1,0 +1,17 @@
+# Cloudflare Workers deployment: static assets only, no server-side Worker
+# script. Wrangler uploads dist/client and serves it directly; every page
+# is already prerendered HTML with client-side hydration.
+#
+# Build first (npm run build, or let `npm run deploy:workers` do it via its
+# predeploy hook), then `wrangler deploy` from this directory.
+
+name = "fusion-transport-score" # TODO(launch): confirm the account's Worker name
+compatibility_date = "2026-07-09"
+
+[assets]
+directory = "./dist/client"
+# We already generate dist/client/404.html at prerender time; serve it for
+# any unmatched path instead of falling back to the SPA shell.
+not_found_handling = "404-page"
+# Matches our folder-per-route layout (/score/<slug>/index.html).
+html_handling = "auto-trailing-slash"

@@ -27,3 +27,13 @@ frontend/public/data/*.geojson
 frontend/public/data/suburbs/
 frontend/public/data/tiles/
 frontend/src/data/generated/
+
+# Generated route-line shards (derived from frontend/data-src/shapes.json by
+# frontend/scripts/split-shapes.mjs). The Rust processor may also drop a
+# fresh shapes.json here; split-shapes.mjs promotes it into data-src/ and
+# this entry keeps the huge unsharded file out of the Vite public dir.
+frontend/public/data/shapes/
+frontend/public/data/shapes.json
+
+# Unused simulation output (src/simulation.rs); not consumed by the frontend.
+frontend/public/data/simulated_bus_grid.json
