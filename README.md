@@ -6,16 +6,17 @@ The scoring engine rates every Melbourne public transport stop on frequency, cov
 
 ## Structure
 
-- `src/` Rust GTFS processor. Reads the PTV GTFS feed, scores every stop, exports per-mode GeoJSON.
-- `frontend/` Vite + React site: lookup funnel, per-suburb pages, league table, methodology, map explorer.
+- `src/` Rust GTFS processor and feeder-network designer. Reads the PTV GTFS feed, scores every stop, exports per-mode GeoJSON; `src/network_design/` proposes a costed bus network connecting residents to high-quality transit.
+- `frontend/` Vite + React site: lookup funnel, per-suburb pages, league table, the plan, methodology, map explorer.
 
 ## Data pipeline (run before any release)
 
 1. Download the PTV GTFS feed from Data Vic (<https://discover.data.vic.gov.au/dataset/gtfs-schedule>) and unzip it into `gtfs/` at the repo root so each mode sits at `gtfs/<mode_id>/google_transit/` (1 regional train, 2 metro train, 3 metro tram, 4 metro bus, 5 regional coach, 6 regional bus, 11 SkyBus).
-2. Run the processor: `cargo run --release --bin process_gtfs`. It writes `frontend/public/data/stops_*.geojson`, `routes.json`, and `shapes.json`.
-3. Build the site: `cd frontend && npm install && npm run build`. The build derives suburb aggregates, shards the route-line geometry into per-mode files under 25MB, prerenders every suburb page, generates share images, and runs the compliance checks. A freshly generated `shapes.json` is automatically promoted into `frontend/data-src/` and removed from the public dir once sharded.
+2. Run the processor: `cargo run --release --bin process_gtfs`. It writes `frontend/public/data/stops_*.geojson`, `routes.json`, `shapes.json`, and `routes_cost.json` (per-route daily trip count and vehicle-km, used by the network designer and reported as the current network's operating cost).
+3. Supply real population, points-of-interest, and road-corridor data at `frontend/public/data/population_grid.json`, `poi.json`, and `road_corridors.json` (see `frontend/scripts/gen-network-fixture.mjs` for the exact shape each file must match), then run `cargo run --release --bin design_network`. It writes `frontend/public/data/network_plan.json`, the costed feeder network shown at `/the-plan`.
+4. Build the site: `cd frontend && npm install && npm run build`. The build derives suburb aggregates, shards the route-line geometry into per-mode files under 25MB, prerenders every page including one per suburb, generates share images, and runs the compliance checks. A freshly generated `shapes.json` is automatically promoted into `frontend/data-src/` and removed from the public dir once sharded.
 
-If the scored GeoJSON files are absent, the build generates a clearly labelled sample dataset so development can proceed. Sample builds show a banner on every page, mark every page `noindex`, and watermark every share image. Never deploy a sample build.
+If the scored GeoJSON files, or the population/POI/road-corridor files, are absent, the build generates a clearly labelled sample dataset so development can proceed (`frontend/scripts/gen-fixture.mjs`, `gen-network-fixture.mjs`). If `network_plan.json` is missing and no Rust toolchain is available to compute it, the build falls back to an illustrative stub. Sample and stub builds show a banner on every page, mark every page `noindex`, and watermark every share image. Never deploy a sample or stub build.
 
 ## Compliance gates
 
@@ -28,6 +29,8 @@ The build fails if any generated page or share image is missing the electoral au
 ## Launch checklist
 
 - [ ] Real GTFS data processed and committed to the deploy artifact (no sample banner anywhere)
+- [ ] Real population, POI, and road-corridor data supplied and `design_network` rerun (no sample banner on `/the-plan`)
+- [ ] Bus operating cost anchor (`busOperatingCostPerKm` in `frontend/src/config/anchors.json`) confirmed against a primary DTP/PTV source, not the current blog-derived placeholder
 - [ ] `VITE_SITE_ORIGIN` set to the production origin (share image URLs are absolute)
 - [ ] `VITE_ANALYTICS_DOMAIN` set to the Plausible domain
 - [ ] Join URL and membership price anchor confirmed in `frontend/src/config/`
