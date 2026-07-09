@@ -65,9 +65,11 @@ const baseTemplate = template
     .replace(/<meta name="description"[^>]*\/>\s*/, '');
 
 function writePage(urlPath, head, appHtml, island = '') {
+    // Function replacers so $&/$$/$`/$' in generated copy or JSON islands
+    // are inserted literally instead of being treated as replacement tokens.
     const html = baseTemplate
-        .replace('<!--app-head-->', head + (island ? `\n    ${island}` : ''))
-        .replace('<!--app-html-->', appHtml);
+        .replace('<!--app-head-->', () => head + (island ? `\n    ${island}` : ''))
+        .replace('<!--app-html-->', () => appHtml);
     const outDir = urlPath === '/' ? CLIENT_DIR : path.join(CLIENT_DIR, urlPath);
     fs.mkdirSync(outDir, { recursive: true });
     fs.writeFileSync(path.join(outDir, 'index.html'), html);

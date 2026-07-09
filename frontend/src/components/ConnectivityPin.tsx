@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Marker, Popup, Circle, useMapEvents } from 'react-leaflet';
 import { MapPin } from 'lucide-react';
 import L from 'leaflet';
@@ -18,6 +18,7 @@ interface PinState extends CatchmentResult {
 const ConnectivityPin = () => {
     const [routes, setRoutes] = useState<Record<string, { short_name?: string; long_name?: string }>>({});
     const [pin, setPin] = useState<PinState | null>(null);
+    const requestIdRef = useRef(0);
 
     useEffect(() => {
         fetch('/data/routes.json')
@@ -38,6 +39,7 @@ const ConnectivityPin = () => {
 
     const handleMapClick = async (e: L.LeafletMouseEvent) => {
         const { lat, lng } = e.latlng;
+        const requestId = ++requestIdRef.current;
         try {
             const keys = tilesFor(lat, lng, CATCHMENT_RADIUS_M);
             const lists = await Promise.all(
@@ -48,7 +50,8 @@ const ConnectivityPin = () => {
                 ),
             );
             const result = catchmentScore((lists as StopLite[][]).flat(), lat, lng);
-            setPin({ lat, lng, ...result });
+            // A faster later click can resolve first; only the newest wins.
+            if (requestId === requestIdRef.current) setPin({ lat, lng, ...result });
         } catch (err) {
             console.error('Pin scoring failed:', err);
         }

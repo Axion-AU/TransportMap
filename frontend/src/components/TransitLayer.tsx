@@ -373,17 +373,20 @@ const TransitLayer = ({ viewMode, showShapes = false }: TransitLayerProps) => {
         Promise.all(
             [...shardsToFetch].map(shard =>
                 fetch(`/data/shapes/${shard}`)
-                    .then(res => (res.ok ? res.json() : {}))
+                    .then(res => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+                    .then(data => ({ shard, data, ok: true as const }))
                     .catch(err => {
                         console.error(`Error loading shape shard ${shard}:`, err);
-                        return {};
+                        return { shard, data: {}, ok: false as const };
                     }),
             ),
         ).then(shardResults => {
-             
-            setShapes(prev => Object.assign({}, prev, ...shardResults));
-             
-            setLoadedShards(prev => new Set([...prev, ...shardsToFetch]));
+            setShapes(prev => Object.assign({}, prev, ...shardResults.map(r => r.data)));
+            // Only mark shards that actually loaded; a failed fetch stays
+            // eligible for retry next time this stop (or another sharing
+            // the shard) is selected.
+            const succeeded = shardResults.filter(r => r.ok).map(r => r.shard);
+            setLoadedShards(prev => new Set([...prev, ...succeeded]));
         });
     }, [showShapes, selectedStop, shapeManifest, routes, loadedShards]);
 
@@ -402,9 +405,12 @@ const TransitLayer = ({ viewMode, showShapes = false }: TransitLayerProps) => {
                 const positions = shapes[shapeId];
                 if (!positions) return null;
 
+                // Matches relevantShapeIdsFor's own fallback: when a route has no
+                // shape_ids, that function pushes the routeId itself as the
+                // "shapeId", so the color lookup has to accept that same fallback.
                 const route = selectedStop.route_ids
-                    .map(rid => routes[rid])
-                    .find(r => r?.shape_ids?.includes(shapeId));
+                    .map(rid => ({ rid, r: routes[rid] }))
+                    .find(({ rid, r }) => (r?.shape_ids ? r.shape_ids.includes(shapeId) : rid === shapeId))?.r;
 
                 return (
                     <Polyline

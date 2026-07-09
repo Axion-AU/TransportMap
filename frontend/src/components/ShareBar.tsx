@@ -29,10 +29,14 @@ const ShareBar = ({ slug, suburbName, score, verdict }: ShareBarProps) => {
     };
 
     const copy = async () => {
-        await navigator.clipboard.writeText(url);
-        setCopied(true);
-        track('link_copied', { suburb: slug });
-        setTimeout(() => setCopied(false), 2000);
+        try {
+            await navigator.clipboard.writeText(url);
+            setCopied(true);
+            track('link_copied', { suburb: slug });
+            setTimeout(() => setCopied(false), 2000);
+        } catch {
+            /* clipboard unavailable (unsupported or insecure context); no-op */
+        }
     };
 
     const intent = (channel: string, href: string) => {

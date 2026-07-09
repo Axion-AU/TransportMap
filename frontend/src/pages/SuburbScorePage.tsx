@@ -36,7 +36,8 @@ const SuburbScorePage = () => {
             setDetail(island);
             return;
         }
-         
+
+        let cancelled = false;
         setDetail(null);
         setMissing(false);
         fetch(`/data/suburbs/${slug}.json`)
@@ -44,8 +45,17 @@ const SuburbScorePage = () => {
                 if (!res.ok) throw new Error('missing');
                 return res.json();
             })
-            .then((d: SuburbDetail) => setDetail(d))
-            .catch(() => setMissing(true));
+            .then((d: SuburbDetail) => {
+                if (!cancelled) setDetail(d);
+            })
+            .catch(() => {
+                if (!cancelled) setMissing(true);
+            });
+        // A slow response for a slug the user has since navigated away from
+        // must not overwrite the newer one that already landed.
+        return () => {
+            cancelled = true;
+        };
     }, [slug]);
 
     usePageMeta(
