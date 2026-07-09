@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+  <!-- Placeholder approximation of the Fusion rings mark (mono white).
+       Swap for the official asset before launch. -->
+  <circle cx="32" cy="32" r="28" stroke="#FFFFFF" stroke-width="3" opacity="0.95"/>
+  <circle cx="32" cy="32" r="21" stroke="#FFFFFF" stroke-width="3" opacity="0.8"/>
+  <circle cx="32" cy="32" r="14" stroke="#FFFFFF" stroke-width="3" opacity="0.65"/>
+  <circle cx="32" cy="32" r="7" stroke="#FFFFFF" stroke-width="3" opacity="0.5"/>
+</svg>

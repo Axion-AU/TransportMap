@@ -8,6 +8,8 @@ import L from 'leaflet';
 
 interface TransitLayerProps {
     viewMode: 'connectivity' | 'mode';
+    /** Route shapes are ~90MB; only fetched when the user opts in. */
+    showShapes?: boolean;
 }
 
 
@@ -82,7 +84,7 @@ const getIcon = (stop: Stop, viewMode: 'connectivity' | 'mode') => {
 
 
 
-const TransitLayer = ({ viewMode }: TransitLayerProps) => {
+const TransitLayer = ({ viewMode, showShapes = false }: TransitLayerProps) => {
     const map = useMap();
     const [stops, setStops] = useState<Stop[]>([]);
     const [shapes, setShapes] = useState<Record<string, [number, number][]>>({});
@@ -103,7 +105,6 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                     regionalCoachRes,
                     regionalBusRes,
                     skybusRes,
-                    shapesRes,
                     routesRes
                 ] = await Promise.all([
                     fetch('/data/stops_metro_train.geojson'),
@@ -113,11 +114,10 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                     fetch('/data/stops_regional_coach.geojson'),
                     fetch('/data/stops_regional_bus.geojson'),
                     fetch('/data/stops_skybus.geojson'),
-                    fetch('/data/shapes.json'),
                     fetch('/data/routes.json')
                 ]);
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                 
                 const parseGeoJSONStops = async (res: Response): Promise<Stop[]> => {
                     const data = await res.json();
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -282,11 +282,9 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
 
                 const allStops = deduplicateStops(rawStops);
 
-                const shapesData = await shapesRes.json();
                 const routesData = await routesRes.json();
 
                 setStops(allStops);
-                setShapes(shapesData);
                 setRoutes(routesData);
                 setLoading(false);
                 console.log('Data loaded successfully:', allStops.length, 'stops');
@@ -326,8 +324,20 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
         click: () => setSelectedStop(null) // Deselect on map click
     });
 
+    // Route shapes load on demand: the file is huge and most sessions never need it.
     useEffect(() => {
+        if (!showShapes || Object.keys(shapes).length > 0) return;
+        fetch('/data/shapes.json')
+            .then(res => res.json())
+            .then(setShapes)
+            .catch(err => console.error('Error loading route shapes:', err));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [showShapes]);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- recompute viewport stops once data arrives
         updateVisibleStops();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stops, loading]); // Update when data loads
 
     if (loading) return null; // Or a loader component
@@ -335,7 +345,7 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
     return (
         <LayerGroup>
             {/* Render Lines for Selected Stop */}
-            {selectedStop && selectedStop.route_ids.map(routeId => {
+            {showShapes && selectedStop && selectedStop.route_ids.map(routeId => {
                 const route = routes[routeId];
                 if (!route) return null;
 

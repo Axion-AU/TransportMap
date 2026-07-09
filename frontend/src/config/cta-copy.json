@@ -1,0 +1,30 @@
+{
+  "_comment": "Join CTA copy keyed by score band. {suburb}, {score}, {membership}, {weeklyFares} are replaced at render. Voice rules apply: plain, specific, sourced, no em-dashes, no negate-then-correct constructions.",
+  "bands": {
+    "stranded": {
+      "heading": "THIS IS A FUNDING DECISION",
+      "body": "{suburb} scored {score}/100 because someone decided it was acceptable. Fusion costed the fix. Membership is {membership} a year, less than a week of the fares you pay for this.",
+      "button": "Join Fusion and fix it"
+    },
+    "poor": {
+      "heading": "YOU ARE PAYING FULL FARE FOR THIS",
+      "body": "A week of commuting costs you about {weeklyFares}. {suburb} gets {score}/100 worth of service for it. Fusion membership is {membership} a year and comes with a costed transport plan.",
+      "button": "Join Fusion"
+    },
+    "patchy": {
+      "heading": "GOOD ENOUGH IS THE ENEMY",
+      "body": "{suburb} sits at {score}/100. The plan to lift it exists and it is costed. Membership is {membership} a year.",
+      "button": "Join Fusion"
+    },
+    "decent": {
+      "heading": "KEEP IT AND SPREAD IT",
+      "body": "{suburb} scores {score}/100. Most of Melbourne gets far less for the same fare. Fusion has the costed plan to bring every suburb up. Membership is {membership} a year.",
+      "button": "Join Fusion"
+    },
+    "good": {
+      "heading": "EVERY SUBURB DESERVES THIS",
+      "body": "{suburb} scores {score}/100 and proves it can be done. Help make it the norm. Membership is {membership} a year.",
+      "button": "Join Fusion"
+    }
+  }
+}

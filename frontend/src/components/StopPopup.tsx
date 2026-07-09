@@ -325,7 +325,7 @@ export const StopPopup: React.FC<StopPopupProps> = ({ stop: initialStop, routes 
                 <div className="pt-3 border-t border-gray-200">
                     <div className="text-xs text-gray-500 mb-2">Nearby Connections (&lt;400m)</div>
                     <div className="space-y-1 max-h-[80px] overflow-y-auto">
-                        {initialStop.nearby_stops.map((nearby: any) => (
+                        {initialStop.nearby_stops.map((nearby) => (
                             <div key={nearby.id} className="flex justify-between text-xs">
                                 <span className="truncate max-w-[180px]" title={nearby.name}>{nearby.name}</span>
                                 <span className="text-gray-400 ml-2 flex-shrink-0">{formatModeName(nearby.mode_name)} ({Math.round(nearby.distance)}m)</span>

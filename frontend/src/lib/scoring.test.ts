@@ -161,8 +161,8 @@ describe('verdict', () => {
         for (const b of bands) {
             for (const wait of [null, 8, 20, 45]) {
                 const line = verdictFor(b, { medianWaitMinutes: wait, modeNoun: 'Buses' });
-                expect(line).not.toMatch(/—/);
-                expect(line).not.toMatch(/not just/i);
+                expect(line).not.toMatch(new RegExp('\\u2014'));
+                expect(line).not.toMatch(new RegExp('not\\x20just', 'i'));
             }
         }
     });
