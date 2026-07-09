@@ -22,3 +22,8 @@ Thumbs.db
 frontend/public/data/*.geojson
 !frontend/public/data/annual_metropolitan_train_station_entries_fy_2024_2025.csv
 !frontend/public/data/monthly_public_transport_patronage_by_mode.csv
+
+# Generated build-time data (derived from stops_*.geojson by frontend/scripts/build-data.mjs)
+frontend/public/data/suburbs/
+frontend/public/data/tiles/
+frontend/src/data/generated/
