@@ -81,6 +81,21 @@ jobs.push({
     },
 });
 
+const networkPlanPath = path.resolve(__dirname, '../public/data/network_plan.json');
+if (fs.existsSync(networkPlanPath)) {
+    const plan = JSON.parse(fs.readFileSync(networkPlanPath, 'utf8'));
+    const netCost = Math.round(plan.net_annual_cost).toLocaleString('en-AU');
+    jobs.push({
+        file: 'the-plan.png',
+        props: {
+            heading: 'We costed the fix',
+            score: null,
+            scoreColor: '#00DDB8',
+            verdict: `400m transit coverage: ${plan.baseline_pct_within_400.toFixed(0)}% to ${plan.proposed_pct_within_400.toFixed(0)}%. Net cost $${netCost} a year.`,
+        },
+    });
+}
+
 for (const s of suburbIndex.suburbs) {
     const detail = JSON.parse(fs.readFileSync(path.resolve(__dirname, `../public/data/suburbs/${s.slug}.json`), 'utf8'));
     jobs.push({

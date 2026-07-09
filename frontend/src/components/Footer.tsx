@@ -14,6 +14,7 @@ const Footer = () => {
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
                     <Link to="/methodology" className="text-blue hover:brightness-125">How the score works</Link>
                     <Link to="/suburbs" className="text-blue hover:brightness-125">Worst served suburbs</Link>
+                    <Link to="/the-plan" className="text-blue hover:brightness-125">The plan</Link>
                     <Link to="/map" className="text-blue hover:brightness-125">Explore the map</Link>
                     <a href={site.joinUrl} className="text-blue hover:brightness-125">Join Fusion</a>
                 </div>

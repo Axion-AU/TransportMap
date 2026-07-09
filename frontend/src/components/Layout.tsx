@@ -13,6 +13,7 @@ interface LayoutProps {
 const NAV = [
     { to: '/', label: 'Your score' },
     { to: '/suburbs', label: 'Worst 20' },
+    { to: '/the-plan', label: 'The plan' },
     { to: '/methodology', label: 'Methodology' },
     { to: '/map', label: 'Map' },
 ];

@@ -96,6 +96,21 @@ if (!fs.existsSync(ogManifestPath)) {
             }
         }
     }
+
+    const planDir = path.join(CLIENT_DIR, 'the-plan');
+    if (fs.existsSync(planDir)) {
+        if (!covered.has('the-plan.png')) {
+            failures.push('the-plan: no verified og image');
+        }
+        if (!fs.existsSync(path.join(CLIENT_DIR, 'og', 'the-plan.png'))) {
+            failures.push('the-plan: og/the-plan.png file missing');
+        }
+        const html = fs.readFileSync(path.join(planDir, 'index.html'), 'utf8');
+        const og = html.match(/property="og:image" content="([^"]+)"/);
+        if (!og || !og[1].endsWith('/og/the-plan.png')) {
+            failures.push('the-plan: og:image tag does not point at its image');
+        }
+    }
 }
 
 // 4: hardcoded prices outside anchors.json.

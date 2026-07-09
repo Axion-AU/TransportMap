@@ -25,6 +25,12 @@
       "display": "$30",
       "label": "Fusion membership, one year",
       "source": "TODO(launch): confirm current membership pricing with the membership team."
+    },
+    "busOperatingCostPerKm": {
+      "value": 6.5,
+      "display": "$6.50",
+      "label": "metropolitan bus operating cost per service kilometre",
+      "source": "TODO(confirm): midpoint of a $6 to $7 per km figure derived from Victorian state budget papers by a transit-planning blog, not a primary DTP/PTV source. Replace with an official figure before this number is used in a public claim."
     }
   }
 }

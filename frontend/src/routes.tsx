@@ -6,6 +6,7 @@ import ResultPage from './pages/ResultPage';
 import LeagueTablePage from './pages/LeagueTablePage';
 import EmbedLeagueTable from './pages/EmbedLeagueTable';
 import Methodology from './pages/Methodology';
+import NetworkPlanPage from './pages/NetworkPlanPage';
 import ClientOnly from './components/ClientOnly';
 
 // Leaflet stays out of every funnel chunk: the map page is lazy and
@@ -20,6 +21,7 @@ const AppRoutes = () => (
         <Route path="/suburbs" element={<LeagueTablePage />} />
         <Route path="/embed/suburbs" element={<EmbedLeagueTable />} />
         <Route path="/methodology" element={<Methodology />} />
+        <Route path="/the-plan" element={<NetworkPlanPage />} />
         <Route
             path="/map"
             element={

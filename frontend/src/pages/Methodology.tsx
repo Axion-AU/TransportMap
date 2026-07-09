@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import manifest from '../data/generated/manifest.json';
 import { usePageMeta } from '../lib/meta';
 import { BAND_COLORS, BAND_LABELS, BAND_THRESHOLDS } from '../lib/scoring';
+import anchorsConfig from '../config/anchors.json';
 
 type Accent = 'magenta' | 'violet' | 'blue' | 'cyan' | 'teal';
 
@@ -250,6 +251,7 @@ no viable routes  = best available stop score, capped at 49`}</Formula>
                     <li>Suburb attribution from stop names is a heuristic; the build reports its failure rate ({manifest.unattributedPct}% unattributed in this build) and fails above 5%.</li>
                     <li>Scores describe the timetable, and cancelled or ghost services score better than they deserve.</li>
                     <li>Coverage is Melbourne GTFS. Statewide scoring is planned, and regional stops inside the feed are scored where present.</li>
+                    <li>The plan's population, points of interest, and road corridors are synthetic placeholders until real ABS population, POI, and road datasets are supplied. Real data will change every number on <Link to="/the-plan" className="text-blue">the plan</Link>.</li>
                 </ul>
             </Section>
 
@@ -258,10 +260,10 @@ no viable routes  = best available stop score, capped at 49`}</Formula>
                     <li className="flex gap-3">
                         <span className="type-data text-ink shrink-0">2026.07</span>
                         <span>
-                            Suburb aggregation, league table, and address catchment published.
-                            Distance calculation now applies cosine-of-latitude correction; the
-                            previous map tool overstated east-west distances by about 25% at
-                            Melbourne's latitude, which made 800m catchments too generous east
+                            Suburb aggregation, league table, address catchment, and the feeder-network
+                            designer published. Distance calculation now applies cosine-of-latitude
+                            correction; the previous map tool overstated east-west distances by about
+                            25% at Melbourne's latitude, which made 800m catchments too generous east
                             to west.
                         </span>
                     </li>
@@ -273,6 +275,63 @@ no viable routes  = best available stop score, capped at 49`}</Formula>
                         </span>
                     </li>
                 </ul>
+            </Section>
+
+            <Section title="The plan, how it is built" part="Part 08" accent="blue">
+                <p>
+                    <Link to="/the-plan" className="text-blue">The plan</Link> is a feeder bus network
+                    designed to connect residents to transit that already works. Every number on it comes
+                    from the formulas below, run by a separate program, not by hand.
+                </p>
+                <h3 className="type-display text-2xl text-ink pt-2">What counts as high quality</h3>
+                <p>
+                    A stop qualifies as a trunk anchor at <span className="type-data text-ink">final_score {'>'}= 70</span>,
+                    the same "decent" threshold shown on every score page. No separate bar was invented for this feature.
+                </p>
+                <h3 className="type-display text-2xl text-ink pt-2">Coverage targets and candidate routes</h3>
+                <Formula>{`target        = 80% of residents within 400m, 100% within 800m, of a high-quality stop
+candidate     = a road corridor with a synthesized stop within 1500m of a high-quality stop
+stop spacing  = every 400m along the corridor, matching the walk-catchment radius used everywhere else`}</Formula>
+                <p>
+                    The 1500m "anchor radius" is deliberately looser than the 400m/800m coverage
+                    thresholds: it answers "can this corridor plausibly connect to trunk transit",
+                    not "is a resident within walking distance of it".
+                </p>
+                <h3 className="type-display text-2xl text-ink pt-2">Route selection</h3>
+                <Formula>{`coverage_value = newly_covered_pop_400 * 1.0
+               + newly_covered_pop_800 * 0.4
+               + poi_weight_served * 400  (points of interest as a bonus, never the gate)
+value          = coverage_value / daily_cost
+each round     = add the highest-value remaining candidate, repeat until both targets are met
+               = stop and report the shortfall honestly if no candidate adds coverage`}</Formula>
+                <p>
+                    This is a greedy maximal-covering heuristic, not a true network optimiser: it is
+                    transparent and fast, not provably optimal. A denser real road network than this
+                    build's fixture corridors will find more candidates and can close a shortfall this
+                    build reports.
+                </p>
+                <h3 className="type-display text-2xl text-ink pt-2">Cost and what gets retired</h3>
+                <Formula>{`daily_vehicle_km   = corridor length (km) * trips per day
+trips per day      = (peak hours * 60 / peak headway + offpeak hours * 60 / offpeak headway) * 2 directions
+annual cost        = daily_vehicle_km * cost per km * 365
+redundant route    = every stop on an existing low-quality route is now within 400m of
+                     a high-quality stop or a newly proposed route
+net annual cost    = new routes' annual cost − retired routes' annual cost`}</Formula>
+                <div className="bg-purple-900 border border-border-subtle rounded-[4px] overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead><tr className="border-b border-border-strong"><Th>Assumption</Th><Th>Value</Th></tr></thead>
+                        <tbody className="divide-y divide-border-subtle">
+                            <tr><Td>Peak headway</Td><Td mono>15 min</Td></tr>
+                            <tr><Td>Off-peak headway</Td><Td mono>30 min</Td></tr>
+                            <tr><Td>Service span</Td><Td mono>7am to 9pm</Td></tr>
+                            <tr><Td>Cost per service km</Td><Td mono>{anchorsConfig.anchors.busOperatingCostPerKm.display}</Td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p className="text-sm">
+                    These are policy choices Fusion is proposing to fund, not figures pulled from data.
+                    The cost rate is a config value, sourced and dated on <Link to="/the-plan" className="text-blue">the plan</Link> itself; it refreshes on the same cycle as every other price anchor on this site.
+                </p>
             </Section>
 
             <div className="text-center pt-4">
