@@ -49,6 +49,7 @@ pub fn write_geojson_chunked(stops: &[ProcessedStop]) -> Result<(), Box<dyn Erro
             properties.insert("cbd_direct_score".to_string(), serde_json::json!(stop.cbd_direct_score));
             properties.insert("orbital_directness_score".to_string(), serde_json::json!(stop.orbital_directness_score));
             properties.insert("connectivity_tier".to_string(), serde_json::json!(stop.connectivity_tier));
+            properties.insert("best_topology".to_string(), serde_json::json!(stop.best_topology));
             properties.insert("local_coverage_score".to_string(), serde_json::json!(stop.local_coverage_score));
             
             properties.insert("base_score".to_string(), serde_json::json!(stop.base_score));
@@ -89,7 +90,7 @@ pub fn write_geojson_chunked(stops: &[ProcessedStop]) -> Result<(), Box<dyn Erro
         let mut foreign_members = serde_json::Map::new();
         foreign_members.insert("version".to_string(), json!(env!("CARGO_PKG_VERSION")));
         foreign_members.insert("generated_at".to_string(), json!(chrono::Utc::now().to_rfc3339()));
-        foreign_members.insert("methodology_version".to_string(), json!("2025.12"));
+        foreign_members.insert("methodology_version".to_string(), json!("2026.07"));
 
         let feature_collection = FeatureCollection {
             bbox: None,

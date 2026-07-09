@@ -101,6 +101,7 @@ pub struct ProcessedStop {
     pub cbd_direct_score: f32,       // Component of Network (20%)
     pub orbital_directness_score: f32, // Component of Network (30%)
     pub connectivity_tier: String,   // "Premium", "Excellent", "Good", etc.
+    pub best_topology: String,       // "Grid", "SmartBus", "Arterial", "Radial", "Feeder", "Local"
 
     // Inter-Modality Bonus Fields
     // Inter-Modality Bonus Fields

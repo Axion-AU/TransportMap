@@ -172,6 +172,7 @@ function makeStop(rand, suburb, i, modeName, modeId, routePool) {
             cbd_direct_score: q > 0.6 ? 100 : 0,
             orbital_directness_score: Math.round(20 + q * 60),
             connectivity_tier: q > 0.7 ? 'Grid' : 'Local',
+            best_topology: bestTopologyFor(modeName, q),
             base_score: round2(base_score),
             final_score: round2(final_score),
             connectivity_score: round2(final_score),
@@ -186,6 +187,17 @@ function makeStop(rand, suburb, i, modeName, modeId, routePool) {
 }
 
 function round2(v) { return Math.round(v * 100) / 100; }
+
+// Mirrors the tier hierarchy in src/gtfs_processor/scoring.rs's
+// classify_route_topology / best_topology: SmartBus > Grid/Arterial > Radial > Local/Feeder.
+function bestTopologyFor(modeName, quality) {
+    if (modeName.includes('train')) return 'Radial';
+    if (modeName === 'metro_tram') return 'Grid';
+    if (quality > 0.7) return 'SmartBus';
+    if (quality > 0.4) return 'Arterial';
+    if (quality < 0.15) return 'Feeder';
+    return 'Local';
+}
 
 const MODE_FILES = {
     metro_train: { file: 'stops_metro_train.geojson', modeId: 2, mode: 'train' },
@@ -222,14 +234,35 @@ export function generateFixture() {
         void quality;
     }
 
+    // routes_cost.json: the current-network cost baseline the Rust network
+    // designer (src/network_design) needs. The real pipeline computes this
+    // from actual GTFS trip counts and shape lengths (src/gtfs_processor/cost.rs);
+    // that requires real GTFS text files we don't have here, so this
+    // synthesizes a plausible one entry per fixture route id instead.
+    const routeModes = new Map();
+    for (const [modeName, stopFeatures] of Object.entries(features)) {
+        const { modeId } = MODE_FILES[modeName];
+        for (const f of stopFeatures) {
+            for (const rid of f.properties.route_ids) {
+                if (!routeModes.has(rid)) routeModes.set(rid, modeId);
+            }
+        }
+    }
+    const routeCosts = [...routeModes.entries()].map(([route_id, mode_id]) => {
+        const lengthKm = 2 + rand() * 12;
+        const daily_trip_count = 20 + Math.floor(rand() * 60);
+        return { route_id, mode_id, daily_trip_count, daily_vehicle_km: round2(lengthKm * daily_trip_count) };
+    });
+
     fs.mkdirSync(DATA_DIR, { recursive: true });
+    fs.writeFileSync(path.join(DATA_DIR, 'routes_cost.json'), JSON.stringify(routeCosts));
     for (const [key, { file }] of Object.entries(MODE_FILES)) {
         const fc = {
             type: 'FeatureCollection',
             fixture: true,
             version: '0.0.0-fixture',
             generated_at: '2026-07-09T00:00:00Z',
-            methodology_version: '2025.12',
+            methodology_version: '2026.07',
             features: features[key],
         };
         fs.writeFileSync(path.join(DATA_DIR, file), JSON.stringify(fc));

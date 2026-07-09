@@ -655,7 +655,7 @@ pub fn calculate_scores(
     }
 
     // Key: id, Value: (headway, span, rel, net, loc, wait, freq, cov, f_mult, c_mult, hub, cbd, orb, tier, intermodal, connections)
-    let mut scores_map: HashMap<String, (f32, f32, f32, f32, f32, f32, f32, f32, f32, f32, f32, f32, f32, String, InterModalBonus, ModalConnections)> = HashMap::new(); 
+    let mut scores_map: HashMap<String, (f32, f32, f32, f32, f32, f32, f32, f32, f32, f32, f32, f32, f32, String, InterModalBonus, ModalConnections, String)> = HashMap::new();
     let mut nearby_stops_map: HashMap<String, Vec<NearbyStop>> = HashMap::new();
 
     for id in &active_stops {
@@ -878,14 +878,15 @@ pub fn calculate_scores(
             frequency_total, coverage_total,
             freq_mult, catch_mult,
             hub_reach, cbd_dir, orb_dir, tier,
-            intermodal, modal_connections // Add new structs to map
+            intermodal, modal_connections, // Add new structs to map
+            best_topology.to_string()
         ));
     }
 
     let mut final_stops = Vec::new();
     for id in &active_stops {
         let data = stops_map.get(id).unwrap();
-        let (head, span, rel, net, loc, avg_wait, freq_key, cov_key, f_mult, c_mult, hub, cbd, orb, tier_n, intermodal, connections) = scores_map.get(id).unwrap();
+        let (head, span, rel, net, loc, avg_wait, freq_key, cov_key, f_mult, c_mult, hub, cbd, orb, tier_n, intermodal, connections, best_topology_n) = scores_map.get(id).unwrap();
         
         // Base Score = (Frequency Key * 0.5) + (Coverage Key * 0.5)
         let base_score = (freq_key * 0.5) + (cov_key * 0.5);
@@ -938,7 +939,8 @@ pub fn calculate_scores(
             cbd_direct_score: *cbd,
             orbital_directness_score: *orb,
             connectivity_tier: tier_n.clone(),
-            
+            best_topology: best_topology_n.clone(),
+
             intermodal_bonus: intermodal.total,
             intermodal_breakdown: intermodal.breakdown.clone(),
             connected_modes: {

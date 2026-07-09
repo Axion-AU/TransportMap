@@ -37,3 +37,13 @@ frontend/public/data/shapes.json
 
 # Unused simulation output (src/simulation.rs); not consumed by the frontend.
 frontend/public/data/simulated_bus_grid.json
+
+# Feeder-network designer inputs/outputs. Population/POI/road-corridor
+# fixtures come from frontend/scripts/gen-network-fixture.mjs; routes_cost
+# and network_plan are written by the Rust binaries (process_gtfs and
+# design_network respectively) and regenerated on every build.
+frontend/public/data/population_grid.json
+frontend/public/data/poi.json
+frontend/public/data/road_corridors.json
+frontend/public/data/routes_cost.json
+frontend/public/data/network_plan.json

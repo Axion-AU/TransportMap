@@ -116,6 +116,21 @@ routes.push({
     ogImage: 'default.png',
 });
 
+const networkPlanPath = path.resolve(__dirname, '../public/data/network_plan.json');
+if (fs.existsSync(networkPlanPath)) {
+    const plan = JSON.parse(fs.readFileSync(networkPlanPath, 'utf8'));
+    routes.push({
+        urlPath: '/the-plan',
+        title: `The plan | Transport Score`,
+        description: `A costed feeder bus network moving 400m transit coverage from ${plan.baseline_pct_within_400.toFixed(0)}% to ${plan.proposed_pct_within_400.toFixed(0)}%, net ${Math.round(plan.net_annual_cost).toLocaleString()} AUD a year.`,
+        ogImage: 'the-plan.png',
+        noindex: Boolean(plan.fixture),
+        island: `<script type="application/json" id="network-plan-data">${JSON.stringify(plan).replace(/</g, '\\u003c')}</script>`,
+    });
+} else {
+    console.warn('[prerender] network_plan.json missing; /the-plan will not be prerendered.');
+}
+
 for (const s of suburbIndex.suburbs) {
     const detailPath = path.resolve(__dirname, `../public/data/suburbs/${s.slug}.json`);
     const detail = JSON.parse(fs.readFileSync(detailPath, 'utf8'));

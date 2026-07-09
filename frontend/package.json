@@ -17,6 +17,7 @@
     "check:voice": "tsx scripts/check-voice.mjs",
     "test": "vitest run",
     "lint": "eslint .",
+    "prebuild": "tsx scripts/ensure-data.mjs",
     "build": "npm run build:data && npm run build:shapes && NODE_OPTIONS='--max-old-space-size=8192' tsc -b && npm run build:client && npm run build:server && npm run build:og && npm run prerender && npm run check",
     "preview": "vite preview --outDir dist/client",
     "predeploy:workers": "npm run build",

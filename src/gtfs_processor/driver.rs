@@ -3,6 +3,7 @@ use super::loader::*;
 use super::aggregator::*;
 use super::scoring::*;
 use super::exporter::*;
+use super::cost::{aggregate_route_costs, RouteCost};
 use rayon::prelude::*;
 use geojson;
 use std::collections::{HashMap, HashSet};
@@ -13,13 +14,14 @@ use std::fs;
 use csv;
 use indicatif::{ProgressBar, ProgressStyle};
 
-fn process_mode_internal(mode_id: u32, mode_name: &str, dir: &str) 
+fn process_mode_internal(mode_id: u32, mode_name: &str, dir: &str)
     -> Result<(
-        HashMap<String, StopData>, 
-        HashMap<String, ProcessedRoute>, 
-        HashMap<String, Vec<(f64, f64)>>, 
-        HashMap<String, String>
-    ), Box<dyn Error>> 
+        HashMap<String, StopData>,
+        HashMap<String, ProcessedRoute>,
+        HashMap<String, Vec<(f64, f64)>>,
+        HashMap<String, String>,
+        HashMap<String, RouteCost>,
+    ), Box<dyn Error>>
 {
      // 1. Calendars & Date
      let (service_days, service_dates) = load_calendar(dir)?;
@@ -106,8 +108,13 @@ fn process_mode_internal(mode_id: u32, mode_name: &str, dir: &str)
          &weekend_services,
          |sid| is_service_active(sid, repr_date, &service_dates, &service_days)
      )?;
-     
-     Ok((stops_map, routes_map, shapes, child_to_parent))
+
+     // Per-route daily operating cost baseline: trip count and vehicle-km
+     // on the same representative day used for scoring, so the network
+     // designer's "current cost" is directly comparable to its proposals.
+     let route_costs = aggregate_route_costs(&trip_info, &shapes, &service_dates, &service_days, repr_date, mode_id);
+
+     Ok((stops_map, routes_map, shapes, child_to_parent, route_costs))
 }
 
 pub fn run_processing(gtfs_root: &str) -> Result<(), Box<dyn Error>> {
@@ -142,22 +149,28 @@ pub fn run_processing(gtfs_root: &str) -> Result<(), Box<dyn Error>> {
     let mut final_routes_map = HashMap::new();
     let mut final_shapes_map = HashMap::new();
     let mut final_child_to_parent = HashMap::new();
-    
+    let mut final_route_costs: HashMap<String, RouteCost> = HashMap::new();
+
     for res in results {
         match res {
-            Ok((sm, rm, shm, ctp)) => {
+            Ok((sm, rm, shm, ctp, rc)) => {
                 final_stops_map.extend(sm);
                 final_routes_map.extend(rm);
                 final_shapes_map.extend(shm);
                 final_child_to_parent.extend(ctp);
+                final_route_costs.extend(rc);
             },
             Err(e) => eprintln!("Error processing mode: {}", e),
         }
     }
-    
+
     println!("Writing routes and shapes...");
     fs::write("frontend/public/data/routes.json", serde_json::to_string(&final_routes_map)?)?;
     fs::write("frontend/public/data/shapes.json", serde_json::to_string(&final_shapes_map)?)?;
+
+    println!("Writing route costs ({} routes)...", final_route_costs.len());
+    let route_costs_list: Vec<&RouteCost> = final_route_costs.values().collect();
+    fs::write("frontend/public/data/routes_cost.json", serde_json::to_string(&route_costs_list)?)?;
     
     // LOAD PATRONAGE
     let mut patronage_map: HashMap<String, u32> = HashMap::new();

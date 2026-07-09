@@ -28,3 +28,29 @@ if (!fs.existsSync(path.join(DATA_DIR, 'shapes', 'manifest.json'))) {
     console.log('[ensure-data] sharding route line shapes.');
     execFileSync('npx', ['tsx', path.join(__dirname, 'split-shapes.mjs')], { stdio: 'inherit' });
 }
+
+if (!fs.existsSync(path.join(DATA_DIR, 'population_grid.json'))
+    || !fs.existsSync(path.join(DATA_DIR, 'poi.json'))
+    || !fs.existsSync(path.join(DATA_DIR, 'road_corridors.json'))) {
+    console.log('[ensure-data] no population/POI/road data found; generating SAMPLE fixture.');
+    const { generateNetworkFixture } = await import('./gen-network-fixture.mjs');
+    generateNetworkFixture();
+}
+
+if (!fs.existsSync(path.join(DATA_DIR, 'routes_cost.json'))) {
+    console.log('[ensure-data] no route cost baseline found; regenerating stop fixture to produce one.');
+    const { generateFixture } = await import('./gen-fixture.mjs');
+    generateFixture();
+}
+
+if (!fs.existsSync(path.join(DATA_DIR, 'network_plan.json'))) {
+    console.log('[ensure-data] designing the feeder network.');
+    const repoRoot = path.resolve(__dirname, '../..');
+    try {
+        execFileSync('cargo', ['run', '--release', '--bin', 'design_network'], { cwd: repoRoot, stdio: 'inherit' });
+    } catch (err) {
+        console.warn('[ensure-data] cargo unavailable or design_network failed; writing a stub network_plan.json instead.', err.message);
+        const { generateNetworkPlanFixture } = await import('./gen-network-plan-fixture.mjs');
+        generateNetworkPlanFixture();
+    }
+}
