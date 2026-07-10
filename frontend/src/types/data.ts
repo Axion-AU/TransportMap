@@ -8,11 +8,13 @@ export interface SuburbIndexEntry {
     score: number;
     band: Band;
     stopCount: number;
+    isRegional: boolean;
 }
 
 export interface SuburbIndex {
     suburbs: SuburbIndexEntry[];
     worst20: string[];
+    worst20Regional: string[];
 }
 
 export interface SuburbDetail {
@@ -29,10 +31,21 @@ export interface SuburbDetail {
     modeNoun: string;
     verdict: string;
     centroid: { lat: number; lon: number };
+    isRegional: boolean;
+    /** 'grid': population-weighted 250m-cell aggregation (item 1). 'legacy-mean': plain stop-mean fallback. */
+    scoreMethod: 'grid' | 'legacy-mean';
+    /** Real Vicmap Admin locality boundary, when the suburb has one (metro attribution scope only). */
+    boundary: GeoJSON.Polygon | GeoJSON.MultiPolygon | null;
+    /** The same 250m cells used to compute the score, for an honest coverage map -- empty when scoreMethod is 'legacy-mean'. */
+    gridCells: { lat: number; lon: number; score: number }[];
+    /** Every scored stop in the suburb, sorted by score descending. */
+    stops: { name: string; mode_name: string; final_score: number; lat: number; lon: number }[];
 }
+
 
 export interface DataManifest {
     fixture: boolean;
+    planFixture: boolean;
     gtfsGeneratedAt: string | null;
     methodologyVersion: string | null;
     dataBuiltAt: string;

@@ -42,6 +42,14 @@ export function geohashEncode(lat: number, lon: number, precision: number = TILE
 const METERS_PER_DEGREE_LAT = 111320;
 
 /**
+ * Grid cell size for suburb-level population aggregation (methodology
+ * refactor item 1) and its map display -- shared by build-data.mjs (which
+ * computes cell centers) and SuburbMap.tsx (which draws each cell's
+ * bounds from its center), so the two can never drift apart.
+ */
+export const GRID_STEP_DEG = 250 / METERS_PER_DEGREE_LAT;
+
+/**
  * Tile keys covering a circle of radiusM around a point: the tiles of the
  * four corners of the bounding box, deduplicated (1 to 4 keys).
  */

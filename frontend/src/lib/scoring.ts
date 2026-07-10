@@ -59,6 +59,54 @@ export interface SuburbResult {
     /** Median peak wait in minutes across stops that report one. */
     medianWaitMinutes: number | null;
     stopCount: number;
+    /**
+     * 'grid': population-weighted average of per-cell address-style scores
+     * (methodology refactor item 1). 'legacy-mean': plain mean of stop
+     * final_score, used when the suburb has no real polygon boundary or no
+     * populated grid cells (e.g. outside the metro attribution scope).
+     */
+    scoreMethod: 'grid' | 'legacy-mean';
+}
+
+/**
+ * One 250m grid cell's address-style score (from catchmentScore at the
+ * cell's center), tagged with its population weight (dwellings, not
+ * usual-resident population -- see build-data.mjs's mesh-block fetch
+ * script for why). Produced by build-data.mjs, which owns the polygon and
+ * mesh-block lookups; this module only aggregates the results.
+ */
+export interface GridCell {
+    score: number;
+    avgFrequency: number;
+    avgCoverage: number;
+    avgReliability: number;
+    population: number;
+    /** Cell center, for downstream map rendering. Not used by gridScore's own math. */
+    lat?: number;
+    lon?: number;
+}
+
+/**
+ * Population-weighted mean of a suburb's grid cells -- the address-style
+ * score and its breakdown, both computed the same way so the published
+ * headline and its 3-part breakdown stay mutually reproducible (unlike a
+ * headline computed one way and a breakdown computed another). Returns
+ * null if there are no cells or their total population weight is zero,
+ * so the caller can fall back to the legacy stop-mean.
+ */
+export function gridScore(cells: GridCell[]): { score: number; avgFrequency: number; avgCoverage: number; avgReliability: number } | null {
+    const totalPopulation = cells.reduce((sum, c) => sum + c.population, 0);
+    if (cells.length === 0 || totalPopulation <= 0) return null;
+
+    const weightedMean = (pick: (c: GridCell) => number) =>
+        cells.reduce((sum, c) => sum + pick(c) * c.population, 0) / totalPopulation;
+
+    return {
+        score: weightedMean(c => c.score),
+        avgFrequency: weightedMean(c => c.avgFrequency),
+        avgCoverage: weightedMean(c => c.avgCoverage),
+        avgReliability: weightedMean(c => c.avgReliability),
+    };
 }
 
 export const CATCHMENT_RADIUS_M = 800;
@@ -100,6 +148,9 @@ export function diversityBonus(count: number): number {
  * Core aggregation over a set of stops: best viable route 70%, route
  * diversity 30%. With no viable route (none above 50), the score is the
  * best available stop capped at 49, keeping it under the viability line.
+ * Used directly for single-address catchments (catchmentScore); suburbScore
+ * only takes the breakdown/viableCount/bestScore fields from this and
+ * computes its own headline score (see typicalStopScore below).
  */
 function aggregateStops(stops: StopLite[]): Omit<CatchmentResult, 'nearbyStops'> {
     if (stops.length === 0) {
@@ -155,8 +206,34 @@ export function catchmentScore(stops: StopLite[], lat: number, lon: number): Cat
     return { ...aggregateStops(nearbyStops), nearbyStops };
 }
 
-/** Aggregate a whole suburb's stops into one published score. */
-export function suburbScore(stops: StopLite[]): SuburbResult {
+/**
+ * Legacy fallback for suburbScore, used only when no grid cells are
+ * available (methodology refactor item 1 shipped 2026-07-10; this was the
+ * suburb-level formula before it). Plain average of every scored stop's
+ * final_score: still means stop density can drive the number rather than
+ * real service quality (the exact problem item 1 fixes), and averages
+ * across stops kilometres apart rather than population-weighting them --
+ * kept only for suburbs outside the real-polygon attribution scope, or
+ * with zero populated grid cells, so those suburbs still get a published
+ * number instead of none at all.
+ */
+function typicalStopScore(stops: StopLite[]): number {
+    if (stops.length === 0) return 0;
+    return stops.reduce((sum, s) => sum + s.final_score, 0) / stops.length;
+}
+
+/**
+ * Aggregate a whole suburb's stops into one published score.
+ *
+ * `gridCells`, when supplied by build-data.mjs (real polygon boundary and
+ * at least one populated 250m cell), is used for both the headline score
+ * and the breakdown via `gridScore` -- this is the item 1 fix (grid +
+ * population aggregation) replacing the plain stop-mean. `viableCount` and
+ * `bestScore` still come from the suburb's stops directly regardless,
+ * since they're inherently about "does a viable route exist here," not a
+ * population-weighted average.
+ */
+export function suburbScore(stops: StopLite[], gridCells?: GridCell[]): SuburbResult {
     const agg = aggregateStops(stops);
     const waits = stops
         .map(s => s.average_wait_time)
@@ -164,17 +241,18 @@ export function suburbScore(stops: StopLite[]): SuburbResult {
         .sort((a, b) => a - b);
     const medianWaitMinutes = waits.length > 0 ? waits[Math.floor(waits.length / 2)] : null;
 
+    const grid = gridCells ? gridScore(gridCells) : null;
+
     return {
-        score: agg.score,
-        breakdown: {
-            frequency: agg.avgFrequency,
-            coverage: agg.avgCoverage,
-            reliability: agg.avgReliability,
-        },
+        score: grid ? grid.score : typicalStopScore(stops),
+        breakdown: grid
+            ? { frequency: grid.avgFrequency, coverage: grid.avgCoverage, reliability: grid.avgReliability }
+            : { frequency: agg.avgFrequency, coverage: agg.avgCoverage, reliability: agg.avgReliability },
         viableCount: agg.viableCount,
         bestScore: agg.bestScore,
         medianWaitMinutes,
         stopCount: stops.length,
+        scoreMethod: grid ? 'grid' : 'legacy-mean',
     };
 }
 

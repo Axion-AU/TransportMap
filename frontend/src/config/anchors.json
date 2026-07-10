@@ -20,11 +20,23 @@
       "label": "average annual cost of running a car",
       "source": "RACV vehicle running costs survey. Confirm current figure before launch."
     },
-    "membershipAnnual": {
-      "value": 30,
-      "display": "$30",
-      "label": "Fusion membership, one year",
-      "source": "TODO(launch): confirm current membership pricing with the membership team."
+    "membershipStandard": {
+      "value": 69.08,
+      "display": "$69.08",
+      "label": "Fusion membership, one year, standard rate",
+      "source": "Membership team fee schedule, 2026. TODO(launch): link canonical source."
+    },
+    "membershipConcession": {
+      "value": 17.27,
+      "display": "$17.27",
+      "label": "Fusion membership, one year, concession rate",
+      "source": "Membership team fee schedule, 2026. TODO(launch): link canonical source."
+    },
+    "membershipFree": {
+      "value": 0,
+      "display": "$0",
+      "label": "Fusion membership, one year, free tier",
+      "source": "Membership team fee schedule, 2026. TODO(launch): link canonical source."
     },
     "busOperatingCostPerKm": {
       "value": 6.5,

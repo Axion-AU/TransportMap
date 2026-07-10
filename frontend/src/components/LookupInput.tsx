@@ -41,7 +41,13 @@ const LookupInput = ({ autoFocus = false }: { autoFocus?: boolean }) => {
     const goSuburb = (slug: string) => {
         track('lookup_performed', { method: 'suburb' });
         setOpen(false);
-        navigate(`/score/${slug}`);
+        if (document.startViewTransition) {
+            document.startViewTransition(() => {
+                navigate(`/score/${slug}`);
+            });
+        } else {
+            navigate(`/score/${slug}`);
+        }
     };
 
     const geocodeAddress = async () => {
@@ -66,7 +72,13 @@ const LookupInput = ({ autoFocus = false }: { autoFocus?: boolean }) => {
             const lat = parseFloat(data[0].lat).toFixed(4);
             const lon = parseFloat(data[0].lon).toFixed(4);
             track('lookup_performed', { method: 'address' });
-            navigate(`/result?lat=${lat}&lon=${lon}`);
+            if (document.startViewTransition) {
+                document.startViewTransition(() => {
+                    navigate(`/result?lat=${lat}&lon=${lon}`);
+                });
+            } else {
+                navigate(`/result?lat=${lat}&lon=${lon}`);
+            }
         } catch {
             setError('Address search is unavailable right now. Suburb search still works.');
         } finally {

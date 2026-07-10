@@ -4,7 +4,9 @@ import {
     catchmentScore,
     distanceMeters,
     diversityBonus,
+    gridScore,
     suburbScore,
+    type GridCell,
     type StopLite,
 } from './scoring';
 import { geohashEncode, tilesFor } from './geo';
@@ -101,16 +103,61 @@ describe('suburbScore', () => {
             stop({ id: 'C', final_score: 55, route_ids: ['R3'], frequency_score: 45, coverage_score: 60, reliability_score: 50, average_wait_time: 15 }),
         ];
         const result = suburbScore(stops);
-        // viable: R1 (90), R3 (55); qwc = 0.81 + 0.3025 = 1.1125
-        // diversity = 20 + 0.1125 * 30 = 23.375
-        // score = 90 * 0.7 + 23.375 * 0.3 = 63 + 7.0125 = 70.0125
-        expect(result.score).toBeCloseTo(70.0125, 3);
+        // Suburb score is typical access, the plain average of final_score
+        // across every stop, not best-stop-dominant like a single address:
+        // (90 + 40 + 55) / 3 = 61.666...
+        expect(result.score).toBeCloseTo(61.6667, 3);
+        // bestScore/viableCount still come from the best-stop aggregation,
+        // shown separately as "best route in this suburb".
+        expect(result.bestScore).toBe(90);
         expect(result.viableCount).toBe(2);
         expect(result.breakdown.frequency).toBeCloseTo((80 + 30 + 45) / 3, 5);
         expect(result.breakdown.coverage).toBeCloseTo(60, 5);
         expect(result.breakdown.reliability).toBeCloseTo((100 + 80 + 50) / 3, 5);
         expect(result.medianWaitMinutes).toBe(15);
         expect(result.stopCount).toBe(3);
+        expect(result.scoreMethod).toBe('legacy-mean');
+    });
+
+    it('uses gridScore when grid cells are supplied, not the stop-mean', () => {
+        const stops = [stop({ id: 'A', final_score: 90 }), stop({ id: 'B', final_score: 10 })];
+        // Grid cells disagree sharply with the stop mean (50) -- if this
+        // still returned 50, suburbScore would be ignoring the grid input.
+        const cells: GridCell[] = [
+            { score: 80, avgFrequency: 80, avgCoverage: 80, avgReliability: 80, population: 100 },
+            { score: 20, avgFrequency: 20, avgCoverage: 20, avgReliability: 20, population: 10 },
+        ];
+        const result = suburbScore(stops, cells);
+        expect(result.scoreMethod).toBe('grid');
+        // Population-weighted mean: (80*100 + 20*10) / 110 = 74.545...
+        expect(result.score).toBeCloseTo(74.5455, 3);
+        expect(result.breakdown.frequency).toBeCloseTo(74.5455, 3);
+    });
+
+    it('falls back to legacy-mean when grid cells are supplied but empty or unpopulated', () => {
+        const stops = [stop({ id: 'A', final_score: 90 }), stop({ id: 'B', final_score: 10 })];
+        expect(suburbScore(stops, []).scoreMethod).toBe('legacy-mean');
+        expect(suburbScore(stops, [{ score: 80, avgFrequency: 0, avgCoverage: 0, avgReliability: 0, population: 0 }]).scoreMethod).toBe('legacy-mean');
+    });
+});
+
+describe('gridScore', () => {
+    it('returns null for no cells or zero total population', () => {
+        expect(gridScore([])).toBeNull();
+        expect(gridScore([{ score: 50, avgFrequency: 50, avgCoverage: 50, avgReliability: 50, population: 0 }])).toBeNull();
+    });
+
+    it('population-weights score and every breakdown field the same way', () => {
+        const cells: GridCell[] = [
+            { score: 100, avgFrequency: 90, avgCoverage: 80, avgReliability: 70, population: 1 },
+            { score: 0, avgFrequency: 10, avgCoverage: 20, avgReliability: 30, population: 3 },
+        ];
+        const result = gridScore(cells)!;
+        // Weighted mean, weight 1 vs 3 (total 4): (100*1 + 0*3)/4 = 25.
+        expect(result.score).toBeCloseTo(25, 5);
+        expect(result.avgFrequency).toBeCloseTo((90 * 1 + 10 * 3) / 4, 5);
+        expect(result.avgCoverage).toBeCloseTo((80 * 1 + 20 * 3) / 4, 5);
+        expect(result.avgReliability).toBeCloseTo((70 * 1 + 30 * 3) / 4, 5);
     });
 });
 

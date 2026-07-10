@@ -61,7 +61,7 @@ function bandUpperBound(index: number): number {
  */
 const Methodology = () => {
     usePageMeta(
-        'Methodology | Transport Score',
+        'How Melbourne Public Transport Is Scored: Methodology | Transport Score',
         'The complete scoring formula: data vintage, weights, thresholds, limitations, and changelog. Every displayed number is reproducible from this page.',
     );
 
@@ -75,7 +75,51 @@ const Methodology = () => {
                     formulas below. If you cannot reproduce a number from this page, that is a bug.
                     Report it and we will fix it in public, in the changelog at the bottom.
                 </p>
+                {/* Author attribution and freshness: E-E-A-T signals for AI engines */}
+                <p className="text-sm text-ink-faint">
+                    Published by Fusion Party Australia transport policy team.{' '}
+                    <time dateTime={manifest.dataBuiltAt?.slice(0, 10) ?? ''}>
+                        Last updated {manifest.dataVintageLabel}.
+                    </time>
+                </p>
             </header>
+
+            {/* Key facts card: structured for AI snippet extraction (40-60 word answer blocks) */}
+            <dl className="grid sm:grid-cols-2 gap-x-8 gap-y-4 border border-border-subtle rounded-[4px] p-5 bg-surface-raised text-sm">
+                <div>
+                    <dt className="type-overline text-ink-faint mb-1">Score range</dt>
+                    <dd className="text-ink font-semibold">0 to 100</dd>
+                </div>
+                <div>
+                    <dt className="type-overline text-ink-faint mb-1">Data source</dt>
+                    <dd className="text-ink font-semibold">
+                        <a
+                            href="https://discover.data.vic.gov.au/dataset/gtfs-schedule"
+                            className="text-blue"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            PTV GTFS (data.vic.gov.au)
+                        </a>
+                    </dd>
+                </div>
+                <div>
+                    <dt className="type-overline text-ink-faint mb-1">Scoring dimensions</dt>
+                    <dd className="text-ink font-semibold">Frequency 50%, Coverage 50%</dd>
+                </div>
+                <div>
+                    <dt className="type-overline text-ink-faint mb-1">Coverage area</dt>
+                    <dd className="text-ink font-semibold">Metropolitan Melbourne</dd>
+                </div>
+                <div>
+                    <dt className="type-overline text-ink-faint mb-1">Data vintage</dt>
+                    <dd className="text-ink font-semibold type-data">{manifest.dataVintageLabel}</dd>
+                </div>
+                <div>
+                    <dt className="type-overline text-ink-faint mb-1">Suburbs scored</dt>
+                    <dd className="text-ink font-semibold type-data">{manifest.suburbCount.toLocaleString()}</dd>
+                </div>
+            </dl>
 
             <Divider />
 
@@ -152,27 +196,26 @@ headway_score = peak * 0.6 + offpeak * 0.25 + weekend * 0.15`}</Formula>
                     Peak means weekdays 7 to 9am and 4 to 6pm; off peak is 9am to 4pm and 6 to 10pm;
                     weekend is 7am to 10pm.
                 </p>
-                <div className="bg-purple-900 border border-border-subtle rounded-[4px] overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead><tr className="border-b border-border-strong"><Th>Average wait</Th><Th>Headway score</Th></tr></thead>
-                        <tbody className="divide-y divide-border-subtle">
-                            <tr><Td>5 minutes or less</Td><Td mono>100</Td></tr>
-                            <tr><Td>up to 10 minutes</Td><Td mono>95</Td></tr>
-                            <tr><Td>up to 15 minutes</Td><Td mono>80</Td></tr>
-                            <tr><Td>up to 20 minutes</Td><Td mono>65</Td></tr>
-                            <tr><Td>up to 30 minutes</Td><Td mono>45</Td></tr>
-                            <tr><Td>up to 40 minutes</Td><Td mono>30</Td></tr>
-                            <tr><Td>up to 60 minutes</Td><Td mono>15</Td></tr>
-                            <tr><Td>over 60 minutes</Td><Td mono>5</Td></tr>
-                        </tbody>
-                    </table>
-                </div>
+                <Formula>{`headway_score = 100 / (1 + (average_wait / 28)^2.2)`}</Formula>
                 <p>
-                    Service span scores hours of operation (70%) and days per week (30%): a 23 hour
-                    span earns 100, sliding to 30 points below 12 hours; days score is active days
-                    out of 7. Night network services add up to 10 bonus points, capped at 100.
-                    Reliability is a days-of-service proxy: 7 day service earns 100, 5 or 6 days
-                    earns 80, less earns 50.
+                    A continuous curve (as of 2026-07-10), not a step table: a 5 minute wait scores
+                    close to 100, a 30 minute wait close to 45, a 60 minute wait close to 15, sliding
+                    smoothly in between so two suburbs a minute apart in average wait are never
+                    separated by an arbitrary band. The two constants above are the entire tunable
+                    surface for this curve, replacing what used to be eight independently hand-picked
+                    breakpoints.
+                </p>
+                <p>
+                    Service span scores hours of operation (70%) and days per week (30%). Hours use
+                    their own continuous curve, <Formula>{`hours_score = 100 / (1 + e^(-(span_hours - 12) / 4.329))`}</Formula>{' '}
+                    centred so a 12 hour span scores 50, climbing toward 100 for a near-24-hour span
+                    and down toward 20 to 30 for a short one. Days score is active days out of 7.
+                    Night network services add a bonus, also continuous and decaying with night
+                    frequency rather than a flat +10/+5/+2 tier, capped so the total never exceeds 100.
+                    Reliability (10% of the frequency key) is also continuous:{' '}
+                    <Formula>{`reliability_score = 100 * (active_days / 7)^0.663`}</Formula>{' '}
+                    7 day service scores 100, 5 days scores 80 (both exact, by construction), and
+                    days in between are no longer flattened into one identical bucket.
                 </p>
 
                 <h3 className="type-display text-2xl text-ink pt-2">Coverage key (50% of the score)</h3>
@@ -184,7 +227,7 @@ local        = walk_catchment * 0.5 + feeder * 0.3 + active_transport * 0.2`}</F
                     <li><strong className="text-ink">Orbital directness:</strong> can you travel suburb to suburb without the CBD? Rail interchanges score 90, SmartBus and grid routes 60 to 85, feeder buses 30.</li>
                     <li><strong className="text-ink">CBD access:</strong> binary, 100 or 0, for a direct city service.</li>
                     <li><strong className="text-ink">Walk catchment:</strong> 3 or more stops within 400m scores 100, two scores 70, one scores 40, none scores 10.</li>
-                    <li><strong className="text-ink">Intermodal bonus:</strong> up to 20 points for genuine train, tram, and bus interchange within 150m, discounted when the connecting service itself scores under 70.</li>
+                    <li><strong className="text-ink">Intermodal bonus:</strong> up to 20 points for physical train, tram, and bus interchanges within 150m, discounted when the connecting service itself scores under 70.</li>
                 </ul>
 
                 <h3 className="type-display text-2xl text-ink pt-2">Penalties</h3>
@@ -193,23 +236,20 @@ local        = walk_catchment * 0.5 + feeder * 0.3 + active_transport * 0.2`}</F
                     punish weak links, keyed on the blended headway score and the local coverage
                     score respectively.
                 </p>
-                <div className="bg-purple-900 border border-border-subtle rounded-[4px] overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead><tr className="border-b border-border-strong"><Th>Trigger score</Th><Th>Multiplier</Th></tr></thead>
-                        <tbody className="divide-y divide-border-subtle">
-                            <tr><Td>under 20</Td><Td mono>0.50</Td></tr>
-                            <tr><Td>under 40</Td><Td mono>0.70</Td></tr>
-                            <tr><Td>under 60</Td><Td mono>0.85</Td></tr>
-                            <tr><Td>60 and above</Td><Td mono>1.00</Td></tr>
-                        </tbody>
-                    </table>
-                </div>
+                <Formula>{`multiplier = 0.5 + 0.5 / (1 + e^(-(trigger_score - 35) / 12))`}</Formula>
+                <p>
+                    A continuous curve (as of 2026-07-10), not four fixed tiers: a trigger score of 15
+                    scores a multiplier near 0.58, 30 near 0.70, 50 near 0.89, 70 near 0.97, sliding
+                    between a floor of 0.5 and a ceiling of 1.0 rather than jumping at 20/40/60. Both
+                    penalties (frequency and catchment) share this same curve, applied to their own
+                    trigger score.
+                </p>
             </Section>
 
             <Section title="From stops to your result" part="Part 04" accent="cyan">
                 <p>
-                    Address results score everything within an 800m walk. Suburb pages score all of
-                    the suburb's stops. Both use the same aggregation:
+                    Address results score everything within an 800m walk, and ask "what is the best
+                    option at this exact point":
                 </p>
                 <Formula>{`viable_route      = any route whose best stop scores over 50
 quality_count     = sum over viable routes of (score / 100)^2
@@ -218,10 +258,49 @@ diversity_bonus   = 20 at 1.0, 50 at 2.0, 70 at 3.0, 85 at 4.0, 100 at 5.0+
 score             = best_viable * 0.7 + diversity_bonus * 0.3
 no viable routes  = best available stop score, capped at 49`}</Formula>
                 <p>
-                    The three-part breakdown shown with every result is the plain average of the
-                    stops' frequency, coverage, and reliability sub-scores. The headline wait in
-                    verdict lines is the median peak wait across the stops, doubled into the gap
-                    between services.
+                    Suburb pages ask a different question: "what is typical access across this
+                    suburb", not "what is the best this suburb can offer". A single strong anchor
+                    stop (usually a train station) should not carry a whole suburb's score when most
+                    of that suburb cannot walk to it, and stop density (a tram corridor with a stop
+                    every 250m) shouldn't either -- two suburbs with identical real service but
+                    different stop spacing should score the same. As of 2026-07-10, the suburb score
+                    is computed by gridding the suburb's real boundary into 250m cells, scoring each
+                    cell exactly like a single address (the same best_viable * 0.7 + diversity_bonus *
+                    0.3 formula above, applied at the cell's centre), then averaging the cells
+                    weighted by real ABS Census mesh block dwelling counts (2021, the latest available
+                    -- see the note on data vintage below):
+                </p>
+                <Formula>{`cell_score        = address-style score (above), computed at each 250m cell's centre
+suburb_score      = sum(cell_score * cell_dwellings) / sum(cell_dwellings)`}</Formula>
+                <p>
+                    The three-part breakdown shown with every result is computed the same
+                    population-weighted way, from each cell's own frequency/coverage/reliability
+                    averages -- so the headline score and its breakdown are always mutually
+                    reproducible from the same underlying cells, not two separately-averaged numbers.
+                    A suburb outside Greater Melbourne and the commuter corridor (where a real polygon
+                    boundary isn't yet in scope, see "known limitations"), or with no populated cells
+                    inside it, falls back to a plain mean of its stops' final scores instead -- every
+                    suburb detail page states which method produced its number.
+                </p>
+                <p>
+                    <strong className="text-ink">Data vintage:</strong> population weights come from
+                    the 2021 Census (the most recent mesh block release; the next Census is in August
+                    2026, with mesh block data typically following a year or more later), and weight
+                    by dwelling count rather than usual-resident population -- growth-corridor estates
+                    built after 2021 are undercounted on people more than on dwellings, and this tool's
+                    whole point is the newest, worst-served pockets, not the best-documented ones.
+                    A dwelling standing but not yet occupied at census time still counts; a resident
+                    who has since moved in but wasn't there for the count would not.
+                </p>
+                <p>
+                    The suburb's best stop is still shown alongside the score for context (labelled
+                    "best route"), using the same best_viable figure as the address formula above --
+                    that one figure is deliberately not population-weighted, since "your best nearby
+                    option" is a different question to "typical access here".
+                </p>
+                <p>
+                    The headline wait in verdict lines is the median peak wait across the suburb's
+                    stops, doubled into the gap between services.
                 </p>
                 <p>
                     The league table ranks suburbs by this score, lowest first, and requires at
@@ -229,9 +308,12 @@ no viable routes  = best available stop score, capped at 49`}</Formula>
                 </p>
                 <p>
                     Distances are straight-line metres with cosine-of-latitude correction. Suburbs
-                    are attributed from stop names: PTV bus and tram stops carry their suburb in
-                    trailing parentheses, stations are mapped by name with a curated exception list,
-                    and the remainder inherit the nearest attributed stop within 1km.
+                    are attributed by real point-in-polygon against Vicmap Admin locality boundaries
+                    (the Victorian government's authoritative locality dataset), scoped to Greater
+                    Melbourne and the commuter corridor. A small remainder outside that scope, or on
+                    a rare gap at a polygon edge, falls back to a heuristic: trailing-parenthesis
+                    suburb names on stops, station names mapped by a curated exception list, then the
+                    nearest attributed stop within 1km.
                 </p>
             </Section>
 
@@ -248,7 +330,9 @@ no viable routes  = best available stop score, capped at 49`}</Formula>
             <Section title="Known limitations" part="Part 06" accent="magenta">
                 <ul className="space-y-2 list-disc pl-5">
                     <li>Walking distances are straight-line, so barriers like freeways and rivers can flatter a stop's true catchment.</li>
-                    <li>Suburb attribution from stop names is a heuristic; the build reports its failure rate ({manifest.unattributedPct}% unattributed in this build) and fails above 5%.</li>
+                    <li>Suburb attribution is real point-in-polygon for Greater Melbourne and the commuter corridor; a small remainder outside that scope still uses a name-parsing heuristic. The build reports its failure rate ({manifest.unattributedPct}% unattributed in this build) and fails above 10%.</li>
+                    <li>A locality can be a real, official Victorian place with zero stops scored inside its exact boundary, and so not appear in the league table at all -- that is not good service, it is the opposite. This was confirmed for several growth-corridor localities once real boundaries replaced name-parsing: the timetabled network has not yet reached the exact gazetted area, even where nearby stops score patchy-to-poor.</li>
+                    <li>Grid + population aggregation (the suburb score formula above) is scoped to the same Greater Melbourne + commuter corridor as attribution. Suburbs outside that scope, or with no populated 250m cell inside their real boundary, fall back to a plain stop-mean instead -- flagged as such on that suburb's own detail data, though not yet called out visually on the page itself.</li>
                     <li>Scores describe the timetable, and cancelled or ghost services score better than they deserve.</li>
                     <li>Coverage is Melbourne GTFS. Statewide scoring is planned, and regional stops inside the feed are scored where present.</li>
                     <li>The plan's population, points of interest, and road corridors are synthetic placeholders until real ABS population, POI, and road datasets are supplied. Real data will change every number on <Link to="/the-plan" className="text-blue">the plan</Link>.</li>
@@ -257,6 +341,55 @@ no viable routes  = best available stop score, capped at 49`}</Formula>
 
             <Section title="Changelog" part="Part 07" accent="violet">
                 <ul className="space-y-3 text-sm">
+                    <li className="flex gap-3">
+                        <span className="type-data text-ink shrink-0">2026-07-10</span>
+                        <span>
+                            Suburb attribution now uses real point-in-polygon against Vicmap Admin
+                            locality boundaries for Greater Melbourne and the commuter corridor,
+                            replacing the previous name-parsing heuristic there (unattributed rate
+                            dropped from 7.54% to 5.76%; the remainder is outside this release's
+                            metro scope and still uses the old heuristic). Several suburbs' stop
+                            counts and scores changed as a direct result, including Carlton (previously
+                            a 1-stop fragment with its real ~44 stops misattributed elsewhere) and
+                            several outer growth-corridor suburbs gaining their first accurate entry.
+                            Also added: a validation fixture suite checking real scores against cited
+                            external sources (Victorian Auditor-General's Office, Infrastructure
+                            Victoria) on every build, and Rust/frontend unit tests now run in CI.
+                        </span>
+                    </li>
+                    <li className="flex gap-3">
+                        <span className="type-data text-ink shrink-0">2026-07-10</span>
+                        <span>
+                            Headway, service span, night network, reliability, and penalty-multiplier
+                            scores now use continuous curves instead of step tables, collapsing roughly
+                            30 hand-picked breakpoints into 2-3 tunable parameters per curve. A wait of
+                            19 versus 21 minutes (or any other pair a step apart) no longer produces an
+                            arbitrary score jump. Checked against the validation fixture suite above
+                            before and after; every fixture still passes. One incidental, intentional
+                            change: reliability no longer flattens every active-day count below 5 into
+                            one identical score.
+                        </span>
+                    </li>
+                    <li className="flex gap-3">
+                        <span className="type-data text-ink shrink-0">2026-07-10</span>
+                        <span>
+                            Suburb scores now come from a 250m grid over the suburb's real boundary,
+                            each cell scored like a single address and averaged weighted by real 2021
+                            ABS Census mesh block dwelling counts, replacing the plain stop-mean that
+                            let stop density (a tram corridor with a stop every 250m) drive the score
+                            instead of real service quality. Effect confirmed directly: St Kilda,
+                            Richmond, Fitzroy, South Yarra, North Melbourne, and Carlton all move from
+                            "decent" to "good" (they were suppressed by stop-averaging, not genuinely
+                            middling), while VAGO-cited growth-corridor suburbs stay patchy-to-poor as
+                            expected. One suburb (Doncaster East) moved further than expected on first
+                            check -- inspected directly rather than assumed a bug: its western portion,
+                            where most dwellings sit, has genuinely decent SmartBus coverage even
+                            without the still-unbuilt rail line VAGO's report cites, and its eastern
+                            edge alone drags the average down, not up. 496 of 762 suburbs (within
+                            Greater Melbourne and the commuter corridor) use this grid method; the
+                            remainder still use the stop-mean fallback (see "known limitations").
+                        </span>
+                    </li>
                     <li className="flex gap-3">
                         <span className="type-data text-ink shrink-0">2026.07</span>
                         <span>
@@ -305,10 +438,7 @@ value          = coverage_value / daily_cost
 each round     = add the highest-value remaining candidate, repeat until both targets are met
                = stop and report the shortfall honestly if no candidate adds coverage`}</Formula>
                 <p>
-                    This is a greedy maximal-covering heuristic, not a true network optimiser: it is
-                    transparent and fast, not provably optimal. A denser real road network than this
-                    build's fixture corridors will find more candidates and can close a shortfall this
-                    build reports.
+                    This greedy maximal-covering heuristic is transparent and fast, rather than a mathematically optimal network design. A denser road network than these fixture corridors will find more candidates and can close a shortfall this build reports.
                 </p>
                 <h3 className="type-display text-2xl text-ink pt-2">Cost and what gets retired</h3>
                 <Formula>{`daily_vehicle_km   = corridor length (km) * trips per day

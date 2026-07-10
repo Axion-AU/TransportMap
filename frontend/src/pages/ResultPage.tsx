@@ -115,7 +115,7 @@ const ResultPage = () => {
             )}
 
             {nearestSuburb && (
-                <JoinCta slug={nearestSuburb.slug} suburbName={nearestSuburb.name} score={roundedScore} band={scoreBand} />
+                <JoinCta slug={nearestSuburb.slug} suburbName={nearestSuburb.name} score={roundedScore} band={scoreBand} isRegional={nearestSuburb.isRegional} />
             )}
         </div>
     );
