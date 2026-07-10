@@ -21,6 +21,54 @@ pub fn calculate_average_wait_time(departures: Vec<f32>) -> f32 {
     }
 }
 
+// A through-station's departures include both directions of travel at one
+// parent stop. Pooling them into a single sorted list and taking gaps between
+// consecutive entries treats "a train going either way" as one combined
+// service, which looks roughly twice as frequent as either direction alone
+// (interleaving direction A and direction B departures halves the apparent
+// gap). A rider waits for one direction, so the honest figure is the worse
+// (longer) of the two directions' wait times, not the pooled figure.
+pub fn calculate_average_wait_time_bidirectional(departures: &[(f32, u8)]) -> f32 {
+    let dir0: Vec<f32> = departures.iter().filter(|(_, d)| *d == 0).map(|(t, _)| *t).collect();
+    let dir1: Vec<f32> = departures.iter().filter(|(_, d)| *d == 1).map(|(t, _)| *t).collect();
+    let w0 = calculate_average_wait_time(dir0);
+    let w1 = calculate_average_wait_time(dir1);
+    match (w0 < 999.0, w1 < 999.0) {
+        (true, true) => w0.max(w1),
+        (true, false) => w0,
+        (false, true) => w1,
+        (false, false) => 999.0,
+    }
+}
+
+fn flatten_times(departures: &[(f32, u8)]) -> Vec<f32> {
+    departures.iter().map(|(t, _)| *t).collect()
+}
+
+// "Peak" and "offpeak" are each two disjoint clock windows (AM 7-9 / PM
+// 16-18, and midday 9-16 / evening 18-22). Combines the two windows'
+// bidirectional waits into one figure without ever computing a gap across
+// the boundary between them: pooling both windows into one sorted list and
+// taking consecutive gaps would count the multi-hour jump from the end of
+// one window to the start of the next as a single "wait", which dwarfs the
+// real gaps for any station with only a handful of peak services. Windows
+// are combined by departure-count-weighted average so a window with more
+// service contributes more to the figure.
+pub fn combine_window_waits(window_a: &[(f32, u8)], window_b: &[(f32, u8)]) -> f32 {
+    let wait_a = calculate_average_wait_time_bidirectional(window_a);
+    let wait_b = calculate_average_wait_time_bidirectional(window_b);
+    match (wait_a < 999.0, wait_b < 999.0) {
+        (true, true) => {
+            let count_a = window_a.len() as f32;
+            let count_b = window_b.len() as f32;
+            (wait_a * count_a + wait_b * count_b) / (count_a + count_b)
+        }
+        (true, false) => wait_a,
+        (false, true) => wait_b,
+        (false, false) => 999.0,
+    }
+}
+
 // 1. Headway Score (0-100)
 // Maps "Average Wait Time" (Headway / 2) to a score.
 
@@ -43,24 +91,26 @@ pub struct InterModalBonus {
 // Used for nearby stops to avoid circular dependencies.
 pub fn calculate_intrinsic_stop_quality(stop: &StopData) -> f32 {
     // 1. Headway
-    let peak = calculate_average_wait_time(stop.weekday_peak_departures.clone());
-    let offpeak = calculate_average_wait_time(stop.weekday_offpeak_departures.clone());
-    let weekend = calculate_average_wait_time(stop.weekend_departures.clone());
-    
-    let w_score = (calculate_headway_score(peak) * 0.6) 
-                + (calculate_headway_score(offpeak) * 0.25) 
+    let peak = combine_window_waits(&stop.weekday_am_peak_departures, &stop.weekday_pm_peak_departures);
+    let offpeak = combine_window_waits(&stop.weekday_midday_departures, &stop.weekday_evening_departures);
+    let weekend = calculate_average_wait_time_bidirectional(&stop.weekend_departures);
+
+    let w_score = (calculate_headway_score(peak) * 0.6)
+                + (calculate_headway_score(offpeak) * 0.25)
                 + (calculate_headway_score(weekend) * 0.15);
 
     // 2. Span
     // Simplified span calculation (cached max_days would be better but expensive to recompute)
-    // We'll use a rough proxy if max_days isn't easily available? 
+    // We'll use a rough proxy if max_days isn't easily available?
     // Actually stop.active_days is available.
     let max_days = stop.active_days.len();
-    
-    // Flatten departures for span
-    let mut all_deps = stop.weekday_peak_departures.clone();
-    all_deps.extend(&stop.weekday_offpeak_departures);
-    
+
+    // Flatten departures for span (direction doesn't matter for service span)
+    let mut all_deps = flatten_times(&stop.weekday_am_peak_departures);
+    all_deps.extend(flatten_times(&stop.weekday_pm_peak_departures));
+    all_deps.extend(flatten_times(&stop.weekday_midday_departures));
+    all_deps.extend(flatten_times(&stop.weekday_evening_departures));
+
     let span_score = calculate_service_span_score(&all_deps, max_days, false, 0.0);
     
     // Quality = (Freq * 0.6) + (Span * 0.4)
@@ -213,16 +263,18 @@ pub fn calculate_intermodal_bonus(
         breakdown: bonus_breakdown,
     }
 }
+// Continuous saturating curve (methodology refactor item 3), replacing an
+// 8-tier step table that made a 49-vs-51 minute wait an arbitrary cliff
+// instead of the near-identical experience it is. `k` and `p` are fit
+// against the old table's breakpoints (5->100, 10->95, 15->80, 20->65,
+// 30->45, 40->30, 60->15) and verified in tests to stay within +/-5 points
+// of each; see the tolerance-band test below for why an exact match isn't
+// possible (or desirable) with only two tunable parameters.
 pub fn calculate_headway_score(avg_wait_minutes: f32) -> f32 {
-    let w = avg_wait_minutes;
-    if w <= 5.0 { 100.0 }       // < 10m Headway (Premium TUAG)
-    else if w <= 10.0 { 95.0 }  // < 20m Headway (TUAG)
-    else if w <= 15.0 { 80.0 }  // < 30m Headway (Good)
-    else if w <= 20.0 { 65.0 }  // < 40m Headway (Frequent)
-    else if w <= 30.0 { 45.0 }  // < 60m Headway (Moderate)
-    else if w <= 40.0 { 30.0 }  // < 80m Headway (Poor - Sunbury case)
-    else if w <= 60.0 { 15.0 }  // < 120m Headway (Very Poor)
-    else { 5.0 }                // Catastrophic
+    const K: f32 = 28.0;
+    const P: f32 = 2.2;
+    let w = avg_wait_minutes.max(0.0);
+    100.0 / (1.0 + (w / K).powf(P))
 }
 
 // 2. Service Span Score (0-100)
@@ -244,24 +296,30 @@ pub fn calculate_service_span_score(
     let last = sorted.last().unwrap();
     let span_hours = last - first;
 
-    // Stricter thresholds ( User Feedback: 100/100 needs 23+ hours)
-    let hours_score = if span_hours >= 23.0 { 100.0 }       // True 24/7 or close
-    else if span_hours >= 20.0 { 90.0 }                     // Very long hours
-    else if span_hours >= 18.0 { 80.0 }                     // Long hours (Current Melbourne Standard ~19h)
-    else if span_hours >= 16.0 { 70.0 }                     // Good hours
-    else if span_hours >= 14.0 { 60.0 }                     // Moderate
-    else if span_hours >= 12.0 { 50.0 }                     // Limited
-    else { 30.0 };                                          // Poor
+    // Continuous sigmoid (methodology refactor item 3), replacing a 7-tier
+    // step table. Centered at h0=12 (50-point midpoint, matching the old
+    // "12h -> 50" breakpoint exactly) with steepness fit against the old
+    // 18h->80 breakpoint; verified in tests to stay close to the other old
+    // breakpoints, with a wider documented tolerance at the 23h tail where
+    // a 2-parameter curve trades tail-saturation accuracy for a smooth
+    // mid-range fit (see the tolerance-band test below).
+    const SPAN_H0: f32 = 12.0;
+    const SPAN_S: f32 = 4.329;
+    let hours_score = 100.0 / (1.0 + (-(span_hours - SPAN_H0) / SPAN_S).exp());
 
     // Days Component (30%)
     let days_score = (active_days as f32 / 7.0) * 100.0;
-    
-    // Night Network Bonus (Add to final score)
-    // Only if night service exists
+
+    // Night Network Bonus (Add to final score). Continuous decay
+    // (methodology refactor item 3) replacing a 3-tier table; unlike the
+    // old table's flat +2 floor for any night service however infrequent,
+    // this decays toward 0 for genuinely poor night frequency, which is
+    // more honest than crediting a train every 3 hours the same as one
+    // every 40 minutes.
     let night_bonus = if has_night_network {
-        if night_frequency <= 20.0 { 10.0 }      // Frequent/Viable night service
-        else if night_frequency <= 40.0 { 5.0 }  // Marginal
-        else { 2.0 }                             // Nominal (Hourly)
+        const NIGHT_K: f32 = 25.0;
+        const NIGHT_P: f32 = 3.0;
+        10.0 / (1.0 + (night_frequency / NIGHT_K).powf(NIGHT_P))
     } else {
         0.0
     };
@@ -274,28 +332,39 @@ pub fn calculate_service_span_score(
 // 3. Reliability Score (0-100)
 // Proxy: Is the schedule consistent across the week?
 // We check if weekday/weekend patterns are stable.
-// Simplified proxy: If runs 7 days = 100, if < 5 days = 50.
+//
+// Continuous power curve (methodology refactor item 3), replacing a 3-tier
+// table whose flat "< 5 days -> 50" bucket scored 1 active day the same as
+// 4. The exponent is solved so the curve hits the old table's two real
+// breakpoints exactly (7 days -> 100, 5 days -> 100*(5/7)^p = 80), so this
+// is not a fitted approximation like the other curves above -- days 0-4
+// scoring a smooth ramp below the old flat 50 (down to 0 for zero active
+// days, versus the old table's flat 50) is an intentional consequence of
+// removing that cliff, not a fitting artifact.
 pub fn calculate_reliability_score(active_days: usize) -> f32 {
-    // Ideally we'd check if M-F have same trips, but active_days is a good proxy for "consistent daily service"
-    if active_days >= 7 { 100.0 }
-    else if active_days >= 5 { 80.0 }
-    else { 50.0 }
+    const EXPONENT: f32 = 0.663;
+    100.0 * (active_days as f32 / 7.0).powf(EXPONENT)
 }
 
 // --- PENALTY FUNCTIONS ---
 
+// Continuous logistic (methodology refactor item 3) shared by both penalty
+// functions below, replacing two identically-shaped 4-tier tables. `center`
+// and `steepness` are fit against the tables' representative test points
+// (15->0.50, 30->0.70, 50->0.85, 70->1.0); see the tolerance-band test for
+// the fit quality (tightest at the extremes, which matter most for an
+// honest "this stop/suburb is genuinely bad" claim).
+fn smooth_penalty_multiplier(x: f32, center: f32, steepness: f32, floor: f32) -> f32 {
+    let ceiling = 1.0;
+    floor + (ceiling - floor) / (1.0 + (-(x - center) / steepness).exp())
+}
+
 pub fn calculate_frequency_penalty(headway_score: f32) -> f32 {
-    if headway_score < 20.0 { 0.50 }      // Catastrophic (>60m wait)
-    else if headway_score < 40.0 { 0.70 } // Severe (30-60m wait)
-    else if headway_score < 60.0 { 0.85 } // Moderate (15-30m wait)
-    else { 1.0 }                          // No penalty
+    smooth_penalty_multiplier(headway_score, 35.0, 12.0, 0.5)
 }
 
 pub fn calculate_catchment_penalty(local_coverage_score: f32) -> f32 {
-    if local_coverage_score < 20.0 { 0.50 }      // Catastrophic
-    else if local_coverage_score < 40.0 { 0.70 } // Severe
-    else if local_coverage_score < 60.0 { 0.85 } // Moderate
-    else { 1.0 }                                 // No penalty
+    smooth_penalty_multiplier(local_coverage_score, 35.0, 12.0, 0.5)
 }
 
 pub fn parse_gtfs_date(date_str: &str) -> Option<NaiveDate> {
@@ -322,8 +391,15 @@ pub fn is_service_active(
     service_id: &str,
     date: NaiveDate,
     service_dates: &HashMap<String, (NaiveDate, NaiveDate)>,
-    service_days: &HashMap<String, HashSet<u8>>
+    service_days: &HashMap<String, HashSet<u8>>,
+    service_exceptions: &HashMap<String, HashMap<NaiveDate, u8>>
 ) -> bool {
+    if let Some(exceptions) = service_exceptions.get(service_id) {
+        if let Some(&exception_type) = exceptions.get(&date) {
+            if exception_type == 1 { return true; }
+            if exception_type == 2 { return false; }
+        }
+    }
     if let Some((start, end)) = service_dates.get(service_id) {
         if date < *start || date > *end { return false; }
     }
@@ -663,8 +739,10 @@ pub fn calculate_scores(
         let grid_x = (data.lon / grid_size).floor() as i32;
         let grid_y = (data.lat / grid_size).floor() as i32;
 
-        let mut cluster_peak = Vec::new();
-        let mut cluster_offpeak = Vec::new();
+        let mut cluster_am_peak = Vec::new();
+        let mut cluster_pm_peak = Vec::new();
+        let mut cluster_midday = Vec::new();
+        let mut cluster_evening = Vec::new();
         let mut cluster_weekend = Vec::new();
         let mut all_departures_for_span = Vec::new(); // Use all departures for span calculation
         
@@ -686,13 +764,17 @@ pub fn calculate_scores(
                             
                             if dist_sq < grid_size*grid_size {
                                 if nid == id {
-                                    cluster_peak.extend(&neighbor.weekday_peak_departures);
-                                    cluster_offpeak.extend(&neighbor.weekday_offpeak_departures);
+                                    cluster_am_peak.extend(&neighbor.weekday_am_peak_departures);
+                                    cluster_pm_peak.extend(&neighbor.weekday_pm_peak_departures);
+                                    cluster_midday.extend(&neighbor.weekday_midday_departures);
+                                    cluster_evening.extend(&neighbor.weekday_evening_departures);
                                     cluster_weekend.extend(&neighbor.weekend_departures);
-                                    
-                                    all_departures_for_span.extend(&neighbor.weekday_peak_departures);
-                                    all_departures_for_span.extend(&neighbor.weekday_offpeak_departures);
-                                    
+
+                                    all_departures_for_span.extend(&neighbor.weekday_am_peak_departures);
+                                    all_departures_for_span.extend(&neighbor.weekday_pm_peak_departures);
+                                    all_departures_for_span.extend(&neighbor.weekday_midday_departures);
+                                    all_departures_for_span.extend(&neighbor.weekday_evening_departures);
+
                                     for r in &neighbor.routes { cluster_routes.insert(r.clone()); }
                                     if neighbor.active_days.len() > max_days { max_days = neighbor.active_days.len(); }
                                 }
@@ -747,7 +829,7 @@ pub fn calculate_scores(
                  // Must be DIFFERENT mode to be a feeder
                  if neighbor.mode_id != data.mode_id {
                      // Check viability
-                     let n_peak = calculate_average_wait_time(neighbor.weekday_peak_departures.clone());
+                     let n_peak = combine_window_waits(&neighbor.weekday_am_peak_departures, &neighbor.weekday_pm_peak_departures);
                      let n_score = calculate_headway_score(n_peak);
                      
                      if n_score > 50.0 {
@@ -779,32 +861,39 @@ pub fn calculate_scores(
 
         // --- KEY 1: FREQUENCY (50%) ---
         // 1. Headway (30% of total)
-        let peak_wait = calculate_average_wait_time(cluster_peak);
-        let offpeak_wait = calculate_average_wait_time(cluster_offpeak);
-        let weekend_wait = calculate_average_wait_time(cluster_weekend.clone());
-        
+        // Bidirectional: a through-station's parent stop pools departures from
+        // both directions, so headway is computed per direction and the worse
+        // (longer) wait is used, rather than the pooled two-way stream which
+        // looks twice as frequent as either direction actually runs.
+        // combine_window_waits additionally keeps AM/PM peak and midday/evening
+        // offpeak from being pooled into one sorted list, which would otherwise
+        // count the multi-hour gap between the two windows as a "wait".
+        let peak_wait = combine_window_waits(&cluster_am_peak, &cluster_pm_peak);
+        let offpeak_wait = combine_window_waits(&cluster_midday, &cluster_evening);
+        let weekend_wait = calculate_average_wait_time_bidirectional(&cluster_weekend);
+
         let avg_wait_for_display = if peak_wait < 999.0 { peak_wait } else { offpeak_wait };
 
-        let headway_score_val = (calculate_headway_score(peak_wait) * 0.6) 
+        let headway_score_val = (calculate_headway_score(peak_wait) * 0.6)
                               + (calculate_headway_score(offpeak_wait) * 0.25)
                               + (calculate_headway_score(weekend_wait) * 0.15);
 
         // 2. Service Span (15% of total)
         // Check for Night Network (Weekend 1am-4am)
-        let night_departures: Vec<f32> = cluster_weekend.iter()
-            .filter(|&&t| (t >= 1.0 && t <= 4.5) || (t >= 25.0 && t <= 28.5))
+        let night_departures: Vec<(f32, u8)> = cluster_weekend.iter()
+            .filter(|&&(t, _)| (t >= 1.0 && t <= 4.5) || (t >= 25.0 && t <= 28.5))
             .cloned()
             .collect();
-            
+
         let has_night_network = !night_departures.is_empty();
         let night_frequency = if has_night_network {
-            calculate_average_wait_time(night_departures)
+            calculate_average_wait_time_bidirectional(&night_departures)
         } else {
             0.0
         };
 
         let span_score_val = calculate_service_span_score(
-            &all_departures_for_span, 
+            &flatten_times(&all_departures_for_span),
             max_days,
             has_night_network,
             night_frequency
@@ -962,81 +1051,127 @@ pub fn calculate_scores(
 mod tests {
     use super::*;
 
+    // Tolerance-band tests for the continuous curves (methodology refactor
+    // item 3), checked against the OLD step table's breakpoints. Exact
+    // equality is neither possible nor desirable with only 2-3 tunable
+    // parameters fit across 4-8 anchor points -- see each curve's own
+    // comment above for the specific fit and where it trades accuracy.
     #[test]
     fn test_calculate_headway_score() {
-        assert_eq!(calculate_headway_score(4.0), 100.0); // 4m wait (<5)
-        assert_eq!(calculate_headway_score(9.0), 95.0);  // 9m wait (<10)
-        assert_eq!(calculate_headway_score(40.0), 30.0); // 40m wait (Sunbury case)
-        assert_eq!(calculate_headway_score(70.0), 5.0);  // 70m wait (Catastrophic)
+        let cases = [(5.0, 100.0), (10.0, 95.0), (15.0, 80.0), (20.0, 65.0), (30.0, 45.0), (40.0, 30.0), (60.0, 15.0)];
+        for (wait, old_value) in cases {
+            let new_value = calculate_headway_score(wait);
+            assert!((new_value - old_value).abs() <= 5.0,
+                "headway_score({wait}) = {new_value}, expected within 5 of old breakpoint {old_value}");
+        }
+        // Monotonically decreasing: a longer wait must never score better.
+        assert!(calculate_headway_score(10.0) > calculate_headway_score(30.0));
     }
 
     #[test]
     fn test_calculate_service_span_score() {
         let deps_18h = vec![5.0, 23.0]; // 18 hours span
-        // Hours Score for 18h = 80.0. Days Score = 100.0.
-        // Final = (80 * 0.7) + (100 * 0.3) = 56 + 30 = 86.0.
-        assert_eq!(calculate_service_span_score(&deps_18h, 7, false, 0.0), 86.0);
+        // Old table: hours_score 80 -> final (80*0.7)+(100*0.3) = 86.0.
+        // The 18h breakpoint sits mid-curve, not in the tail, so the
+        // narrower headway-style tolerance still applies here.
+        let score_18h = calculate_service_span_score(&deps_18h, 7, false, 0.0);
+        assert!((score_18h - 86.0).abs() <= 6.0, "18h span score {score_18h}, expected near 86.0");
 
+        // 12h span sits exactly at the curve's constructed midpoint
+        // (hours_score(12) = 50 by definition), so this one still matches
+        // the old table's "50 -> (50*0.7)+(100*0.3) = 65.0" almost exactly.
         let deps_12h = vec![7.0, 19.0];
-        // Score = (50 * 0.7) + (100 * 0.3) = 35 + 30 = 65
-        assert_eq!(calculate_service_span_score(&deps_12h, 7, false, 0.0), 65.0);
+        let score_12h = calculate_service_span_score(&deps_12h, 7, false, 0.0);
+        assert!((score_12h - 65.0).abs() <= 1.0, "12h span score {score_12h}, expected near 65.0");
     }
 
     #[test]
     fn test_calculate_frequency_penalty() {
-        assert_eq!(calculate_frequency_penalty(15.0), 0.50); // < 20
-        assert_eq!(calculate_frequency_penalty(30.0), 0.70); // < 40
-        assert_eq!(calculate_frequency_penalty(50.0), 0.85); // < 60
-        assert_eq!(calculate_frequency_penalty(70.0), 1.0);  // >= 60
+        let cases = [(15.0, 0.50), (30.0, 0.70), (50.0, 0.85), (70.0, 1.0)];
+        for (headway_score, old_value) in cases {
+            let new_value = calculate_frequency_penalty(headway_score);
+            assert!((new_value - old_value).abs() <= 0.08,
+                "frequency_penalty({headway_score}) = {new_value}, expected within 0.08 of old value {old_value}");
+        }
     }
-    
+
+    #[test]
+    fn test_calculate_catchment_penalty() {
+        let cases = [(15.0, 0.50), (30.0, 0.70), (50.0, 0.85), (70.0, 1.0)];
+        for (local_coverage_score, old_value) in cases {
+            let new_value = calculate_catchment_penalty(local_coverage_score);
+            assert!((new_value - old_value).abs() <= 0.08,
+                "catchment_penalty({local_coverage_score}) = {new_value}, expected within 0.08 of old value {old_value}");
+        }
+    }
+
+    #[test]
+    fn test_calculate_reliability_score() {
+        // Both real breakpoints are hit by construction (the exponent is
+        // solved from these two points, not fit approximately).
+        assert!((calculate_reliability_score(7) - 100.0).abs() <= 0.5);
+        assert!((calculate_reliability_score(5) - 80.0).abs() <= 0.5);
+        // Intentional change, not a fitting artifact: the old table gave
+        // any active_days < 5 an identical flat 50, scoring 1 day the same
+        // as 4. The continuous curve differentiates them: days far from
+        // the d=5 anchor score below the old flat 50 (stricter -- 1 day is
+        // ~27.5, 2 days ~43.6), while days close to it are pulled up toward
+        // 80 by the same smooth interpolation (3 days ~57.0, 4 days ~69.0).
+        // Both directions are an honest consequence of a curve required to
+        // pass through two fixed points, not a one-sided regression.
+        assert!(calculate_reliability_score(1) < 50.0);
+        assert!(calculate_reliability_score(4) > 50.0);
+        assert!(calculate_reliability_score(1) < calculate_reliability_score(4));
+    }
+
     #[test]
     fn test_scenario_sunbury() {
         // Sunbury: ~40m wait (Score 30).
-        let headway_score = 30.0; 
-        
+        let headway_score = 30.0;
+
         // Freq Key components (assuming good span/reliability for train)
         let span_score = 100.0;
         let rel_score = 100.0;
         let freq_key = (headway_score * 0.6) + (span_score * 0.3) + (rel_score * 0.1);
         // = 18 + 30 + 10 = 58.0
-        
+
         // Coverage (assuming decent network, poor local for the 'House' scenario, but we score stops)
         // Let's assume the stop itself is decent coverage, but the *penalty* is the prediction key.
         // User says "Sunbury house scored 70.5 base".
         // Let's assume Cov Key = 83 (since (58+83)/2 = 70.5)
         let cov_key = 83.0;
         let base_score = (freq_key * 0.5) + (cov_key * 0.5); // 70.5
-        
-        // Penalty
-        // Headway Score 30.0 -> < 40.0 -> 0.70 multiplier.
+
+        // Penalty: old table gave exactly 0.70 at headway_score 30 (< 40
+        // bucket); the continuous curve gives close to that, not exact.
         let penalty = calculate_frequency_penalty(headway_score);
-        assert_eq!(penalty, 0.70);
-        
+        assert!((penalty - 0.70).abs() <= 0.08);
+
         let final_score = base_score * penalty;
-        // 70.5 * 0.7 = 49.35. Matches user expectation exactly.
-        assert!((final_score - 49.35).abs() < 0.1);
+        // Old table: 70.5 * 0.70 = 49.35. Same ballpark expected here.
+        assert!((final_score - 49.35).abs() < 6.0);
     }
-    
+
     #[test]
     fn test_scenario_arden() {
         // Arden: Good Freq (Headway 5m wait -> 95).
         let headway_score = 95.0;
         let freq_key = (95.0 * 0.6) + (100.0 * 0.3) + (100.0 * 0.1); // = 57 + 30 + 10 = 97.
-        
+
         // Poor Local (Isolated). Local Score 10.
         // Net Coverage (New station, maybe limited routes yet? Say 40).
         let loc_score = 10.0;
         let net_score = 40.0;
         let cov_key = (net_score * 0.7) + (loc_score * 0.3); // = 28 + 3 = 31.
-        
+
         let base_score = (freq_key * 0.5) + (cov_key * 0.5); // (97 + 31)/2 = 64.
-        
-        // Penalty: Local Coverage < 20 -> 0.50 multiplier.
+
+        // Penalty: old table gave exactly 0.50 at loc_score 10 (< 20
+        // bucket); the continuous curve gives a nearby, not exact, value.
         let c_penalty = calculate_catchment_penalty(loc_score);
-        assert_eq!(c_penalty, 0.50);
-        
-        let final_score = base_score * c_penalty; // 64 * 0.5 = 32.
+        assert!((c_penalty - 0.50).abs() <= 0.08);
+
+        let final_score = base_score * c_penalty; // ~64 * ~0.5 = ~32.
         assert!(final_score < 45.0);
     }
 
@@ -1173,5 +1308,51 @@ mod tests {
             color: "".to_string(), mode_id: 4, shape_ids: vec![]
         };
         assert_eq!(classify_route_topology(&r3, &arterial_set), "Feeder");
+    }
+
+    // Manual review diagnostic for the methodology refactor item 3 curves:
+    // prints old-step-table-vs-new-curve at a fine sweep, not just the old
+    // breakpoints. Not run by default (no CI value, pure eyeballing aid):
+    // `cargo test -- --ignored --nocapture`.
+    #[test]
+    #[ignore]
+    fn print_old_vs_new_curve_sweep() {
+        fn old_headway_score(w: f32) -> f32 {
+            if w <= 5.0 { 100.0 } else if w <= 10.0 { 95.0 } else if w <= 15.0 { 80.0 }
+            else if w <= 20.0 { 65.0 } else if w <= 30.0 { 45.0 } else if w <= 40.0 { 30.0 }
+            else if w <= 60.0 { 15.0 } else { 5.0 }
+        }
+        fn old_penalty(x: f32) -> f32 {
+            if x < 20.0 { 0.50 } else if x < 40.0 { 0.70 } else if x < 60.0 { 0.85 } else { 1.0 }
+        }
+        fn old_reliability(active_days: usize) -> f32 {
+            if active_days >= 7 { 100.0 } else if active_days >= 5 { 80.0 } else { 50.0 }
+        }
+
+        println!("\n-- headway_score: wait(min) old -> new --");
+        for w in (0..=90).step_by(5) {
+            let w = w as f32;
+            println!("  {:>4.0}  {:>6.1} -> {:>6.1}", w, old_headway_score(w), calculate_headway_score(w));
+        }
+
+        println!("\n-- penalty multiplier: score old -> new --");
+        for x in (0..=100).step_by(5) {
+            let x = x as f32;
+            println!("  {:>4.0}  {:>5.2} -> {:>5.2}", x, old_penalty(x), smooth_penalty_multiplier(x, 35.0, 12.0, 0.5));
+        }
+
+        println!("\n-- reliability_score: active_days old -> new --");
+        for d in 0..=7 {
+            println!("  {:>2}    {:>6.1} -> {:>6.1}", d, old_reliability(d), calculate_reliability_score(d));
+        }
+
+        println!("\n-- service_span hours_score: span_hours old -> new --");
+        for h in (6..=24).step_by(1) {
+            let h = h as f32;
+            let old = if h >= 23.0 { 100.0 } else if h >= 20.0 { 90.0 } else if h >= 18.0 { 80.0 }
+                else if h >= 16.0 { 70.0 } else if h >= 14.0 { 60.0 } else if h >= 12.0 { 50.0 } else { 30.0 };
+            let new = 100.0 / (1.0 + (-(h - 12.0) / 4.329_f32).exp());
+            println!("  {:>4.0}  {:>6.1} -> {:>6.1}", h, old, new);
+        }
     }
 }

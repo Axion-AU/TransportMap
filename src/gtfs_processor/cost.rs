@@ -29,13 +29,14 @@ pub fn shape_length_km(points: &[(f64, f64)]) -> f64 {
 }
 
 /// Sums trips active on the representative day into per-route daily
-/// vehicle-km. `trip_info` is (trip_id -> (route_id, service_id, shape_id))
+/// vehicle-km. `trip_info` is (trip_id -> (route_id, service_id, shape_id, direction_id))
 /// as produced by loader::load_trips; `shapes` is shape_id -> polyline.
 pub fn aggregate_route_costs(
-    trip_info: &HashMap<String, (String, String, Option<String>)>,
+    trip_info: &HashMap<String, (String, String, Option<String>, u8)>,
     shapes: &HashMap<String, Vec<(f64, f64)>>,
     service_dates: &HashMap<String, (NaiveDate, NaiveDate)>,
     service_days: &HashMap<String, HashSet<u8>>,
+    service_exceptions: &HashMap<String, HashMap<NaiveDate, u8>>,
     repr_date: NaiveDate,
     mode_id: u32,
 ) -> HashMap<String, RouteCost> {
@@ -43,8 +44,8 @@ pub fn aggregate_route_costs(
     let mut shape_km_cache: HashMap<&str, f64> = HashMap::new();
     let mut costs: HashMap<String, RouteCost> = HashMap::new();
 
-    for (route_id, service_id, shape_opt) in trip_info.values() {
-        if !is_service_active(service_id, repr_date, service_dates, service_days) {
+    for (route_id, service_id, shape_opt, _direction_id) in trip_info.values() {
+        if !is_service_active(service_id, repr_date, service_dates, service_days, service_exceptions) {
             continue;
         }
         let km = match shape_opt {
@@ -97,9 +98,9 @@ mod tests {
     #[test]
     fn aggregate_counts_only_active_service_and_sums_correct_route() {
         let mut trip_info = HashMap::new();
-        trip_info.insert("t1".to_string(), ("R1".to_string(), "weekday".to_string(), Some("s1".to_string())));
-        trip_info.insert("t2".to_string(), ("R1".to_string(), "weekday".to_string(), Some("s1".to_string())));
-        trip_info.insert("t3".to_string(), ("R2".to_string(), "weekend_only".to_string(), Some("s2".to_string())));
+        trip_info.insert("t1".to_string(), ("R1".to_string(), "weekday".to_string(), Some("s1".to_string()), 0u8));
+        trip_info.insert("t2".to_string(), ("R1".to_string(), "weekday".to_string(), Some("s1".to_string()), 1u8));
+        trip_info.insert("t3".to_string(), ("R2".to_string(), "weekend_only".to_string(), Some("s2".to_string()), 0u8));
 
         let mut shapes = HashMap::new();
         shapes.insert("s1".to_string(), vec![(144.9631, -37.8136), (144.9631, -37.8036)]);
@@ -109,10 +110,11 @@ mod tests {
         service_days.insert("weekday".to_string(), HashSet::from([0u8, 1, 2, 3, 4]));
         service_days.insert("weekend_only".to_string(), HashSet::from([5u8, 6]));
         let service_dates = HashMap::new();
+        let service_exceptions = HashMap::new();
 
         // A Wednesday: weekday service active, weekend_only is not.
         let repr_date = NaiveDate::from_ymd_opt(2026, 7, 8).unwrap();
-        let costs = aggregate_route_costs(&trip_info, &shapes, &service_dates, &service_days, repr_date, 4);
+        let costs = aggregate_route_costs(&trip_info, &shapes, &service_dates, &service_days, &service_exceptions, repr_date, 4);
 
         assert_eq!(costs.len(), 1, "only R1 should have active trips on a Wednesday");
         let r1 = costs.get("R1").unwrap();
@@ -121,3 +123,4 @@ mod tests {
         assert!(costs.get("R2").is_none());
     }
 }
+
