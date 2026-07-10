@@ -118,27 +118,13 @@ const TransitLayer = ({ viewMode, showShapes = false }: TransitLayerProps) => {
         const fetchData = async () => {
             try {
                 console.log('Fetching transit data...');
-                const [
-                    metroTrainRes,
-                    metroTramRes,
-                    metroBusRes,
-                    regionalTrainRes,
-                    regionalCoachRes,
-                    regionalBusRes,
-                    skybusRes,
-                    routesRes
-                ] = await Promise.all([
-                    fetch('/data/stops_metro_train.geojson'),
-                    fetch('/data/stops_metro_tram.geojson'),
-                    fetch('/data/stops_metro_bus.geojson'),
-                    fetch('/data/stops_regional_train.geojson'),
-                    fetch('/data/stops_regional_coach.geojson'),
-                    fetch('/data/stops_regional_bus.geojson'),
-                    fetch('/data/stops_skybus.geojson'),
+                const [manifestRes, routesRes] = await Promise.all([
+                    fetch('/data/stops_manifest.json'),
                     fetch('/data/routes.json')
                 ]);
 
-                 
+                const manifest = await manifestRes.json() as Record<string, string[]>;
+                
                 const parseGeoJSONStops = async (res: Response): Promise<Stop[]> => {
                     const data = await res.json();
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -189,15 +175,40 @@ const TransitLayer = ({ viewMode, showShapes = false }: TransitLayerProps) => {
                     }));
                 };
 
+                const fetchModeStops = async (files: string[]) => {
+                    const results = await Promise.all(files.map(f => fetch(f)));
+                    const stopArrays = await Promise.all(results.map(r => parseGeoJSONStops(r)));
+                    return stopArrays.flat();
+                };
+
+                const [
+                    metroTrainStops,
+                    metroTramStops,
+                    metroBusStops,
+                    regionalTrainStops,
+                    regionalCoachStops,
+                    regionalBusStops,
+                    skybusStops
+                ] = await Promise.all([
+                    fetchModeStops(manifest.metro_train || []),
+                    fetchModeStops(manifest.metro_tram || []),
+                    fetchModeStops(manifest.metro_bus || []),
+                    fetchModeStops(manifest.regional_train || []),
+                    fetchModeStops(manifest.regional_coach || []),
+                    fetchModeStops(manifest.regional_bus || []),
+                    fetchModeStops(manifest.skybus || [])
+                ]);
+
                 const rawStops = [
-                    ...(await parseGeoJSONStops(metroTrainRes)),
-                    ...(await parseGeoJSONStops(metroTramRes)),
-                    ...(await parseGeoJSONStops(metroBusRes)),
-                    ...(await parseGeoJSONStops(regionalTrainRes)),
-                    ...(await parseGeoJSONStops(regionalCoachRes)),
-                    ...(await parseGeoJSONStops(regionalBusRes)),
-                    ...(await parseGeoJSONStops(skybusRes))
+                    ...metroTrainStops,
+                    ...metroTramStops,
+                    ...metroBusStops,
+                    ...regionalTrainStops,
+                    ...regionalCoachStops,
+                    ...regionalBusStops,
+                    ...skybusStops
                 ];
+
 
                 // Deduplicate / Chunk Stops
                 const deduplicateStops = (stops: Stop[]) => {

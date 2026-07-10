@@ -44,7 +44,7 @@ export function initAnalytics(): void {
     s.defer = true;
     s.dataset.analytics = 'plausible';
     s.dataset.domain = site.analyticsDomain;
-    s.src = 'https://plausible.io/js/script.js';
+    s.src = 'https://analytics.fusionparty.org.au/js/script.tagged-events.js';
     document.head.appendChild(s);
     window.plausible = window.plausible ?? ((event, options) => {
         (window.plausible as unknown as { q?: unknown[] }).q?.push([event, options]);

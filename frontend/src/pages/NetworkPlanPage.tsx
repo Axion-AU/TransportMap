@@ -98,11 +98,11 @@ const NetworkPlanPage = () => {
         <div className="max-w-3xl mx-auto px-5 py-10 md:py-16 space-y-8">
             <header className="space-y-4">
                 <p className="type-overline text-magenta">We costed the fix</p>
-                <h1 className="type-display text-5xl md:text-6xl">The plan</h1>
+                <h1 className="type-display text-5xl md:text-6xl">A costed plan to fix the timetable</h1>
                 <p className="text-lg text-ink-soft max-w-2xl leading-relaxed">
-                    A feeder bus network connecting residents to the transit that already works, threaded
-                    through schools, hospitals, and shopping centres where the route allows. Below is what
-                    it covers, what it costs, and which existing routes it makes redundant.
+                    We mapped a feeder bus network connecting residents directly to high-frequency transit.
+                    The routes thread through schools, hospitals, and shopping centres.
+                    Below is the coverage, the cost, and the redundant routes this plan retires.
                 </p>
                 {plan.fixture && (
                     <p className="border border-magenta rounded-[4px] p-3 text-sm text-ink-soft max-w-2xl">

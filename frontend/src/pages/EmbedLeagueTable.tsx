@@ -3,6 +3,7 @@ import { WorstTable } from './LeagueTablePage';
 import { site } from '../config/site';
 import { track } from '../lib/analytics';
 import manifest from '../data/generated/manifest.json';
+import suburbIndex from '../data/generated/suburb-index.json';
 
 /**
  * Iframe-embeddable league table: no nav, compact, links open the parent
@@ -28,7 +29,7 @@ const EmbedLeagueTable = () => {
                 </div>
             )}
             <h1 className="type-display text-2xl mb-3">The 20 worst served suburbs in Melbourne</h1>
-            <WorstTable compact linkTarget="_parent" />
+            <WorstTable compact linkTarget="_parent" slugs={suburbIndex.worst20} />
             <div className="mt-4 text-xs text-ink-faint space-y-1">
                 <p>
                     Source: <a href={site.origin} target="_parent" className="text-blue">{site.siteName}</a>, computed from PTV GTFS timetable data.

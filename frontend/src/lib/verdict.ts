@@ -28,16 +28,16 @@ export function verdictFor(bandValue: Band, ctx: VerdictContext): string {
     switch (bandValue) {
         case 'stranded':
             return headway !== null
-                ? `${noun} every ${headway} minutes, if they come. Owning a car is compulsory here and that is a funding decision.`
-                : `Almost nothing runs here worth planning around. Owning a car is compulsory and that is a funding decision.`;
+                ? `${noun} every ${headway} minutes, if they show up. A car is compulsory here because state budgets ignore this suburb.`
+                : `Almost nothing runs here to plan around. A car is compulsory here because state budgets ignore this suburb.`;
         case 'poor':
             return headway !== null
-                ? `${noun} every ${headway} minutes. You pay the same fare as the inner city for a fraction of the service.`
-                : `You pay the same fare as the inner city for a fraction of the service.`;
+                ? `${noun} every ${headway} minutes. You pay full fare for a tiny fraction of the service.`
+                : `You pay full fare for a tiny fraction of the service.`;
         case 'patchy':
             return headway !== null
-                ? `Usable if your plans match the timetable. ${noun} every ${headway} minutes leave zero room for a normal life.`
-                : `Usable if your plans match the timetable. Spontaneous travel happens in other suburbs.`;
+                ? `Usable only if your plans match the timetable. ${noun} every ${headway} minutes leave zero room for spontaneous trips.`
+                : `Usable only if your plans match the timetable. Spontaneous travel is impossible under this timetable.`;
         case 'decent':
             return `Solid service through the day. The gaps show up at night and on weekends, and the fare stays the same.`;
         case 'good':
