@@ -12,20 +12,7 @@ export const OG_HEIGHT = 630;
 
 const el = (type, style, children) => ({ type, props: { style, children } });
 
-function ring(size, opacity) {
-    return el('div', {
-        position: 'absolute',
-        top: (64 - size) / 2,
-        left: (64 - size) / 2,
-        width: size,
-        height: size,
-        borderRadius: '50%',
-        border: '3px solid #FFFFFF',
-        opacity,
-    });
-}
-
-export function ogTemplate({ heading, score, scoreColor, verdict, authLine, expectedAuthLine, fixture, siteLabel }) {
+export function ogTemplate({ heading, score, scoreColor, verdict, authLine, expectedAuthLine, fixture, siteLabel, logoDataUrl }) {
     if (!authLine || authLine !== expectedAuthLine) {
         throw new Error('OG render blocked: authorisation line missing or does not match site config.');
     }
@@ -42,10 +29,20 @@ export function ogTemplate({ heading, score, scoreColor, verdict, authLine, expe
         fontFamily: 'Barlow',
         position: 'relative',
     }, [
-        // Header: rings mark + wordmark
+        // Header: actual Fusion logo mark + wordmark
         el('div', { display: 'flex', alignItems: 'center', gap: 18, padding: '40px 56px 0 56px' }, [
-            el('div', { position: 'relative', width: 64, height: 64, display: 'flex' }, [
-                ring(64, 0.95), ring(48, 0.8), ring(32, 0.65), ring(16, 0.5),
+            el('div', {
+                width: 64,
+                height: 64,
+                borderRadius: 6,
+                backgroundColor: '#5C006B',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+            }, [
+                // img props must be top-level in satori, not inside style
+                { type: 'img', props: { src: logoDataUrl, width: 54, height: 54, style: {} } },
             ]),
             el('div', {
                 fontFamily: 'Barlow Condensed',

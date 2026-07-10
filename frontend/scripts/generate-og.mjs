@@ -37,6 +37,10 @@ const fonts = [
 
 const siteLabel = new URL(site.origin).host;
 
+// Load the official logo as a base64 data URL so satori can render it.
+const logoSvgPath = path.resolve(__dirname, '../public/solo-mono-white.svg');
+const logoDataUrl = `data:image/svg+xml;base64,${fs.readFileSync(logoSvgPath).toString('base64')}`;
+
 /** Walk a satori element tree and collect every text node. */
 function treeText(node) {
     if (node === null || node === undefined) return '';
@@ -46,7 +50,7 @@ function treeText(node) {
 }
 
 async function renderPng(props, outFile) {
-    const tree = ogTemplate({ ...props, expectedAuthLine: site.authorisationLine, authLine: site.authorisationLine, fixture: manifest.fixture, siteLabel });
+    const tree = ogTemplate({ ...props, expectedAuthLine: site.authorisationLine, authLine: site.authorisationLine, fixture: manifest.fixture, siteLabel, logoDataUrl });
     // Belt and braces: satori outputs glyph paths, so verify the line in
     // the element tree that produces the pixels.
     if (!treeText(tree).includes(site.authorisationLine)) {
@@ -96,7 +100,10 @@ if (fs.existsSync(networkPlanPath)) {
     });
 }
 
+const worstSlugs = new Set([...(suburbIndex.worst20 ?? []), ...(suburbIndex.worst20Regional ?? [])]);
+
 for (const s of suburbIndex.suburbs) {
+    if (!worstSlugs.has(s.slug)) continue;
     const detail = JSON.parse(fs.readFileSync(path.resolve(__dirname, `../public/data/suburbs/${s.slug}.json`), 'utf8'));
     jobs.push({
         file: `${s.slug}.png`,
@@ -109,6 +116,7 @@ for (const s of suburbIndex.suburbs) {
         },
     });
 }
+
 
 const BATCH = 8;
 for (let i = 0; i < jobs.length; i += BATCH) {

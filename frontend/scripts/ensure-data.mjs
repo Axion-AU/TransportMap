@@ -29,6 +29,12 @@ if (!fs.existsSync(path.join(DATA_DIR, 'shapes', 'manifest.json'))) {
     execFileSync('npx', ['tsx', path.join(__dirname, 'split-shapes.mjs')], { stdio: 'inherit' });
 }
 
+if (!fs.existsSync(path.join(DATA_DIR, 'stops_manifest.json'))) {
+    console.log('[ensure-data] sharding stops GeoJSONs.');
+    execFileSync('npx', ['tsx', path.join(__dirname, 'split-stops.mjs')], { stdio: 'inherit' });
+}
+
+
 if (!fs.existsSync(path.join(DATA_DIR, 'population_grid.json'))
     || !fs.existsSync(path.join(DATA_DIR, 'poi.json'))
     || !fs.existsSync(path.join(DATA_DIR, 'road_corridors.json'))) {
