@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-10T07:19:53Z",
+  "title": "Design System: Transport Score",
+  "extensions": {
+    "colorMeta": {
+      "purple-900": { "role": "neutral", "displayName": "Void Purple", "canonical": "oklch(15% 0.10 320)", "tonalRamp": ["#0D0016", "#1A0029", "#2E004D", "#43006E", "#5C006B", "#7A2E8C", "#A560B8", "#D2A6E0"] },
+      "surface-raised": { "role": "neutral", "displayName": "Raised Purple", "canonical": "oklch(21% 0.14 320)", "tonalRamp": ["#1A0029", "#2E004D", "#43006E", "#5C006B", "#7A2E8C", "#A560B8", "#C594D6", "#E6D3EE"] },
+      "fusion-purple": { "role": "neutral", "displayName": "Brand Purple", "canonical": "oklch(28% 0.16 330)", "tonalRamp": ["#28002F", "#3F0049", "#5C006B", "#7A2E8C", "#9A56AC", "#BB84CB", "#DCB9E5", "#F2E4F5"] },
+      "magenta": { "role": "primary", "displayName": "Insurgent Magenta", "canonical": "oklch(60% 0.28 330)", "tonalRamp": ["#3D0A3D", "#6B1268", "#A01D9E", "#D428D4", "#E355E3", "#EE84EE", "#F6B4F6", "#FBE0FB"] },
+      "violet": { "role": "secondary", "displayName": "Signal Violet", "canonical": "oklch(52% 0.24 290)", "tonalRamp": ["#1E1147", "#331E77", "#4E2CA8", "#7B3FE4", "#9566EA", "#B48DEF", "#D3B9F5", "#EEE1FC"] },
+      "blue": { "role": "secondary", "displayName": "Ledger Blue", "canonical": "oklch(58% 0.16 260)", "tonalRamp": ["#131F4A", "#1F3277", "#3153A8", "#4A7AEB", "#6F97EF", "#98B4F3", "#C3D3F8", "#E9EFFC"] },
+      "cyan": { "role": "tertiary", "displayName": "Evidence Cyan", "canonical": "oklch(66% 0.13 220)", "tonalRamp": ["#062E36", "#0A4C58", "#088298", "#0BB8D4", "#4CCEE1", "#89E0ED", "#BFEFF6", "#E9FAFC"] },
+      "teal": { "role": "tertiary", "displayName": "Verified Teal", "canonical": "oklch(75% 0.15 175)", "tonalRamp": ["#003A30", "#00614F", "#009A7D", "#00DDB8", "#4FEACE", "#8DF3E1", "#C4F9EE", "#E9FDF8"] },
+      "band-poor": { "role": "data", "displayName": "Poor Band Orange-Red", "canonical": "oklch(58% 0.19 25)", "tonalRamp": ["#3F0E06", "#6E1B0E", "#A6301A", "#E4573F", "#EC8471", "#F3ADA1", "#F8D3CB", "#FCEEEA"] },
+      "band-patchy": { "role": "data", "displayName": "Patchy Band Amber", "canonical": "oklch(78% 0.15 75)", "tonalRamp": ["#3E2A04", "#6B4808", "#A2720F", "#E8A33D", "#EFBC6E", "#F5D49F", "#FAE9CB", "#FDF6EB"] },
+      "ink": { "role": "neutral", "displayName": "Paper White", "canonical": "#FFFFFF", "tonalRamp": ["rgba(255,255,255,0.05)", "rgba(255,255,255,0.10)", "rgba(255,255,255,0.20)", "rgba(255,255,255,0.45)", "rgba(255,255,255,0.60)", "rgba(255,255,255,0.72)", "rgba(255,255,255,0.85)", "#FFFFFF"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page and section headlines. Always uppercase, always heavy, the one place the system shouts." },
+      "overline": { "displayName": "Overline", "purpose": "Section labels and legend headers. Wayfinding, not emphasis." },
+      "body": { "displayName": "Body", "purpose": "All prose. Cap measure at 65-75ch in long-form copy." },
+      "data": { "displayName": "Data", "purpose": "Every score, fare, frequency, and count. Marks a measured value, never used for prose." }
+    },
+    "shadows": [
+      { "name": "floating-overlay", "value": "0 25px 50px -12px rgba(0,0,0,0.5) with backdrop-filter: blur(12px)", "purpose": "Search bar, map legend, popovers, dropdowns: anything floating over the map or other content." },
+      { "name": "cta-glow", "value": "0 0 24px rgba(212, 40, 212, 0.35)", "purpose": "The Join Fusion button only. The one permitted glow in the system." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Default easing for entrances and state transitions." },
+      { "name": "ease-in", "value": "cubic-bezier(0.7, 0, 0.84, 0)", "purpose": "Exits and dismissals." },
+      { "name": "pressable-hover", "value": "filter: brightness(1.12); transition 180ms", "purpose": "Hover feedback on interactive elements." },
+      { "name": "pressable-active", "value": "transform: scale(0.97); transition 120ms", "purpose": "Press/active feedback on interactive elements." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button (Join CTA)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single conversion action. Solid magenta fill, glow, brightness/scale feedback.",
+      "html": "<a href=\"#\" class=\"ds-btn-primary\">Join Fusion and fix it</a>",
+      "css": ".ds-btn-primary { display: inline-block; padding: 16px 32px; background: #D428D4; color: #FFFFFF; font-family: 'Barlow', system-ui, sans-serif; font-size: 1.125rem; font-weight: 600; border-radius: 4px; text-decoration: none; box-shadow: 0 0 24px rgba(212, 40, 212, 0.35); transition: filter 180ms cubic-bezier(0.16,1,0.3,1), transform 120ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-primary:hover { filter: brightness(1.12); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid #7B3FE4; outline-offset: 3px; }"
+    },
+    {
+      "name": "Link Button (Ghost)",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Footer/inline navigation links. Text-only, no container.",
+      "html": "<a href=\"#\" class=\"ds-link\">How the score works</a>",
+      "css": ".ds-link { color: #4A7AEB; font-family: 'Barlow', system-ui, sans-serif; font-size: 0.875rem; text-decoration: none; transition: filter 180ms cubic-bezier(0.16,1,0.3,1); } .ds-link:hover { filter: brightness(1.25); } .ds-link:focus-visible { outline: 2px solid #7B3FE4; outline-offset: 3px; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Address search field. Floats over the map, so it gets blur and shadow.",
+      "html": "<input type=\"text\" class=\"ds-input\" placeholder=\"Search address...\" />",
+      "css": ".ds-input { width: 100%; padding: 12px 16px; background: rgba(46,0,77,0.9); backdrop-filter: blur(12px); border-radius: 4px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.20); color: #FFFFFF; font-family: 'Barlow', system-ui, sans-serif; } .ds-input::placeholder { color: rgba(255,255,255,0.45); } .ds-input:focus { outline: none; box-shadow: 0 0 0 2px #7B3FE4; }"
+    },
+    {
+      "name": "Join CTA Panel",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The score-band-matched conversion panel. Brand-purple background, flat (no shadow).",
+      "html": "<section class=\"ds-card-cta\"><h2 class=\"ds-card-cta-heading\">THE STANDARD EVERY SUBURB DESERVES</h2><p class=\"ds-card-cta-body\">This suburb scores 82/100, proving high-quality public transport is possible.</p><a href=\"#\" class=\"ds-btn-primary\">Join Fusion</a></section>",
+      "css": ".ds-card-cta { background: #5C006B; border: 1px solid rgba(255,255,255,0.20); border-radius: 4px; padding: 32px; } .ds-card-cta-heading { font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.92; font-size: 2rem; margin-bottom: 12px; color: #FFFFFF; } .ds-card-cta-body { font-family: 'Barlow', system-ui, sans-serif; font-size: 1.125rem; line-height: 1.5; color: rgba(255,255,255,0.85); max-width: 42rem; margin-bottom: 24px; }"
+    },
+    {
+      "name": "Legend / Data Readout",
+      "kind": "custom",
+      "refersTo": "legend-readout",
+      "description": "Signature label-plus-swatch-plus-mono-number pattern used to present any measured claim inline.",
+      "html": "<div class=\"ds-readout\"><div class=\"ds-readout-left\"><span class=\"ds-readout-swatch\" style=\"background:#00DDB8\"></span><span class=\"ds-readout-label\">GOOD</span></div><span class=\"ds-readout-value\">&#8805; 85</span></div>",
+      "css": ".ds-readout { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; } .ds-readout-left { display: flex; align-items: center; gap: 12px; } .ds-readout-swatch { width: 16px; height: 16px; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.3); } .ds-readout-label { font-family: 'Barlow', system-ui, sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.75rem; color: #FFFFFF; } .ds-readout-value { font-family: 'Space Mono', ui-monospace, monospace; font-weight: 700; font-size: 0.75rem; color: rgba(255,255,255,0.72); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Ledger of Neglect",
+    "overview": "This is a system built to present an accusation as an accounting entry: cold, sourced, and impossible to wave away. The dark violet-black base isn't mood lighting, it's the colour of a night shift newsroom producing a document that will be read in daylight and checked against primary sources. Every number that appears on it, a score, a headway in minutes, a dollar figure, is set in a mono data face so it reads as measured, not asserted. The single spectrum of accent hues (magenta through teal) exists so the system can carry five distinct data states (score bands) and one unmistakable call to action without inventing a second, incompatible palette, one accent per zone, never blended for decoration. The system explicitly rejects the look of a government PDF report or civic dashboard (no grey chrome, no boxed KPI tiles, no bureaucratic flatness), the look of a generic SaaS marketing site (no gradient-hero, no identical icon-card grids), and the stock-photo, committee-designed look of major party websites. Near-sharp 4px corners replace the soft, friendly rounding of consumer software on purpose: this is a document, not an app trying to be liked.",
+    "keyCharacteristics": [
+      "Dark violet-black base (#1A0029) throughout; no light theme.",
+      "One accent spectrum (magenta → violet → blue → cyan → teal) shared by CTAs, links, and score-band data, never introduced as a second, unrelated palette.",
+      "Near-sharp corners (2-4px) on every surface; nothing pill-shaped or heavily rounded.",
+      "Condensed, uppercase, heavy display type for headlines; a dedicated mono face for every number.",
+      "Flat by default; depth is reserved for floating overlays and the one CTA glow."
+    ],
+    "rules": [
+      { "name": "The One Spectrum Rule", "body": "CTAs, links, and score-band data all draw from the same five-hue spectrum (magenta → violet → blue → cyan → teal). A new feature never introduces a colour outside this set; if a sixth state is needed, it's expressed as a shade or opacity of an existing hue, not a new hue.", "section": "colors" },
+      { "name": "The Warm-Poor, Cool-Good Rule", "body": "Score bands run warm-to-cool as they improve: stranded (magenta) and poor (orange-red) read as alarm; patchy (amber) is the pivot; decent (blue) and good (teal) read as resolution. A band colour is never reassigned outside this temperature logic.", "section": "colors" },
+      { "name": "The Numbers-Are-Mono Rule", "body": "Any figure that represents a measured or sourced value (a score, a fare, a frequency, a dwelling count) is set in Space Mono. If it's in Barlow, it's a claim; if it's in Space Mono, it's a measurement.", "section": "typography" },
+      { "name": "The One Glow Rule", "body": ".cta-glow exists on exactly one class of element, the primary Join CTA. No other button, card, or badge may take a glow; introducing a second glow dilutes the one visual signal that says this is the action.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep every score, fare, frequency, and count in Space Mono (.type-data); it's how the system marks measured, not claimed.",
+      "Do keep corners at 2-4px everywhere; buttons, cards, and inputs all share the same near-sharp radius.",
+      "Do reserve .cta-glow for the single Join Fusion button; nothing else glows.",
+      "Do run score-band colour warm-to-cool as bands improve (magenta/red-orange → amber → blue → teal); never reassign a band colour outside that temperature order.",
+      "Do use backdrop-blur plus shadow only for UI that floats over the map or other content; every other surface stays flat."
+    ],
+    "donts": [
+      "Don't build a generic government PDF report or civic Tableau-style dashboard: no grey chrome, no boxed KPI tiles, no bureaucratic flatness.",
+      "Don't build a generic SaaS product site: no gradient-hero, no identical icon-card grids, no corporate-startup visual grammar.",
+      "Don't imitate the stock-photo, primary-colour, committee-designed look of major Australian party websites.",
+      "Don't introduce a second, unrelated colour palette; every accent must come from the existing five-hue spectrum.",
+      "Don't round corners past 4px or use pill shapes; that softness reads as consumer app, not evidentiary document.",
+      "Don't add a second glow anywhere in the system; it dilutes the one signal that says this is the action.",
+      "Don't set a score, price, or measured figure in Barlow; if it's a number that was measured or sourced, it belongs in Space Mono."
+    ]
+  }
+}

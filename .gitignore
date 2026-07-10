@@ -13,6 +13,7 @@ gtfs/
 frontend/src/data/stops.json
 frontend/src/data/shapes.json
 frontend/src/data/routes.json
+gtfs.zip
 
 # OS
 .DS_Store

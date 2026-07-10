@@ -11,8 +11,10 @@ The scoring engine rates every Melbourne public transport stop on frequency, cov
 
 ## Data pipeline (run before any release)
 
-1. Download the PTV GTFS feed from Data Vic (<https://discover.data.vic.gov.au/dataset/gtfs-schedule>) and unzip it into `gtfs/` at the repo root so each mode sits at `gtfs/<mode_id>/google_transit/` (1 regional train, 2 metro train, 3 metro tram, 4 metro bus, 5 regional coach, 6 regional bus, 11 SkyBus).
-2. Run the processor: `cargo run --release --bin process_gtfs`. It writes `frontend/public/data/stops_*.geojson`, `routes.json`, `shapes.json`, and `routes_cost.json` (per-route daily trip count and vehicle-km, used by the network designer and reported as the current network's operating cost).
+1. **Obtain PTV GTFS Data**: Download the PTV GTFS feed zip from Data Vic (<https://discover.data.vic.gov.au/dataset/gtfs-schedule>).
+   - **Automated extraction (Recommended)**: Place the downloaded `gtfs.zip` directly at the repository root (`/gtfs.zip`). The processor will automatically detect and extract it when run.
+   - **Manual extraction fallback**: Alternatively, unzip it manually into the `gtfs/` folder at the repo root so each mode sits at `gtfs/<mode_id>/google_transit/` (1 regional train, 2 metro train, 3 metro tram, 4 metro bus, 5 regional coach, 6 regional bus, 11 SkyBus).
+2. **Run the processor**: `cargo run --release --bin process_gtfs`. If `gtfs.zip` is found in the root, it extracts it first, then processes all modes and writes `frontend/public/data/stops_*.geojson`, `routes.json`, `shapes.json`, and `routes_cost.json`.
 3. Supply real population, points-of-interest, and road-corridor data at `frontend/public/data/population_grid.json`, `poi.json`, and `road_corridors.json` (see `frontend/scripts/gen-network-fixture.mjs` for the exact shape each file must match), then run `cargo run --release --bin design_network`. It writes `frontend/public/data/network_plan.json`, the costed feeder network shown at `/the-plan`.
 4. Build the site: `cd frontend && npm install && npm run build`. The build derives suburb aggregates, shards the route-line geometry into per-mode files under 25MB, prerenders every page including one per suburb, generates share images, and runs the compliance checks. A freshly generated `shapes.json` is automatically promoted into `frontend/data-src/` and removed from the public dir once sharded.
 
