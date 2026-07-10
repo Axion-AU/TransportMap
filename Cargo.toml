@@ -16,3 +16,7 @@ chrono = "0.4"
 geojson = "0.24"
 rayon = "1.10"
 indicatif = "0.17"
+zip = "0.6.6"
+
+[dev-dependencies]
+tempfile = "3.8"

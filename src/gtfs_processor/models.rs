@@ -25,6 +25,7 @@ pub struct GtfsTrip {
     pub trip_id: String,
     pub service_id: String,
     pub shape_id: Option<String>,
+    pub direction_id: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -54,6 +55,13 @@ pub struct GtfsCalendar {
     pub sunday: u8,
     pub start_date: String,  // YYYYMMDD format
     pub end_date: String,    // YYYYMMDD format
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GtfsCalendarDate {
+    pub service_id: String,
+    pub date: String,          // YYYYMMDD format
+    pub exception_type: u8,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -143,10 +151,24 @@ pub struct StopData {
     pub shapes: HashSet<String>, // Track which specific shapes serve this stop
     pub is_parent: bool,
     
-    // Store actual departure times (hours since midnight)
-    pub weekday_peak_departures: Vec<f32>,
-    pub weekday_offpeak_departures: Vec<f32>,
-    pub weekend_departures: Vec<f32>,
+    // Store actual departure times (hours since midnight), tagged with GTFS
+    // direction_id (0/1). Through-stations serve both directions from one
+    // parent stop; without the direction tag, headway is computed across the
+    // interleaved two-way stream, which looks roughly twice as frequent as
+    // either direction actually runs. See calculate_average_wait_time_bidirectional.
+    //
+    // "Peak" and "offpeak" are each two disjoint clock windows (AM 7-9 / PM
+    // 16-18, and midday 9-16 / evening 18-22). They're stored separately so
+    // headway is never computed across the boundary between them — pooling
+    // both windows into one sorted list and taking gaps between consecutive
+    // entries counts the multi-hour jump from the end of one window to the
+    // start of the next as a single "wait", which dwarfs the real gaps for
+    // any station with only a few peak services.
+    pub weekday_am_peak_departures: Vec<(f32, u8)>,
+    pub weekday_pm_peak_departures: Vec<(f32, u8)>,
+    pub weekday_midday_departures: Vec<(f32, u8)>,
+    pub weekday_evening_departures: Vec<(f32, u8)>,
+    pub weekend_departures: Vec<(f32, u8)>,
     
     // Track which trips we've already recorded (to avoid duplicates across days)
     pub recorded_peak_trips: HashSet<String>,
@@ -168,8 +190,10 @@ impl StopData {
             routes: HashSet::new(),
             shapes: HashSet::new(),
             is_parent: false,
-            weekday_peak_departures: Vec::new(),
-            weekday_offpeak_departures: Vec::new(),
+            weekday_am_peak_departures: Vec::new(),
+            weekday_pm_peak_departures: Vec::new(),
+            weekday_midday_departures: Vec::new(),
+            weekday_evening_departures: Vec::new(),
             weekend_departures: Vec::new(),
             recorded_peak_trips: HashSet::new(),
             recorded_offpeak_trips: HashSet::new(),
