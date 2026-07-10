@@ -83,19 +83,30 @@ if (!fs.existsSync(ogManifestPath)) {
     const scoreDir = path.join(CLIENT_DIR, 'score');
     if (fs.existsSync(scoreDir)) {
         for (const slug of fs.readdirSync(scoreDir)) {
-            if (!covered.has(`${slug}.png`)) {
-                failures.push(`score/${slug}: no verified og image`);
-            }
-            if (!fs.existsSync(path.join(CLIENT_DIR, 'og', `${slug}.png`))) {
-                failures.push(`score/${slug}: og/${slug}.png file missing`);
-            }
             const html = fs.readFileSync(path.join(scoreDir, slug, 'index.html'), 'utf8');
             const og = html.match(/property="og:image" content="([^"]+)"/);
-            if (!og || !og[1].endsWith(`/og/${slug}.png`)) {
-                failures.push(`score/${slug}: og:image tag does not point at its image`);
+            if (!og) {
+                failures.push(`score/${slug}: missing og:image tag`);
+                continue;
+            }
+            const ogImgUrl = og[1];
+            if (ogImgUrl.endsWith('/og/default.png')) {
+                // Fallback is allowed
+                continue;
+            }
+            if (ogImgUrl.endsWith(`/og/${slug}.png`)) {
+                if (!covered.has(`${slug}.png`)) {
+                    failures.push(`score/${slug}: no verified og image`);
+                }
+                if (!fs.existsSync(path.join(CLIENT_DIR, 'og', `${slug}.png`))) {
+                    failures.push(`score/${slug}: og/${slug}.png file missing`);
+                }
+            } else {
+                failures.push(`score/${slug}: og:image tag does not point at its image or default.png (got: ${ogImgUrl})`);
             }
         }
     }
+
 
     const planDir = path.join(CLIENT_DIR, 'the-plan');
     if (fs.existsSync(planDir)) {

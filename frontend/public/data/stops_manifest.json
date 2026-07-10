@@ -1,0 +1,27 @@
+{
+  "metro_train": [
+    "/data/stops_metro_train.geojson"
+  ],
+  "metro_tram": [
+    "/data/stops_metro_tram.geojson"
+  ],
+  "metro_bus": [
+    "/data/stops_metro_bus_part1.geojson",
+    "/data/stops_metro_bus_part2.geojson",
+    "/data/stops_metro_bus_part3.geojson",
+    "/data/stops_metro_bus_part4.geojson",
+    "/data/stops_metro_bus_part5.geojson"
+  ],
+  "regional_train": [
+    "/data/stops_regional_train.geojson"
+  ],
+  "regional_coach": [
+    "/data/stops_regional_coach.geojson"
+  ],
+  "regional_bus": [
+    "/data/stops_regional_bus.geojson"
+  ],
+  "skybus": [
+    "/data/stops_skybus.geojson"
+  ]
+}

@@ -1,0 +1,34 @@
+# Transport Score
+
+Transport Score is a public tool by Fusion Party Australia that scores every Melbourne suburb's public transport quality from 0 to 100, based on frequency, coverage, and reliability from the PTV GTFS timetable data.
+
+## What it does
+
+- Scores every public transport stop in metropolitan Melbourne using the official PTV GTFS feed published on Data Vic
+- Aggregates stop scores to suburb level using a weighted average
+- Ranks all Melbourne suburbs in a public league table
+- Proposes a costed bus network plan to fix the worst-served areas
+
+## Score methodology
+
+- Score range: 0–100
+- Data source: PTV GTFS timetable feed (discover.data.vic.gov.au/dataset/gtfs-schedule)
+- Scoring dimensions: Frequency 50%, Coverage 50%
+- Score bands: 0–20 Stranded, 20–40 Struggling, 40–60 Adequate, 60–80 Connected, 80–100 Excellent
+- Coverage area: Metropolitan Melbourne, Victoria, Australia
+
+## Key pages
+
+- / — Suburb lookup: enter any Melbourne suburb to get its score
+- /suburbs — Full league table of all Melbourne suburbs ranked by transport score
+- /methodology — Complete scoring methodology (data source, weights, thresholds, formulas)
+- /the-plan — Fusion Party's costed feeder bus network improvement plan
+- /map — Map explorer showing every scored stop across Melbourne
+- /score/[suburb-slug] — Individual suburb score page (e.g. /score/werribee)
+
+## About
+
+Built by Fusion Party Australia for the November 2026 Victorian state election.
+Data: PTV GTFS timetable feed published on Data Vic (data.vic.gov.au)
+Contact: contact@fusionparty.org.au
+Authorised by K. Hunt, FUSION, Mansfield VIC

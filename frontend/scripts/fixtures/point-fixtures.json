@@ -1,0 +1,50 @@
+[
+  {
+    "label": "Carlton (Lygon St / Grattan St)",
+    "lat": -37.7983,
+    "lon": 144.9668,
+    "minBand": "good",
+    "currentScoreAtWriting": 90.6,
+    "citation": "Dense tram corridor plus tram/bus interchange in the heart of Carlton. Asserted at point level, not suburb level, because suburb-level 'Carlton' is currently a 1-stop attribution fragment (score 82, only 1 stop) with the suburb's real ~200 stops misattributed to Carlton North/Melbourne -- catchmentScore at a real point is unaffected by that bug and shows the suburb's true quality. Graduate this to a Tier-A suburb fixture once item 6 (polygon attribution) fixes Carlton's suburb bucket."
+  },
+  {
+    "label": "Tarneit interior (Lynbridge Cres / Tarneit Rd, away from the station)",
+    "lat": -37.8624,
+    "lon": 144.6668,
+    "maxBand": "patchy",
+    "currentScoreAtWriting": 53.0,
+    "citation": "CORRECTION to docs/methodology_refactor.md's illustrative claim 'Tarneit interior = stranded': verified against real 2026 GTFS timetable data this session, the worst-serviced genuinely-inhabited interior points in Tarneit score 'patchy' (low-to-mid 50s), not 'stranded' -- the growth-corridor bus grid does reach most residential streets, just at low frequency/quality. The doc's claim was directionally right (Tarneit is a known-poor growth suburb) but not literally accurate at point level; asserting the real ceiling here (patchy) rather than the aspirational one (stranded) keeps this fixture honest. A genuinely 'stranded' real example is the Cranbourne East/Clyde fixture below."
+  },
+  {
+    "label": "Epping North / Aurora Estate",
+    "lat": -37.64,
+    "lon": 145.025,
+    "maxBand": "patchy",
+    "currentScoreAtWriting": 69.9,
+    "citation": "Victorian Auditor-General's Office audit: 'only around 40 per cent of homes within 400 metres of bus stops and only one route near' this estate; proposed rail line not funded before 2032. UPDATED after a further GTFS refresh mid-session (stop count 25,779 -> 28,037, verified as real feeder-bus additions, e.g. McDonalds Rd/Davisson St and other real, named stops now within catchment, not a fixture-fitting artifact): score moved 41.9 (poor) -> 69.9 (patchy). The VAGO rail-funding point still stands; this reflects genuine improved bus coverage in the interim, not a retraction of the audit's finding."
+  },
+  {
+    "label": "Doreen interior (723m from Hawkstowe Railway Station)",
+    "lat": -37.62,
+    "lon": 145.09,
+    "maxBand": "decent",
+    "currentScoreAtWriting": 79.3,
+    "citation": "Whittlesea growth corridor, VAGO-cited council-wide inadequate coverage. Doreen does not exist as a suburb entry at all under polygon attribution (confirmed absent this session, zero stops inside its own boundary) -- this point fixture is the only way to track it. Twice updated after real GTFS refreshes mid-session: first after piece 3 (curves + fresh data) confirmed Hawkstowe Railway Station itself genuinely scores 89.1; second after a further refresh (stop count 25,779 -> 28,037) added real feeder bus stops around Hawkstowe (e.g. Hawkstowe Station/Hawkstowe Pde, Hawkstowe Station/Plenty Rd, all real named stops scoring 70-72), pulling this point to 79.3/decent. This is a real, verified service gradient at this specific point next to an improving station, not a suburb-wide retraction of the VAGO finding -- most of Doreen remains real, worse-served growth-corridor territory."
+  },
+  {
+    "label": "Cranbourne East / Clyde",
+    "lat": -38.14,
+    "lon": 145.32,
+    "maxBand": "poor",
+    "currentScoreAtWriting": 11.0,
+    "citation": "VAGO report names Cranbourne East specifically: rail extension 'to be considered after 2032', estimated cost $200 million. This is the strongest real, verified 'stranded'-band example found this session (actual current score is stranded, 11.0) -- maxBand is set one band above the true observed value (poor, not stranded) to avoid over-tight assertions on the single harshest data point, while still catching any suspicious jump to patchy or better."
+  },
+  {
+    "label": "Strathtulloh interior, ~2.4km from the nearest stop",
+    "lat": -37.7134,
+    "lon": 144.59,
+    "maxBand": "poor",
+    "currentScoreAtWriting": 0.0,
+    "citation": "First-hand account from a real Strathtulloh resident (this session), refined across several corrections: there is a real service gradient within Strathtulloh, not a uniform verdict. A Cobblebank bus (across the boundary, ~40 minute headway) reaches the absolute northern edge of Strathtulloh -- someone 200m from that edge has real, if infrequent, access. This resident lives ~2.4km from that same stop, a 30-minute walk, well beyond catchmentScore's 800m radius, and is genuinely stranded -- the real 0.0/stranded score confirmed at this point matches that specific location, not a claim that all of Strathtulloh is unserved. Strathtulloh is a real, distinct Vicmap locality (not part of Melton South, a neighbouring but separate real locality) and currently has zero of its own stops attributed inside its boundary -- the same real 'gazetted place, zero scored service' finding as Doreen/Wollert/Toolern Vale. maxBand is set one band above the true observed value (poor, not stranded), consistent with the Cranbourne East/Clyde fixture's reasoning above."
+  }
+]

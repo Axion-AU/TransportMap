@@ -5,7 +5,7 @@
 # Build first (npm run build, or let `npm run deploy:workers` do it via its
 # predeploy hook), then `wrangler deploy` from this directory.
 
-name = "fusion-transport-score" # TODO(launch): confirm the account's Worker name
+name = "transportmap" # TODO(launch): confirm the account's Worker name
 compatibility_date = "2026-07-09"
 
 [assets]
@@ -15,3 +15,18 @@ directory = "./dist/client"
 not_found_handling = "404-page"
 # Matches our folder-per-route layout (/score/<slug>/index.html).
 html_handling = "auto-trailing-slash"
+
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1

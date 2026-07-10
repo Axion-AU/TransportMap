@@ -1,8 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- Placeholder Fusion rings favicon: spectrum rings on brand purple.
-       Swap for the official asset before launch. -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64">
+  <!-- Fusion logo favicon: official five-ring mark on brand purple. -->
   <rect width="64" height="64" rx="6" fill="#5C006B"/>
-  <circle cx="32" cy="32" r="24" stroke="#D428D4" stroke-width="4" fill="none"/>
-  <circle cx="32" cy="32" r="16" stroke="#7B3FE4" stroke-width="4" fill="none"/>
-  <circle cx="32" cy="32" r="8" stroke="#00DDB8" stroke-width="4" fill="none"/>
+  <!-- logo centred and scaled to fill the tile -->
+  <g transform="matrix(0.314,0,0,0.314,5.152,5.152)">
+    <g transform="matrix(0.12459,0,0,0.12459,-1372.08,-828.102)">
+      <g transform="matrix(0.294222,-0.955737,-0.955737,-0.294222,0,0)">
+        <circle cx="-3741.09" cy="-13601.9" r="636.15" fill="none" stroke="white" stroke-width="30"/>
+      </g>
+      <g transform="matrix(0.294222,-0.955737,-0.955737,-0.294222,0,0)">
+        <circle cx="-3793.03" cy="-13444.7" r="636.15" fill="none" stroke="white" stroke-width="30"/>
+      </g>
+      <g transform="matrix(-0.8128,-0.582543,-0.582543,0.8128,0,0)">
+        <circle cx="-13813.3" cy="-773.182" r="636.15" fill="none" stroke="white" stroke-width="30"/>
+      </g>
+      <g transform="matrix(-0.786256,0.617901,0.617901,0.786256,0,0)">
+        <circle cx="-4764.99" cy="13054" r="636.15" fill="none" stroke="white" stroke-width="30"/>
+      </g>
+      <g transform="matrix(0.323122,0.946357,0.946357,-0.323122,0,0)">
+        <circle cx="10882.5" cy="8911.95" r="636.15" fill="none" stroke="white" stroke-width="30"/>
+      </g>
+    </g>
+  </g>
 </svg>
