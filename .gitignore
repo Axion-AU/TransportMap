@@ -58,3 +58,4 @@ frontend/data-src/raw/
 # Ignore large generated shapes file
 frontend/data-src/shapes.json
 
+.agents/skills
