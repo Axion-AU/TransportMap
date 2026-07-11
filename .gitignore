@@ -48,3 +48,12 @@ frontend/public/data/poi.json
 frontend/public/data/road_corridors.json
 frontend/public/data/routes_cost.json
 frontend/public/data/network_plan.json
+
+# Raw OSM/routing-engine inputs for the travel-time-matrix pipeline
+# (frontend/scripts/fetch-osm-extract.mjs, compute-travel-time-matrix.mjs).
+# Large (100MB-1GB+) and regenerable by re-running the fetch script; only
+# the small derived frontend/data-src/travel-time-matrix.json is committed.
+frontend/data-src/raw/
+
+# Ignore .agents/skills directory
+.agents/skills
