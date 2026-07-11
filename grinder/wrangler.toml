@@ -1,0 +1,30 @@
+# Meat Grinder — analytics loop + autonomous scheduler
+#
+# Secrets (set with `wrangler secret put <NAME>`):
+#   ADMIN_TOKEN         bearer token for the admin UI / API
+#   MASTODON_TOKEN      account token, scopes: read:statuses read:notifications write:statuses
+#   BSKY_IDENTIFIER     bluesky handle or DID
+#   BSKY_APP_PASSWORD   bluesky app password
+#   ANTHROPIC_API_KEY   for mention triage + monthly style-rule analysis (optional;
+#                       those jobs no-op without it)
+
+name = "meat-grinder"
+main = "src/index.ts"
+compatibility_date = "2026-06-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "meat-grinder"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+[triggers]
+# */10 → mention poller; */15 → metrics poller; 0,30 → scheduler tick + housekeeping
+crons = ["*/10 * * * *", "*/15 * * * *", "0,30 * * * *"]
+
+[vars]
+MASTODON_BASE_URL = "https://mastodon.social"   # replace with the party's instance
+BSKY_SERVICE = "https://bsky.social"
+ALERT_WEBHOOK_URL = ""                          # optional: POSTed JSON on adapter failures
+
+[observability]
+enabled = true
