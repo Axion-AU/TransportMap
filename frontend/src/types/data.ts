@@ -1,4 +1,4 @@
-import type { Band } from '../lib/scoring';
+import type { Band, VerdictInputs } from '../lib/scoring';
 
 export interface SuburbIndexEntry {
     name: string;
@@ -30,6 +30,8 @@ export interface SuburbDetail {
     stopCount: number;
     modeNoun: string;
     verdict: string;
+    /** Population-weighted grid inputs behind the verdict sentence; null when scoreMethod is 'legacy-mean'. */
+    verdictInputs: VerdictInputs | null;
     centroid: { lat: number; lon: number };
     isRegional: boolean;
     /** 'grid': population-weighted 250m-cell aggregation (item 1). 'legacy-mean': plain stop-mean fallback. */

@@ -25,18 +25,27 @@
  * support, and only fall back to a generic per-band line when none do.
  */
 
-import type { Band, SuburbBreakdown, ModeBreakdown } from './scoring';
+import type { Band, SuburbBreakdown, ModeBreakdown, VerdictInputs } from './scoring';
 import { friendlyModeName } from './scoring';
 
 export interface VerdictContext {
-    /** Median peak wait in minutes across the suburb's primary (most prevalent) mode, if known. */
+    /** Median peak wait in minutes across the suburb's primary (most prevalent) mode, if known. Stop-based; only used on the legacy (no verdictInputs) path. */
     medianWaitMinutes: number | null;
-    /** Plural noun for the primary mode: "Trains", "Trams", "Buses", "Services". */
+    /** Plural noun for the primary mode: "Trains", "Trams", "Buses", "Services". Stop-based; only used on the legacy path. */
     modeNoun: string;
     /** Population-weighted (or legacy-mean) frequency/coverage/reliability, 0-100. */
     breakdown: SuburbBreakdown;
-    /** Per-mode summaries, sorted by prevalence (stopCount) first. */
+    /** Per-mode summaries, sorted by prevalence (stopCount) first. Stop-based; used for the legacy path and for the reach gate's "strong anchor" check. */
     modeBreakdown: ModeBreakdown[];
+    /**
+     * Population-weighted grid inputs (methodology refactor, verdict piece).
+     * Present only for grid-scored suburbs -- when set, verdictFor uses the
+     * reach/mode-share/weakest-dimension gates built on these instead of the
+     * legacy stop-based logic below. Absent (undefined) for legacy-mean
+     * suburbs and for every address-level caller (ResultPage, ConnectivityPin),
+     * which have no suburb-wide population grid to draw from.
+     */
+    verdictInputs?: VerdictInputs;
 }
 
 /** Median wait is half the headway; riders experience the headway. */

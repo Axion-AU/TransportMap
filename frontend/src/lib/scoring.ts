@@ -34,6 +34,13 @@ export interface ViableRoute {
     score: number;
 }
 
+/** A single route's best-scoring stop, reduced to what a verdict needs to say about it. */
+export interface RouteSample {
+    score: number;
+    peakWaitMinutes: number | null;
+    modeName: string;
+}
+
 export interface CatchmentResult {
     score: number;
     nearbyStops: StopLite[];
@@ -43,6 +50,10 @@ export interface CatchmentResult {
     avgFrequency: number;
     avgCoverage: number;
     avgReliability: number;
+    /** The best viable route's own stop, or null if no route here clears VIABILITY_THRESHOLD. */
+    bestViable: RouteSample | null;
+    /** The single best-scoring stop regardless of viability; always set when any stop is nearby. */
+    bestAvailable: RouteSample | null;
 }
 
 export interface SuburbBreakdown {
@@ -122,6 +133,9 @@ export interface GridCell {
     /** Cell center, for downstream map rendering. Not used by gridScore's own math. */
     lat?: number;
     lon?: number;
+    /** Carried straight from this cell's catchmentScore call, for computeVerdictInputs. */
+    bestViable?: RouteSample | null;
+    bestAvailable?: RouteSample | null;
 }
 
 /**
@@ -153,6 +167,97 @@ export function gridScore(cells: GridCell[]): { score: number; avgFrequency: num
         avgCoverage: weightedMean(c => c.avgCoverage),
         avgReliability: weightedMean(c => c.avgReliability),
     };
+}
+
+/** Population-weighted median: the value at the point where cumulative weight crosses half the total. */
+function weightedMedian(items: { value: number; weight: number }[]): number | null {
+    const valid = items.filter(i => Number.isFinite(i.value) && i.weight > 0).sort((a, b) => a.value - b.value);
+    const total = valid.reduce((sum, i) => sum + i.weight, 0);
+    if (total <= 0) return null;
+    let cumulative = 0;
+    for (const item of valid) {
+        cumulative += item.weight;
+        if (cumulative >= total / 2) return item.value;
+    }
+    return valid[valid.length - 1].value;
+}
+
+/** One mode's population-weighted share of a suburb's reached grid cells. */
+export interface ModeShare {
+    modeName: string;
+    /** Fraction of the reached (has-a-viable-route) population whose best option is this mode. */
+    share: number;
+    medianWaitMinutes: number | null;
+    /** Population-weighted mean cell score for this mode's cells; used to size a genuine mode split, not displayed directly. */
+    avgScore: number;
+}
+
+/**
+ * Population-weighted verdict inputs, computed from the same grid cells as
+ * gridScore (methodology refactor, verdict piece): what share of the suburb
+ * can actually reach a viable route, the wait that share experiences, how
+ * that reached population splits by mode, and what the unreached population
+ * is left with instead. Only meaningful for grid-scored suburbs -- callers
+ * without populated grid cells should not call this and should fall back to
+ * the legacy stop-based verdict path instead.
+ */
+export interface VerdictInputs {
+    reachShare: number;
+    medianWaitMinutes: number | null;
+    modeShares: ModeShare[];
+    fallbackWaitMinutes: number | null;
+    fallbackModeName: string | null;
+}
+
+export function computeVerdictInputs(cells: GridCell[]): VerdictInputs {
+    const totalPopulation = cells.reduce((sum, c) => sum + c.population, 0);
+    const reached = cells.filter(c => c.bestViable);
+    const reachedPopulation = reached.reduce((sum, c) => sum + c.population, 0);
+    const reachShare = totalPopulation > 0 ? reachedPopulation / totalPopulation : 0;
+
+    const medianWaitMinutes = weightedMedian(
+        reached
+            .filter(c => c.bestViable!.peakWaitMinutes !== null)
+            .map(c => ({ value: c.bestViable!.peakWaitMinutes!, weight: c.population }))
+    );
+
+    const byMode = new Map<string, GridCell[]>();
+    for (const c of reached) {
+        const name = c.bestViable!.modeName;
+        if (!byMode.has(name)) byMode.set(name, []);
+        byMode.get(name)!.push(c);
+    }
+    const modeShares: ModeShare[] = [...byMode.entries()]
+        .map(([modeName, modeCells]) => {
+            const pop = modeCells.reduce((sum, c) => sum + c.population, 0);
+            return {
+                modeName,
+                share: reachedPopulation > 0 ? pop / reachedPopulation : 0,
+                medianWaitMinutes: weightedMedian(
+                    modeCells
+                        .filter(c => c.bestViable!.peakWaitMinutes !== null)
+                        .map(c => ({ value: c.bestViable!.peakWaitMinutes!, weight: c.population }))
+                ),
+                avgScore: pop > 0 ? modeCells.reduce((sum, c) => sum + c.score * c.population, 0) / pop : 0,
+            };
+        })
+        .sort((a, b) => b.share - a.share);
+
+    const unreachedWithService = cells.filter(c => !c.bestViable && c.bestAvailable && c.bestAvailable.peakWaitMinutes !== null);
+    const fallbackWaitMinutes = weightedMedian(
+        unreachedWithService.map(c => ({ value: c.bestAvailable!.peakWaitMinutes!, weight: c.population }))
+    );
+    let fallbackModeName: string | null = null;
+    if (unreachedWithService.length > 0) {
+        const modePopulation = new Map<string, number>();
+        for (const c of unreachedWithService) {
+            const name = c.bestAvailable!.modeName;
+            modePopulation.set(name, (modePopulation.get(name) ?? 0) + c.population);
+        }
+        fallbackModeName = [...modePopulation.entries()].sort((a, b) => b[1] - a[1])[0][0];
+    }
+
+    return { reachShare, medianWaitMinutes, modeShares, fallbackWaitMinutes, fallbackModeName };
 }
 
 export const CATCHMENT_RADIUS_M = 800;
@@ -198,27 +303,45 @@ export function diversityBonus(count: number): number {
  * only takes the breakdown/viableCount/bestScore fields from this and
  * computes its own headline score (see typicalStopScore below).
  */
+/** A finite, positive wait is a real display value; anything else (missing, zero, NaN) means "unknown". */
+function peakWait(stop: StopLite): number | null {
+    return Number.isFinite(stop.average_wait_time) && stop.average_wait_time > 0 ? stop.average_wait_time : null;
+}
+
 function aggregateStops(stops: StopLite[]): Omit<CatchmentResult, 'nearbyStops'> {
     if (stops.length === 0) {
-        return { score: 0, viableRoutes: [], viableCount: 0, bestScore: 0, avgFrequency: 0, avgCoverage: 0, avgReliability: 0 };
+        return { score: 0, viableRoutes: [], viableCount: 0, bestScore: 0, avgFrequency: 0, avgCoverage: 0, avgReliability: 0, bestViable: null, bestAvailable: null };
     }
 
-    const routeBestScores = new Map<string, number>();
+    const routeBest = new Map<string, { score: number; stop: StopLite }>();
     for (const stop of stops) {
         for (const rid of stop.route_ids ?? []) {
-            const current = routeBestScores.get(rid) ?? 0;
-            routeBestScores.set(rid, Math.max(current, stop.final_score));
+            const current = routeBest.get(rid);
+            if (!current || stop.final_score > current.score) {
+                routeBest.set(rid, { score: stop.final_score, stop });
+            }
         }
     }
 
     const viableRoutes: ViableRoute[] = [];
-    routeBestScores.forEach((score, id) => {
+    routeBest.forEach(({ score }, id) => {
         if (score > VIABILITY_THRESHOLD) viableRoutes.push({ id, score });
     });
     viableRoutes.sort((a, b) => b.score - a.score);
 
-    const bestAvailable = stops.reduce((max, s) => Math.max(max, s.final_score), 0);
-    const bestScore = viableRoutes.length > 0 ? viableRoutes[0].score : bestAvailable;
+    const bestViable: RouteSample | null = viableRoutes.length > 0
+        ? (() => {
+            const top = routeBest.get(viableRoutes[0].id)!;
+            return { score: top.score, peakWaitMinutes: peakWait(top.stop), modeName: top.stop.mode_name };
+        })()
+        : null;
+
+    const bestAvailableStop = stops.reduce<StopLite | null>((best, s) => (!best || s.final_score > best.final_score ? s : best), null);
+    const bestAvailable: RouteSample | null = bestAvailableStop
+        ? { score: bestAvailableStop.final_score, peakWaitMinutes: peakWait(bestAvailableStop), modeName: bestAvailableStop.mode_name }
+        : null;
+
+    const bestScore = bestViable?.score ?? bestAvailable?.score ?? 0;
 
     const qualityWeightedCount = viableRoutes.reduce((sum, r) => sum + (r.score / 100) ** 2, 0);
 
@@ -226,7 +349,7 @@ function aggregateStops(stops: StopLite[]): Omit<CatchmentResult, 'nearbyStops'>
     if (viableRoutes.length > 0) {
         score = bestScore * 0.7 + diversityBonus(qualityWeightedCount) * 0.3;
     } else {
-        score = Math.min(bestAvailable, VIABILITY_THRESHOLD - 1);
+        score = Math.min(bestScore, VIABILITY_THRESHOLD - 1);
     }
     score = Math.min(score, 100);
 
@@ -241,6 +364,8 @@ function aggregateStops(stops: StopLite[]): Omit<CatchmentResult, 'nearbyStops'>
         avgFrequency: avg(s => s.frequency_score),
         avgCoverage: avg(s => s.coverage_score),
         avgReliability: avg(s => s.reliability_score),
+        bestViable,
+        bestAvailable,
     };
 }
 

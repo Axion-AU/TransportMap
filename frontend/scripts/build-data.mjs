@@ -38,7 +38,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import simplify from '@turf/simplify';
-import { suburbScore, catchmentScore, band, LEAGUE_TABLE_MIN_STOPS, CATCHMENT_RADIUS_M, distanceMeters, friendlyModeName } from '../src/lib/scoring.ts';
+import { suburbScore, catchmentScore, computeVerdictInputs, band, LEAGUE_TABLE_MIN_STOPS, CATCHMENT_RADIUS_M, distanceMeters, friendlyModeName } from '../src/lib/scoring.ts';
 import { verdictFor } from '../src/lib/verdict.ts';
 import { geohashEncode, tilesFor, GRID_STEP_DEG } from '../src/lib/geo.ts';
 
@@ -254,6 +254,8 @@ function computeGridCellsForSuburb(suburbName, populationByCell, tileIndex) {
                 population: pop.dwellings,
                 lat: center.lat,
                 lon: center.lon,
+                bestViable: result.bestViable,
+                bestAvailable: result.bestAvailable,
             });
         }
     }
@@ -518,11 +520,13 @@ function main() {
             lon: suburbStops.reduce((s, x) => s + x.lon, 0) / suburbStops.length,
         };
         const modeNoun = result.modeBreakdown.length > 0 ? friendlyModeName(result.modeBreakdown[0].modeName) : 'Services';
+        const verdictInputs = result.scoreMethod === 'grid' ? computeVerdictInputs(gridCells) : undefined;
         const verdict = verdictFor(scoreBand, {
             medianWaitMinutes: result.medianWaitMinutes,
             modeNoun,
             breakdown: result.breakdown,
             modeBreakdown: result.modeBreakdown,
+            verdictInputs,
         });
 
         const stopList = [...suburbStops]
@@ -594,6 +598,7 @@ function main() {
             stopCount: result.stopCount,
             modeNoun,
             verdict,
+            verdictInputs: verdictInputs ?? null,
             centroid: { lat: +centroid.lat.toFixed(5), lon: +centroid.lon.toFixed(5) },
             isRegional,
             scoreMethod: result.scoreMethod,
