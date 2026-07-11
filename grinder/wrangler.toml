@@ -5,8 +5,9 @@
 #   MASTODON_TOKEN      account token, scopes: read:statuses read:notifications write:statuses
 #   BSKY_IDENTIFIER     bluesky handle or DID
 #   BSKY_APP_PASSWORD   bluesky app password
-#   ANTHROPIC_API_KEY   for mention triage + monthly style-rule analysis (optional;
-#                       those jobs no-op without it)
+#   OPENROUTER_API_KEY  for mention triage + monthly style-rule analysis (optional;
+#                       those jobs no-op without it). Model id is the llm_model
+#                       config key.
 
 name = "meat-grinder"
 main = "src/index.ts"

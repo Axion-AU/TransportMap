@@ -1,8 +1,8 @@
-import Anthropic from '@anthropic-ai/sdk';
 import * as bluesky from './adapters/bluesky';
 import * as mastodon from './adapters/mastodon';
 import { logEvent } from './alerts';
 import { getConfig, getConfigString, setConfig } from './config';
+import { chatComplete, llmAvailable } from './llm';
 import type { Env, MentionRow, Platform } from './types';
 import { graphemeLength, nowIso, stripHtml, uuid } from './util';
 
@@ -12,8 +12,8 @@ import { graphemeLength, nowIso, stripHtml, uuid } from './util';
  * human review tab → fires immediately on approval.
  *
  * INV-1 applies unchanged: a draft cannot post without a human approver (also
- * enforced by a D1 trigger). Without ANTHROPIC_API_KEY mentions stay 'pending'
- * and are handled manually in the UI.
+ * enforced by a D1 trigger). Triage goes through OpenRouter; without
+ * OPENROUTER_API_KEY mentions stay 'pending' and are handled manually in the UI.
  */
 
 export async function pollMentions(env: Env, now: Date = new Date()): Promise<void> {
@@ -107,7 +107,7 @@ const TRIAGE_SCHEMA = {
 } as const;
 
 async function triagePending(env: Env, now: Date): Promise<void> {
-  if (!env.ANTHROPIC_API_KEY) return;
+  if (!llmAvailable(env)) return;
   const db = env.DB;
   const pending = await db
     .prepare(`SELECT * FROM mentions WHERE triage = 'pending' ORDER BY created_at LIMIT 10`)
@@ -116,7 +116,6 @@ async function triagePending(env: Env, now: Date): Promise<void> {
 
   const policy = await getConfig<string>(db, 'engagement_policy');
   const limits = await getConfig<Record<string, number>>(db, 'platform_limits');
-  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
 
   for (const mention of pending.results) {
     let context = '';
@@ -129,29 +128,18 @@ async function triagePending(env: Env, now: Date): Promise<void> {
     }
 
     try {
-      const response = await client.messages.create({
-        model: 'claude-opus-4-8',
-        max_tokens: 4096,
-        thinking: { type: 'adaptive' },
+      const text = await chatComplete(env, {
         system:
           `You triage social media mentions for the Fusion Party (Australia). ` +
           `Engagement policy: ${policy}\n\n` +
           `Classify the mention as reply / ignore / escalate. If reply, draft a ` +
           `courteous, factual reply under ${limits[mention.platform]} characters — ` +
           `no hashtag spam, no sarcasm, on-message. If not replying, draft_reply is null. ` +
-          `Every reply is reviewed and approved by a human before posting.`,
-        output_config: { format: { type: 'json_schema', schema: TRIAGE_SCHEMA } },
-        messages: [
-          {
-            role: 'user',
-            content: `Mention on ${mention.platform} from @${mention.author_handle}:\n${mention.text}${context}`,
-          },
-        ],
+          `Every reply is reviewed and approved by a human before posting. ` +
+          `Respond with JSON only: {"action": "reply"|"ignore"|"escalate", "reason": string, "draft_reply": string|null}.`,
+        user: `Mention on ${mention.platform} from @${mention.author_handle}:\n${mention.text}${context}`,
+        jsonSchema: { name: 'triage_verdict', schema: TRIAGE_SCHEMA as unknown as Record<string, unknown> },
       });
-      const text = response.content
-        .filter((b): b is Anthropic.TextBlock => b.type === 'text')
-        .map((b) => b.text)
-        .join('');
       const verdict = JSON.parse(text) as TriageVerdict;
 
       await db

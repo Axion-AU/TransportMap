@@ -43,6 +43,9 @@ export const DEFAULTS = {
   // §4.1 per-platform limits (mastodon: chars, bluesky: graphemes)
   platform_limits: { mastodon: 500, bluesky: 300 },
 
+  // OpenRouter model id used for triage + monthly style analysis
+  llm_model: 'anthropic/claude-sonnet-4.5',
+
   // mention triage engagement policy, injected into the triage prompt
   engagement_policy:
     'Reply to good-faith questions and correctable factual points. Ignore bait, ' +

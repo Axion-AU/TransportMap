@@ -7,7 +7,7 @@ export interface Env {
   MASTODON_TOKEN: string;
   BSKY_IDENTIFIER: string;
   BSKY_APP_PASSWORD: string;
-  ANTHROPIC_API_KEY?: string;
+  OPENROUTER_API_KEY?: string;
 }
 
 export type Platform = 'mastodon' | 'bluesky';

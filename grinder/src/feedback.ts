@@ -1,6 +1,6 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { logEvent } from './alerts';
 import { getConfig, getConfigString, setConfig } from './config';
+import { chatComplete, llmAvailable } from './llm';
 import type { Env } from './types';
 import { estimateTokens, nowIso, uuid } from './util';
 
@@ -11,8 +11,9 @@ import { estimateTokens, nowIso, uuid } from './util';
  * significant edit pairs) and the top-performers block, writes them to config
  * for the generator to pull into its system prompt (GET /api/prompt-feedback).
  *
- * Monthly diff analysis: passes the trailing month's edit pairs to Claude to
- * distil recurring correction patterns into <=10 style rules. The result is a
+ * Monthly diff analysis: passes the trailing month's edit pairs to the LLM
+ * (via OpenRouter) to distil recurring correction patterns into <=10 style
+ * rules. The result is a
  * PROPOSAL: it enters the generation prompt only after a human approves it in
  * the admin UI (same trust model as content).
  */
@@ -111,7 +112,7 @@ export async function weeklyFeedbackRefresh(env: Env, now: Date = new Date()): P
 
 /** Monthly diff-analysis job (§4.3), surfaced for human review before use. */
 export async function monthlyStyleAnalysis(env: Env, now: Date = new Date()): Promise<void> {
-  if (!env.ANTHROPIC_API_KEY) return;
+  if (!llmAvailable(env)) return;
   const db = env.DB;
   const since = new Date(now.getTime() - 30 * 86400_000).toISOString();
   const pairs = await db
@@ -126,33 +127,18 @@ export async function monthlyStyleAnalysis(env: Env, now: Date = new Date()): Pr
     .all<{ text_before: string; text_after: string; platform: string }>();
   if (pairs.results.length < 5) return; // not enough signal this month
 
-  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
   const pairsText = pairs.results
     .map((p, i) => `[${i + 1}] (${p.platform})\nBEFORE: ${p.text_before}\nAFTER: ${p.text_after}`)
     .join('\n\n');
 
-  const response = await client.messages.create({
-    model: 'claude-opus-4-8',
-    max_tokens: 16000,
-    thinking: { type: 'adaptive' },
+  const text = await chatComplete(env, {
     system:
       'You analyse editorial corrections made to social media copy for an Australian ' +
       'political party. From the BEFORE/AFTER pairs, identify recurring correction ' +
       'patterns and distil them into at most 10 concise, imperative style rules a ' +
       'copywriter could follow. Output only the numbered rule list, one line per rule.',
-    messages: [
-      {
-        role: 'user',
-        content: `Edit pairs from the trailing month:\n\n${pairsText}`,
-      },
-    ],
+    user: `Edit pairs from the trailing month:\n\n${pairsText}`,
   });
-
-  const text = response.content
-    .filter((b): b is Anthropic.TextBlock => b.type === 'text')
-    .map((b) => b.text)
-    .join('\n')
-    .trim();
   if (!text) return;
 
   const month = nowIso(now).slice(0, 7);

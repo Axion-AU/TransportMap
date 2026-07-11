@@ -45,7 +45,7 @@ npx wrangler secret put ADMIN_TOKEN
 npx wrangler secret put MASTODON_TOKEN     # read:statuses read:notifications write:statuses
 npx wrangler secret put BSKY_IDENTIFIER
 npx wrangler secret put BSKY_APP_PASSWORD
-npx wrangler secret put ANTHROPIC_API_KEY  # optional: triage + monthly style analysis
+npx wrangler secret put OPENROUTER_API_KEY # optional: triage + monthly style analysis
 npm run deploy
 ```
 
