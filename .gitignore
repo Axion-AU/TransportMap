@@ -55,5 +55,6 @@ frontend/public/data/network_plan.json
 # the small derived frontend/data-src/travel-time-matrix.json is committed.
 frontend/data-src/raw/
 
-# Ignore .agents/skills directory
-.agents/skills
+# Ignore large generated shapes file
+frontend/data-src/shapes.json
+
