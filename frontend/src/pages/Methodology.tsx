@@ -1,312 +1,479 @@
 import { Link } from 'react-router-dom';
+import type { ReactNode } from 'react';
+import manifest from '../data/generated/manifest.json';
+import { usePageMeta } from '../lib/meta';
+import { BAND_COLORS, BAND_LABELS, BAND_THRESHOLDS } from '../lib/scoring';
+import anchorsConfig from '../config/anchors.json';
 
+type Accent = 'magenta' | 'violet' | 'blue' | 'cyan' | 'teal';
+
+const ACCENT_BORDER: Record<Accent, string> = {
+    magenta: 'border-t-magenta',
+    violet: 'border-t-violet',
+    blue: 'border-t-blue',
+    cyan: 'border-t-cyan',
+    teal: 'border-t-teal',
+};
+
+const ACCENT_TEXT: Record<Accent, string> = {
+    magenta: 'text-magenta',
+    violet: 'text-violet',
+    blue: 'text-blue',
+    cyan: 'text-cyan',
+    teal: 'text-teal',
+};
+
+const Section = ({ title, part, accent, children }: { title: string; part: string; accent: Accent; children: ReactNode }) => (
+    <section className={`space-y-4 bg-surface-raised border border-border-subtle ${ACCENT_BORDER[accent]} border-t-2 rounded-[4px] p-6 md:p-8`}>
+        <p className={`type-overline ${ACCENT_TEXT[accent]}`}>{part}</p>
+        <h2 className="type-display text-3xl text-ink">{title}</h2>
+        {children}
+    </section>
+);
+
+const Formula = ({ children }: { children: ReactNode }) => (
+    <pre className="bg-purple-900 border border-border-subtle rounded-[4px] p-4 overflow-x-auto type-data text-sm text-cyan">{children}</pre>
+);
+
+const Th = ({ children }: { children: ReactNode }) => (
+    <th className="py-2 px-3 text-left type-overline text-ink-faint">{children}</th>
+);
+const Td = ({ children, mono = false }: { children: ReactNode; mono?: boolean }) => (
+    <td className={`py-2 px-3 ${mono ? 'type-data' : ''}`}>{children}</td>
+);
+
+const Divider = () => <div className="spectrum-line" />;
+
+// Worst band first, matching how the rest of the site frames a result:
+// the number you got before the explanation of how you could do better.
+const BANDS_WORST_FIRST = [...BAND_THRESHOLDS].reverse();
+
+function bandUpperBound(index: number): number {
+    const next = BANDS_WORST_FIRST[index + 1];
+    return next ? next.min - 1 : 100;
+}
+
+/**
+ * Ground truth for every number the site displays. The per-stop formulas
+ * transcribe src/gtfs_processor/scoring.rs; the aggregation formulas
+ * transcribe src/lib/scoring.ts. Change code and page together: the golden
+ * tests recompute published scores from these formulas.
+ */
 const Methodology = () => {
+    usePageMeta(
+        'How Melbourne Public Transport Is Scored: Methodology | Transport Score',
+        'The complete scoring formula: data vintage, weights, thresholds, limitations, and changelog. Every displayed number is reproducible from this page.',
+    );
+
     return (
-        <div className="h-full overflow-y-auto bg-slate-900 p-4 md:p-8 text-slate-300 font-sans">
-            <div className="max-w-4xl mx-auto space-y-12 pb-20">
-                {/* Header */}
-                <header className="relative">
-                    <Link to="/" className="absolute top-0 left-0 text-slate-400 hover:text-white flex items-center gap-2 text-sm font-medium transition-colors">
-                        ← Back to Map
-                    </Link>
-                    <div className="text-center space-y-6 pt-8">
-                        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-                            The Transport Inequality Engine
-                        </h1>
-                        <div className="max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
-                            <p className="mb-4">
-                                We do not measure whether public transport <em>exists</em>; we measure whether it is a <strong>viable alternative to driving</strong>.
-                            </p>
-                        </div>
-                    </div>
-                </header>
+        <div className="max-w-3xl mx-auto px-5 py-10 md:py-16 space-y-8 text-ink-soft leading-relaxed">
+            <header className="space-y-4">
+                <p className="type-overline text-magenta">Show your working</p>
+                <h1 className="type-display text-5xl md:text-6xl text-ink">Methodology</h1>
+                <p className="text-lg max-w-2xl">
+                    Every score on this site is computed from published timetable data with the
+                    formulas below. If you cannot reproduce a number from this page, that is a bug.
+                    Report it and we will fix it in public, in the changelog at the bottom.
+                </p>
+                {/* Author attribution and freshness: E-E-A-T signals for AI engines */}
+                <p className="text-sm text-ink-faint">
+                    Published by Fusion Party Australia transport policy team.{' '}
+                    <time dateTime={manifest.dataBuiltAt?.slice(0, 10) ?? ''}>
+                        Last updated {manifest.dataVintageLabel}.
+                    </time>
+                </p>
+            </header>
 
-                {/* Core Philosophy */}
-                <section className="bg-slate-800 rounded-2xl p-6 md:p-8 border border-slate-700 shadow-lg">
-                    <h2 className="text-2xl font-bold text-white mb-6 border-b border-slate-700 pb-4">Core Philosophy</h2>
-                    <div className="prose prose-invert max-w-none text-slate-300">
-                        <p className="mb-6">
-                            Most transport metrics count "stops per suburb". This is misleading. A bus stop served once every 60 minutes offers "fake access"—it appears on a map, but imposes a "planning tax" so high that owning a car becomes structurally mandatory.
-                        </p>
-                        <p className="mb-8">
-                            We score every stop on a strict 0–100 scale of <strong>Car-Competitiveness</strong>.
-                        </p>
-                    </div>
+            {/* Key facts card: structured for AI snippet extraction (40-60 word answer blocks) */}
+            <dl className="grid sm:grid-cols-2 gap-x-8 gap-y-4 border border-border-subtle rounded-[4px] p-5 bg-surface-raised text-sm">
+                <div>
+                    <dt className="type-overline text-ink-faint mb-1">Score range</dt>
+                    <dd className="text-ink font-semibold">0 to 100</dd>
+                </div>
+                <div>
+                    <dt className="type-overline text-ink-faint mb-1">Data source</dt>
+                    <dd className="text-ink font-semibold">
+                        <a
+                            href="https://discover.data.vic.gov.au/dataset/gtfs-schedule"
+                            className="text-blue"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            PTV GTFS (data.vic.gov.au)
+                        </a>
+                    </dd>
+                </div>
+                <div>
+                    <dt className="type-overline text-ink-faint mb-1">Scoring dimensions</dt>
+                    <dd className="text-ink font-semibold">Frequency 50%, Coverage 50%</dd>
+                </div>
+                <div>
+                    <dt className="type-overline text-ink-faint mb-1">Coverage area</dt>
+                    <dd className="text-ink font-semibold">Metropolitan Melbourne</dd>
+                </div>
+                <div>
+                    <dt className="type-overline text-ink-faint mb-1">Data vintage</dt>
+                    <dd className="text-ink font-semibold type-data">{manifest.dataVintageLabel}</dd>
+                </div>
+                <div>
+                    <dt className="type-overline text-ink-faint mb-1">Suburbs scored</dt>
+                    <dd className="text-ink font-semibold type-data">{manifest.suburbCount.toLocaleString()}</dd>
+                </div>
+            </dl>
 
-                    <div className="grid gap-6 md:grid-cols-3">
-                        <div className="bg-slate-900/50 p-6 rounded-xl border-l-4 border-emerald-500">
-                            <div className="text-3xl font-black text-emerald-400 mb-2">85–100</div>
-                            <div className="font-bold text-white text-lg mb-2">Car-Competitive</div>
-                            <div className="text-sm text-slate-400 leading-relaxed">
-                                Spontaneous travel is easy. You might prefer this over driving.
-                            </div>
-                        </div>
-                        <div className="bg-slate-900/50 p-6 rounded-xl border-l-4 border-yellow-500">
-                            <div className="text-3xl font-black text-yellow-500 mb-2">50–85</div>
-                            <div className="font-bold text-white text-lg mb-2">Usable</div>
-                            <div className="text-sm text-slate-400 leading-relaxed">
-                                Viable for some trips, but driving is usually faster or more convenient.
-                            </div>
-                        </div>
-                        <div className="bg-slate-900/50 p-6 rounded-xl border-l-4 border-red-500">
-                            <div className="text-3xl font-black text-red-500 mb-2">0–50</div>
-                            <div className="font-bold text-white text-lg mb-2">Non-Viable</div>
-                            <div className="text-sm text-slate-400 leading-relaxed">
-                                Structurally forced car ownership. Service is a safety net, not a utility.
-                            </div>
-                        </div>
-                    </div>
-                </section>
+            <Divider />
 
-                {/* KEY 1: FREQUENCY */}
-                <section className="space-y-6">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-2xl font-bold border border-blue-500/50">1</div>
-                        <h2 className="text-3xl font-black text-white">Frequency (50%)</h2>
-                    </div>
-                    <p className="text-lg text-slate-400 pl-16">
-                        <strong>"When can I use it?"</strong> Frequency is the single most important factor. If you have to plan your life around a timetable, the system has failed as a utility.
+            <Section title="Data" part="Part 01" accent="magenta">
+                <ul className="space-y-2 list-disc pl-5">
+                    <li>
+                        <strong className="text-ink">Source:</strong> the Public Transport Victoria GTFS
+                        schedule feed, published on Data Vic. All seven sub-feeds: regional train,
+                        metro train, metro tram, metro bus, regional coach, regional bus, SkyBus.
+                    </li>
+                    <li>
+                        <strong className="text-ink">Vintage of this build:</strong>{' '}
+                        <span className="type-data text-ink">{manifest.dataVintageLabel}</span>
+                        {manifest.gtfsGeneratedAt ? ` (processor run ${String(manifest.gtfsGeneratedAt).slice(0, 10)})` : ''}.
+                        Methodology version <span className="type-data text-ink">{manifest.methodologyVersion}</span>.
+                    </li>
+                    <li>
+                        <strong className="text-ink">Representative day:</strong> scores are computed for
+                        the second Wednesday of the feed's longest calendar span, skipping school and
+                        public holiday windows. Weekend metrics use the same feed's weekend services.
+                    </li>
+                    <li>
+                        <strong className="text-ink">Scale of this build:</strong>{' '}
+                        {manifest.stopCount.toLocaleString()} stops across {manifest.suburbCount} suburbs.
+                    </li>
+                </ul>
+                {manifest.fixture && (
+                    <p className="border border-magenta rounded-[4px] p-3 text-sm">
+                        This build runs on generated sample data for testing. Every page carries a
+                        banner, search engines are told not to index it, and share images are
+                        watermarked. The formulas below still hold: sample stops are generated to
+                        satisfy them exactly.
                     </p>
+                )}
+            </Section>
 
-                    <div className="grid lg:grid-cols-2 gap-8">
-                        {/* Headway Deep Dive */}
-                        <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-lg">
-                            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                                <span>⏱️</span> Headway Score (30%)
-                            </h3>
-                            <p className="text-sm text-slate-400 mb-4">
-                                We use the <strong>Turn Up And Go (TUAG)</strong> principle. Non-linear scoring severely penalizes waits over 20 minutes.
-                            </p>
-                            <div className="overflow-hidden rounded-lg border border-slate-700">
-                                <table className="w-full text-sm text-left">
-                                    <thead className="text-xs text-slate-500 uppercase bg-slate-900/80">
-                                        <tr>
-                                            <th className="px-4 py-2">Avg Wait (Headway/2)</th>
-                                            <th className="px-4 py-2">Score</th>
-                                            <th className="px-4 py-2">Verdict</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-700 bg-slate-900/30">
-                                        <tr><td className="px-4 py-2 font-medium text-emerald-400">0–5 min</td><td className="px-4 py-2 font-bold text-emerald-400">100</td><td className="px-4 py-2 text-slate-300">Premium TUAG</td></tr>
-                                        <tr><td className="px-4 py-2 text-emerald-300">5–10 min</td><td className="px-4 py-2 font-bold text-emerald-300">95</td><td className="px-4 py-2 text-slate-300">Standard TUAG</td></tr>
-                                        <tr><td className="px-4 py-2 text-teal-300">10–15 min</td><td className="px-4 py-2 font-bold text-teal-300">80</td><td className="px-4 py-2 text-slate-300">Good</td></tr>
-                                        <tr><td className="px-4 py-2 text-yellow-400">15–20 min</td><td className="px-4 py-2 font-bold text-yellow-400">65</td><td className="px-4 py-2 text-slate-300">Frequent</td></tr>
-                                        <tr><td className="px-4 py-2 text-orange-400">20–30 min</td><td className="px-4 py-2 font-bold text-orange-400">45</td><td className="px-4 py-2 text-slate-300">Moderate</td></tr>
-                                        <tr><td className="px-4 py-2 text-red-400">30–40 min</td><td className="px-4 py-2 font-bold text-red-400">30</td><td className="px-4 py-2 text-slate-300">Poor</td></tr>
-                                        <tr><td className="px-4 py-2 text-red-500">&gt; 60 min</td><td className="px-4 py-2 font-bold text-red-500">5</td><td className="px-4 py-2 text-slate-300">Catastrophic</td></tr>
-                                    </tbody>
-                                </table>
+            <Section title="The score bands" part="Part 02" accent="violet">
+                <p>
+                    Every result, suburb page, and share image is labelled with one of these five
+                    bands. The thresholds below are the exact numbers the site uses, not a rough guide.
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                    {BANDS_WORST_FIRST.map(({ band, min }, i) => {
+                        const upper = bandUpperBound(i);
+                        return (
+                            <div
+                                key={band}
+                                className="bg-purple-900 border border-border-subtle rounded-[4px] p-4"
+                                style={{ borderTop: `2px solid ${BAND_COLORS[band]}` }}
+                            >
+                                <div className="type-data text-3xl mb-1" style={{ color: BAND_COLORS[band] }}>
+                                    {min}{upper < 100 ? `–${upper}` : '+'}
+                                </div>
+                                <div className="type-display text-lg text-ink">{BAND_LABELS[band]}</div>
                             </div>
-                        </div>
+                        );
+                    })}
+                </div>
+            </Section>
 
-                        {/* Service Span Deep Dive */}
-                        <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-lg">
-                            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                                <span>📅</span> Service Span (15%)
-                            </h3>
-                            <p className="text-sm text-slate-400 mb-4">
-                                Temporal coverage. A service running every 10 mins is useless if it stops at 7 PM.
-                            </p>
-                            <div className="space-y-4 text-sm">
-                                <div className="bg-black/30 p-3 rounded-lg border border-slate-700">
-                                    <strong className="block text-slate-200 mb-1">Calculation Formula</strong>
-                                    <code className="block font-mono text-xs text-blue-300">
-                                        Score = (Hours_Score × 0.7) + (Days_Score × 0.3)
-                                    </code>
-                                </div>
-                                <div className="bg-slate-900/30 p-4 rounded-lg border border-slate-700">
-                                    <strong className="block text-slate-200 mb-2">Hours of Operation thresholds:</strong>
-                                    <ul className="space-y-2 text-xs text-slate-400">
-                                        <li className="flex justify-between border-b border-slate-700 pb-1"><span>23+ hours</span> <span className="font-bold text-emerald-400">100 pts</span></li>
-                                        <li className="flex justify-between border-b border-slate-700 pb-1"><span>20+ hours</span> <span className="font-bold text-emerald-500">90 pts</span></li>
-                                        <li className="flex justify-between border-b border-slate-700 pb-1"><span>18+ hours</span> <span className="font-bold text-teal-400">80 pts</span></li>
-                                        <li className="flex justify-between border-b border-slate-700 pb-1"><span>16+ hours</span> <span className="font-bold text-yellow-400">70 pts</span></li>
-                                        <li className="flex justify-between border-b border-slate-700 pb-1"><span>&lt;12 hours</span> <span className="font-bold text-red-400">30 pts</span></li>
-                                    </ul>
-                                </div>
-                                <div className="text-xs text-slate-500 italic">
-                                    * Reliability (5%) is calculated based on 7-day consistency (Weekends must match Weekdays).
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+            <Section title="The per-stop score, 0 to 100" part="Part 03" accent="blue">
+                <p>
+                    Each stop earns a base score from two equally weighted keys, then multiplicative
+                    penalties are applied. Penalties only reduce; the ceiling is 100.
+                </p>
+                <Formula>{`base_score  = frequency_key * 0.5 + coverage_key * 0.5
+final_score = base_score * frequency_penalty * catchment_penalty`}</Formula>
 
-                {/* KEY 2: COVERAGE */}
-                <section className="space-y-6">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-2xl font-bold border border-purple-500/50">2</div>
-                        <h2 className="text-3xl font-black text-white">Coverage (50%)</h2>
-                    </div>
-                    <p className="text-lg text-slate-400 pl-16">
-                        <strong>"Where can I use it?"</strong> Measures the reach of the network and local accessibility. Excellent frequency is useless if the train doesn't go where you need to go.
-                    </p>
+                <h3 className="type-display text-2xl text-ink pt-2">Frequency key (50% of the score)</h3>
+                <Formula>{`frequency_key = headway_score * 0.6 + service_span_score * 0.3 + reliability_score * 0.1
+headway_score = peak * 0.6 + offpeak * 0.25 + weekend * 0.15`}</Formula>
+                <p>
+                    Headway is scored on the average wait, which is half the gap between services.
+                    Peak means weekdays 7 to 9am and 4 to 6pm; off peak is 9am to 4pm and 6 to 10pm;
+                    weekend is 7am to 10pm.
+                </p>
+                <Formula>{`headway_score = 100 / (1 + (average_wait / 28)^2.2)`}</Formula>
+                <p>
+                    A continuous curve (as of 2026-07-10), not a step table: a 5 minute wait scores
+                    close to 100, a 30 minute wait close to 45, a 60 minute wait close to 15, sliding
+                    smoothly in between so two suburbs a minute apart in average wait are never
+                    separated by an arbitrary band. The two constants above are the entire tunable
+                    surface for this curve, replacing what used to be eight independently hand-picked
+                    breakpoints.
+                </p>
+                <p>
+                    Service span scores hours of operation (70%) and days per week (30%). Hours use
+                    their own continuous curve, <Formula>{`hours_score = 100 / (1 + e^(-(span_hours - 12) / 4.329))`}</Formula>{' '}
+                    centred so a 12 hour span scores 50, climbing toward 100 for a near-24-hour span
+                    and down toward 20 to 30 for a short one. Days score is active days out of 7.
+                    Night network services add a bonus, also continuous and decaying with night
+                    frequency rather than a flat +10/+5/+2 tier, capped so the total never exceeds 100.
+                    Reliability (10% of the frequency key) is also continuous:{' '}
+                    <Formula>{`reliability_score = 100 * (active_days / 7)^0.663`}</Formula>{' '}
+                    7 day service scores 100, 5 days scores 80 (both exact, by construction), and
+                    days in between are no longer flattened into one identical bucket.
+                </p>
 
-                    <div className="grid lg:grid-cols-2 gap-8">
-                        {/* Network Coverage Deep Dive */}
-                        <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-lg">
-                            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                                <span>🌐</span> Network Coverage (35%)
-                            </h3>
-                            <p className="text-sm text-slate-400 mb-4">
-                                We break "Network Reach" into three weighted components.
-                            </p>
+                <h3 className="type-display text-2xl text-ink pt-2">Coverage key (50% of the score)</h3>
+                <Formula>{`coverage_key = min(100, network * 0.7 + local * 0.3 + intermodal_bonus)
+network      = hub_reachability * 0.5 + orbital_directness * 0.3 + cbd_access * 0.2
+local        = walk_catchment * 0.5 + feeder * 0.3 + active_transport * 0.2`}</Formula>
+                <ul className="space-y-2 list-disc pl-5 text-sm">
+                    <li><strong className="text-ink">Hub reachability:</strong> super hubs (Southern Cross, Flinders Street, Melbourne Central) score 100; city loop or a major hub 85 to 95; a route into the city 65; anything else 40.</li>
+                    <li><strong className="text-ink">Orbital directness:</strong> can you travel suburb to suburb without the CBD? Rail interchanges score 90, SmartBus and grid routes 60 to 85, feeder buses 30.</li>
+                    <li><strong className="text-ink">CBD access:</strong> binary, 100 or 0, for a direct city service.</li>
+                    <li><strong className="text-ink">Walk catchment:</strong> 3 or more stops within 400m scores 100, two scores 70, one scores 40, none scores 10.</li>
+                    <li><strong className="text-ink">Intermodal bonus:</strong> up to 20 points for physical train, tram, and bus interchanges within 150m, discounted when the connecting service itself scores under 70.</li>
+                </ul>
 
-                            <div className="space-y-4">
-                                <div className="border-l-4 border-purple-500 pl-4 bg-slate-900/30 p-2 rounded-r-lg">
-                                    <div className="font-bold text-white text-sm">1. Hub Reachability (50%)</div>
-                                    <p className="text-xs text-slate-400 mb-2">Can you get to a major interchange?</p>
-                                    <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
-                                        <div className="flex justify-between"><span className="font-semibold text-slate-300">Super Hub</span> <span className="font-mono text-purple-300">100 pts</span></div>
-                                        <div className="flex justify-between"><span className="font-semibold text-slate-300">Premium</span> <span className="font-mono text-purple-300">95 pts</span></div>
-                                        <div className="flex justify-between"><span className="font-semibold text-slate-300">Major Hub</span> <span className="font-mono text-purple-300">85 pts</span></div>
-                                        <div className="flex justify-between"><span className="font-semibold text-slate-300">Local</span> <span className="font-mono text-slate-500">40 pts</span></div>
-                                    </div>
-                                </div>
+                <h3 className="type-display text-2xl text-ink pt-2">Penalties</h3>
+                <p>
+                    Transport is a chain, and one broken link breaks the trip. Two multipliers
+                    punish weak links, keyed on the blended headway score and the local coverage
+                    score respectively.
+                </p>
+                <Formula>{`multiplier = 0.5 + 0.5 / (1 + e^(-(trigger_score - 35) / 12))`}</Formula>
+                <p>
+                    A continuous curve (as of 2026-07-10), not four fixed tiers: a trigger score of 15
+                    scores a multiplier near 0.58, 30 near 0.70, 50 near 0.89, 70 near 0.97, sliding
+                    between a floor of 0.5 and a ceiling of 1.0 rather than jumping at 20/40/60. Both
+                    penalties (frequency and catchment) share this same curve, applied to their own
+                    trigger score.
+                </p>
+            </Section>
 
-                                <div className="border-l-4 border-blue-500 pl-4 bg-slate-900/30 p-2 rounded-r-lg">
-                                    <div className="font-bold text-white text-sm">2. Orbital Directness (30%)</div>
-                                    <p className="text-xs text-slate-400">Can you travel suburb-to-suburb without going via the CBD?</p>
-                                    <ul className="text-xs text-slate-300 mt-1 list-disc list-inside">
-                                        <li><strong>Rail Interchange:</strong> <span className="text-blue-300">90 pts</span> (Best)</li>
-                                        <li><strong>SmartBus / Grid:</strong> <span className="text-blue-300">70–85 pts</span></li>
-                                        <li><strong>Feeder Bus:</strong> <span className="text-red-300">30 pts</span> (Penalized)</li>
-                                    </ul>
-                                </div>
+            <Section title="From stops to your result" part="Part 04" accent="cyan">
+                <p>
+                    Address results score everything within an 800m walk, and ask "what is the best
+                    option at this exact point":
+                </p>
+                <Formula>{`viable_route      = any route whose best stop scores over 50
+quality_count     = sum over viable routes of (score / 100)^2
+diversity_bonus   = 20 at 1.0, 50 at 2.0, 70 at 3.0, 85 at 4.0, 100 at 5.0+
+                    (linear between breakpoints)
+score             = best_viable * 0.7 + diversity_bonus * 0.3
+no viable routes  = best available stop score, capped at 49`}</Formula>
+                <p>
+                    Suburb pages ask a different question: "what is typical access across this
+                    suburb", not "what is the best this suburb can offer". A single strong anchor
+                    stop (usually a train station) should not carry a whole suburb's score when most
+                    of that suburb cannot walk to it, and stop density (a tram corridor with a stop
+                    every 250m) shouldn't either -- two suburbs with identical real service but
+                    different stop spacing should score the same. As of 2026-07-10, the suburb score
+                    is computed by gridding the suburb's real boundary into 250m cells, scoring each
+                    cell exactly like a single address (the same best_viable * 0.7 + diversity_bonus *
+                    0.3 formula above, applied at the cell's centre), then averaging the cells
+                    weighted by real ABS Census mesh block dwelling counts (2021, the latest available
+                    -- see the note on data vintage below):
+                </p>
+                <Formula>{`cell_score        = address-style score (above), computed at each 250m cell's centre
+suburb_score      = sum(cell_score * cell_dwellings) / sum(cell_dwellings)`}</Formula>
+                <p>
+                    The three-part breakdown shown with every result is computed the same
+                    population-weighted way, from each cell's own frequency/coverage/reliability
+                    averages -- so the headline score and its breakdown are always mutually
+                    reproducible from the same underlying cells, not two separately-averaged numbers.
+                    A suburb outside Greater Melbourne and the commuter corridor (where a real polygon
+                    boundary isn't yet in scope, see "known limitations"), or with no populated cells
+                    inside it, falls back to a plain mean of its stops' final scores instead -- every
+                    suburb detail page states which method produced its number.
+                </p>
+                <p>
+                    <strong className="text-ink">Data vintage:</strong> population weights come from
+                    the 2021 Census (the most recent mesh block release; the next Census is in August
+                    2026, with mesh block data typically following a year or more later), and weight
+                    by dwelling count rather than usual-resident population -- growth-corridor estates
+                    built after 2021 are undercounted on people more than on dwellings, and this tool's
+                    whole point is the newest, worst-served pockets, not the best-documented ones.
+                    A dwelling standing but not yet occupied at census time still counts; a resident
+                    who has since moved in but wasn't there for the count would not.
+                </p>
+                <p>
+                    The suburb's best stop is still shown alongside the score for context (labelled
+                    "best route"), using the same best_viable figure as the address formula above --
+                    that one figure is deliberately not population-weighted, since "your best nearby
+                    option" is a different question to "typical access here".
+                </p>
+                <p>
+                    The headline wait in verdict lines is the median peak wait across the suburb's
+                    stops, doubled into the gap between services.
+                </p>
+                <p>
+                    The league table ranks suburbs by this score, lowest first, and requires at
+                    least 3 scored stops so a single flag stop cannot put a suburb on the list.
+                </p>
+                <p>
+                    Distances are straight-line metres with cosine-of-latitude correction. Suburbs
+                    are attributed by real point-in-polygon against Vicmap Admin locality boundaries
+                    (the Victorian government's authoritative locality dataset), scoped to Greater
+                    Melbourne and the commuter corridor. A small remainder outside that scope, or on
+                    a rare gap at a polygon edge, falls back to a heuristic: trailing-parenthesis
+                    suburb names on stops, station names mapped by a curated exception list, then the
+                    nearest attributed stop within 1km.
+                </p>
+            </Section>
 
-                                <div className="border-l-4 border-slate-500 pl-4 bg-slate-900/30 p-2 rounded-r-lg">
-                                    <div className="font-bold text-white text-sm">3. CBD Access (20%)</div>
-                                    <p className="text-xs text-slate-400">Binary bonus (100 or 0) for direct city access.</p>
-                                </div>
-                            </div>
-                        </div>
+            <Section title="What we do not score" part="Part 05" accent="teal">
+                <ul className="space-y-2 list-disc pl-5">
+                    <li><strong className="text-ink">Fares:</strong> a service you cannot catch is unusable at any price. Fares appear on this site only as cost anchors, sourced and dated where shown.</li>
+                    <li><strong className="text-ink">Real-time punctuality:</strong> the score measures the promise of the timetable, which is the generous reading. Reliability here means days-of-service consistency, and that is a proxy, stated plainly.</li>
+                    <li><strong className="text-ink">Speed:</strong> frequent and predictable beats occasionally fast.</li>
+                </ul>
+            </Section>
 
-                        {/* Local Coverage Deep Dive */}
-                        <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-lg">
-                            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                                <span>🚶</span> Local Coverage (15%)
-                            </h3>
-                            <p className="text-sm text-slate-400 mb-4">
-                                The "Last Mile" problem. Can you actually get to the stop?
-                            </p>
-                            <div className="bg-black/30 p-3 rounded-lg border border-slate-700 mb-4">
-                                <code className="block font-mono text-xs text-blue-300">
-                                    Score = (Walk × 0.5) + (Feeder × 0.3) + (Active × 0.2)
-                                </code>
-                            </div>
+            <Divider />
 
-                            <ul className="space-y-3 text-sm text-slate-300">
-                                <li className="flex gap-3 items-start p-2 bg-slate-900/30 rounded">
-                                    <span className="font-bold min-w-[60px] text-white">Walk</span>
-                                    <span className="text-slate-400">Based on density of stops within 400m. 3+ stops = 100pts (Dense). Optimized for walkable urban environments.</span>
-                                </li>
-                                <li className="flex gap-3 items-start p-2 bg-slate-900/30 rounded">
-                                    <span className="font-bold min-w-[60px] text-white">Feeder</span>
-                                    <span className="text-slate-400">Scored based on the frequency of the best connecting mode (Bus/Tram) at the same location.</span>
-                                </li>
-                                <li className="flex gap-3 items-start p-2 bg-slate-900/30 rounded">
-                                    <span className="font-bold min-w-[60px] text-white">Active</span>
-                                    <span className="text-slate-400">Proxy for bike/scooter viability based on transport density.</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
+            <Section title="Known limitations" part="Part 06" accent="magenta">
+                <ul className="space-y-2 list-disc pl-5">
+                    <li>Walking distances are straight-line, so barriers like freeways and rivers can flatter a stop's true catchment.</li>
+                    <li>Suburb attribution is real point-in-polygon for Greater Melbourne and the commuter corridor; a small remainder outside that scope still uses a name-parsing heuristic. The build reports its failure rate ({manifest.unattributedPct}% unattributed in this build) and fails above 10%.</li>
+                    <li>A locality can be a real, official Victorian place with zero stops scored inside its exact boundary, and so not appear in the league table at all -- that is not good service, it is the opposite. This was confirmed for several growth-corridor localities once real boundaries replaced name-parsing: the timetabled network has not yet reached the exact gazetted area, even where nearby stops score patchy-to-poor.</li>
+                    <li>Grid + population aggregation (the suburb score formula above) is scoped to the same Greater Melbourne + commuter corridor as attribution. Suburbs outside that scope, or with no populated 250m cell inside their real boundary, fall back to a plain stop-mean instead -- flagged as such on that suburb's own detail data, though not yet called out visually on the page itself.</li>
+                    <li>Scores describe the timetable, and cancelled or ghost services score better than they deserve.</li>
+                    <li>Coverage is Melbourne GTFS. Statewide scoring is planned, and regional stops inside the feed are scored where present.</li>
+                    <li>The plan's population, points of interest, and road corridors are synthetic placeholders until real ABS population, POI, and road datasets are supplied. Real data will change every number on <Link to="/the-plan" className="text-blue">the plan</Link>.</li>
+                </ul>
+            </Section>
 
-                {/* MODIFIERS: BONUS & PENALTIES */}
-                <section className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-8 border border-slate-700 shadow-2xl overflow-hidden relative">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 text-9xl text-white">⚖️</div>
-                    <div className="relative z-10">
-                        <h2 className="text-3xl font-black text-white mb-2">The Multipliers</h2>
-                        <p className="text-slate-400 text-lg mb-8 max-w-2xl">
-                            Raw scores are adjusted by <strong>Resilience Bonuses</strong> and <strong>Failure Penalties</strong> to reflect real-world user experience.
-                        </p>
+            <Section title="Changelog" part="Part 07" accent="violet">
+                <ul className="space-y-3 text-sm">
+                    <li className="flex gap-3">
+                        <span className="type-data text-ink shrink-0">2026-07-10</span>
+                        <span>
+                            Suburb attribution now uses real point-in-polygon against Vicmap Admin
+                            locality boundaries for Greater Melbourne and the commuter corridor,
+                            replacing the previous name-parsing heuristic there (unattributed rate
+                            dropped from 7.54% to 5.76%; the remainder is outside this release's
+                            metro scope and still uses the old heuristic). Several suburbs' stop
+                            counts and scores changed as a direct result, including Carlton (previously
+                            a 1-stop fragment with its real ~44 stops misattributed elsewhere) and
+                            several outer growth-corridor suburbs gaining their first accurate entry.
+                            Also added: a validation fixture suite checking real scores against cited
+                            external sources (Victorian Auditor-General's Office, Infrastructure
+                            Victoria) on every build, and Rust/frontend unit tests now run in CI.
+                        </span>
+                    </li>
+                    <li className="flex gap-3">
+                        <span className="type-data text-ink shrink-0">2026-07-10</span>
+                        <span>
+                            Headway, service span, night network, reliability, and penalty-multiplier
+                            scores now use continuous curves instead of step tables, collapsing roughly
+                            30 hand-picked breakpoints into 2-3 tunable parameters per curve. A wait of
+                            19 versus 21 minutes (or any other pair a step apart) no longer produces an
+                            arbitrary score jump. Checked against the validation fixture suite above
+                            before and after; every fixture still passes. One incidental, intentional
+                            change: reliability no longer flattens every active-day count below 5 into
+                            one identical score.
+                        </span>
+                    </li>
+                    <li className="flex gap-3">
+                        <span className="type-data text-ink shrink-0">2026-07-10</span>
+                        <span>
+                            Suburb scores now come from a 250m grid over the suburb's real boundary,
+                            each cell scored like a single address and averaged weighted by real 2021
+                            ABS Census mesh block dwelling counts, replacing the plain stop-mean that
+                            let stop density (a tram corridor with a stop every 250m) drive the score
+                            instead of real service quality. Effect confirmed directly: St Kilda,
+                            Richmond, Fitzroy, South Yarra, North Melbourne, and Carlton all move from
+                            "decent" to "good" (they were suppressed by stop-averaging, not genuinely
+                            middling), while VAGO-cited growth-corridor suburbs stay patchy-to-poor as
+                            expected. One suburb (Doncaster East) moved further than expected on first
+                            check -- inspected directly rather than assumed a bug: its western portion,
+                            where most dwellings sit, has genuinely decent SmartBus coverage even
+                            without the still-unbuilt rail line VAGO's report cites, and its eastern
+                            edge alone drags the average down, not up. 496 of 762 suburbs (within
+                            Greater Melbourne and the commuter corridor) use this grid method; the
+                            remainder still use the stop-mean fallback (see "known limitations").
+                        </span>
+                    </li>
+                    <li className="flex gap-3">
+                        <span className="type-data text-ink shrink-0">2026.07</span>
+                        <span>
+                            Suburb aggregation, league table, address catchment, and the feeder-network
+                            designer published. Distance calculation now applies cosine-of-latitude
+                            correction; the previous map tool overstated east-west distances by about
+                            25% at Melbourne's latitude, which made 800m catchments too generous east
+                            to west.
+                        </span>
+                    </li>
+                    <li className="flex gap-3">
+                        <span className="type-data text-ink shrink-0">2025.12</span>
+                        <span>
+                            Per-stop scoring engine: two-key framework (frequency, coverage),
+                            penalty multipliers, intermodal bonus, night network bonus.
+                        </span>
+                    </li>
+                </ul>
+            </Section>
 
-                        <div className="grid md:grid-cols-2 gap-8">
-                            {/* Penalties */}
-                            <div className="bg-red-950/30 border border-red-500/20 p-6 rounded-2xl">
-                                <h3 className="text-xl font-bold text-red-400 mb-4">⚠️ Catastrophic Failure Logic</h3>
-                                <p className="text-sm text-red-200/70 mb-4">
-                                    Transport is a chain. If one link breaks (hourly bus), the entire trip fails.
-                                </p>
-                                <ul className="space-y-4">
-                                    <li className="flex items-center justify-between border-b border-red-500/20 pb-2">
-                                        <span className="text-sm text-red-200">Frequency &lt; 20pts (&gt;60m wait)</span>
-                                        <span className="font-mono font-bold text-red-400">0.5x</span>
-                                    </li>
-                                    <li className="flex items-center justify-between border-b border-red-500/20 pb-2">
-                                        <span className="text-sm text-red-200">Frequency &lt; 40pts (30-60m wait)</span>
-                                        <span className="font-mono font-bold text-orange-400">0.7x</span>
-                                    </li>
-                                    <li className="flex items-center justify-between border-b border-red-500/20 pb-2">
-                                        <span className="text-sm text-red-200">Local Access &lt; 20pts (Inaccessible)</span>
-                                        <span className="font-mono font-bold text-red-400">0.5x</span>
-                                    </li>
-                                </ul>
-                            </div>
+            <Section title="The plan, how it is built" part="Part 08" accent="blue">
+                <p>
+                    <Link to="/the-plan" className="text-blue">The plan</Link> is a feeder bus network
+                    designed to connect residents to transit that already works. Every number on it comes
+                    from the formulas below, run by a separate program, not by hand.
+                </p>
+                <h3 className="type-display text-2xl text-ink pt-2">What counts as high quality</h3>
+                <p>
+                    A stop qualifies as a trunk anchor at <span className="type-data text-ink">final_score {'>'}= 70</span>,
+                    the same "decent" threshold shown on every score page. No separate bar was invented for this feature.
+                </p>
+                <h3 className="type-display text-2xl text-ink pt-2">Coverage targets and candidate routes</h3>
+                <Formula>{`target        = 80% of residents within 400m, 100% within 800m, of a high-quality stop
+candidate     = a road corridor with a synthesized stop within 1500m of a high-quality stop
+stop spacing  = every 400m along the corridor, matching the walk-catchment radius used everywhere else`}</Formula>
+                <p>
+                    The 1500m "anchor radius" is deliberately looser than the 400m/800m coverage
+                    thresholds: it answers "can this corridor plausibly connect to trunk transit",
+                    not "is a resident within walking distance of it".
+                </p>
+                <h3 className="type-display text-2xl text-ink pt-2">Route selection</h3>
+                <Formula>{`coverage_value = newly_covered_pop_400 * 1.0
+               + newly_covered_pop_800 * 0.4
+               + poi_weight_served * 400  (points of interest as a bonus, never the gate)
+value          = coverage_value / daily_cost
+each round     = add the highest-value remaining candidate, repeat until both targets are met
+               = stop and report the shortfall honestly if no candidate adds coverage`}</Formula>
+                <p>
+                    This greedy maximal-covering heuristic is transparent and fast, rather than a mathematically optimal network design. A denser road network than these fixture corridors will find more candidates and can close a shortfall this build reports.
+                </p>
+                <h3 className="type-display text-2xl text-ink pt-2">Cost and what gets retired</h3>
+                <Formula>{`daily_vehicle_km   = corridor length (km) * trips per day
+trips per day      = (peak hours * 60 / peak headway + offpeak hours * 60 / offpeak headway) * 2 directions
+annual cost        = daily_vehicle_km * cost per km * 365
+redundant route    = every stop on an existing low-quality route is now within 400m of
+                     a high-quality stop or a newly proposed route
+net annual cost    = new routes' annual cost − retired routes' annual cost`}</Formula>
+                <div className="bg-purple-900 border border-border-subtle rounded-[4px] overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead><tr className="border-b border-border-strong"><Th>Assumption</Th><Th>Value</Th></tr></thead>
+                        <tbody className="divide-y divide-border-subtle">
+                            <tr><Td>Peak headway</Td><Td mono>15 min</Td></tr>
+                            <tr><Td>Off-peak headway</Td><Td mono>30 min</Td></tr>
+                            <tr><Td>Service span</Td><Td mono>7am to 9pm</Td></tr>
+                            <tr><Td>Cost per service km</Td><Td mono>{anchorsConfig.anchors.busOperatingCostPerKm.display}</Td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p className="text-sm">
+                    These are policy choices Fusion is proposing to fund, not figures pulled from data.
+                    The cost rate is a config value, sourced and dated on <Link to="/the-plan" className="text-blue">the plan</Link> itself; it refreshes on the same cycle as every other price anchor on this site.
+                </p>
+            </Section>
 
-                            {/* Bonuses */}
-                            <div className="bg-emerald-950/30 border border-emerald-500/20 p-6 rounded-2xl">
-                                <h3 className="text-xl font-bold text-emerald-400 mb-4">✨ Inter-Modality Bonus</h3>
-                                <p className="text-sm text-emerald-200/70 mb-4">
-                                    Points awarded for network resilience. Redundancy means alternatives.
-                                </p>
-                                <div className="space-y-4 text-sm">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-emerald-100">Triple Mode (Train+Tram+Bus)</span>
-                                        <span className="font-bold text-emerald-400">+20 pts</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-emerald-100">Dual Mode (Train+Tram)</span>
-                                        <span className="font-bold text-emerald-400">+15 pts</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-emerald-100">Dual Mode (Train+Bus)</span>
-                                        <span className="font-bold text-emerald-400">+12 pts</span>
-                                    </div>
-
-                                    <div className="mt-4 pt-4 border-t border-emerald-500/30">
-                                        <div className="text-xs font-bold text-emerald-500 uppercase mb-2">Quality Weighting</div>
-                                        <p className="text-xs text-emerald-200/60 leading-relaxed mb-3">
-                                            A connection to a hourly bus (Score 30) receives a massive penalty.
-                                        </p>
-                                        <div className="grid grid-cols-2 gap-2 font-mono text-xs text-emerald-300">
-                                            <div>Neighbor Score &ge; 70</div><div className="text-right">100% Bonus</div>
-                                            <div>Neighbor Score &ge; 50</div><div className="text-right text-emerald-400/80">70% Bonus</div>
-                                            <div>Neighbor Score &lt; 50</div><div className="text-right text-emerald-600">30% Bonus</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Exclusions */}
-                <section className="space-y-6 pt-8 border-t border-slate-800">
-                    <h2 className="text-2xl font-bold text-white">What We Do Not Score</h2>
-                    <div className="grid md:grid-cols-3 gap-6">
-                        <div className="bg-slate-800 p-5 rounded-xl border border-slate-700">
-                            <h3 className="font-bold text-white mb-2">1. Cost</h3>
-                            <p className="text-sm text-slate-400">
-                                Cost affects <em>adoption</em>, not <em>viability</em>. If a bus runs every 60 minutes, it is unusable for commuting even if it's free.
-                            </p>
-                        </div>
-                        <div className="bg-slate-800 p-5 rounded-xl border border-slate-700">
-                            <h3 className="font-bold text-white mb-2">2. Timetable Coordination</h3>
-                            <p className="text-sm text-slate-400">
-                                Coordination is a band-aid for poor frequency. If service is frequent (TUAG), coordination is automatic.
-                            </p>
-                        </div>
-                        <div className="bg-slate-800 p-5 rounded-xl border border-slate-700">
-                            <h3 className="font-bold text-white mb-2">3. Speed</h3>
-                            <p className="text-sm text-slate-400">
-                                We prioritize <strong>Predictability over Speed</strong>. Users prefer a consistent 55min trip over a drive varying between 22–72min.
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
+            <div className="text-center pt-4">
+                <p className="text-sm mb-4">
+                    Check a suburb against this page any time, straight from its score card.
+                </p>
+                <Link
+                    to="/"
+                    className="pressable inline-block px-6 py-3 bg-magenta text-white font-semibold rounded-[4px]"
+                >
+                    Look up your suburb
+                </Link>
             </div>
         </div>
     );

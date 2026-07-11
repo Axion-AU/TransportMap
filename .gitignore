@@ -13,6 +13,7 @@ gtfs/
 frontend/src/data/stops.json
 frontend/src/data/shapes.json
 frontend/src/data/routes.json
+gtfs.zip
 
 # OS
 .DS_Store
@@ -22,3 +23,37 @@ Thumbs.db
 frontend/public/data/*.geojson
 !frontend/public/data/annual_metropolitan_train_station_entries_fy_2024_2025.csv
 !frontend/public/data/monthly_public_transport_patronage_by_mode.csv
+
+# Generated build-time data (derived from stops_*.geojson by frontend/scripts/build-data.mjs)
+frontend/public/data/suburbs/
+frontend/public/data/tiles/
+frontend/src/data/generated/
+
+# Generated route-line shards (derived from frontend/data-src/shapes.json by
+# frontend/scripts/split-shapes.mjs). The Rust processor may also drop a
+# fresh shapes.json here; split-shapes.mjs promotes it into data-src/ and
+# this entry keeps the huge unsharded file out of the Vite public dir.
+frontend/public/data/shapes/
+frontend/public/data/shapes.json
+
+# Unused simulation output (src/simulation.rs); not consumed by the frontend.
+frontend/public/data/simulated_bus_grid.json
+
+# Feeder-network designer inputs/outputs. Population/POI/road-corridor
+# fixtures come from frontend/scripts/gen-network-fixture.mjs; routes_cost
+# and network_plan are written by the Rust binaries (process_gtfs and
+# design_network respectively) and regenerated on every build.
+frontend/public/data/population_grid.json
+frontend/public/data/poi.json
+frontend/public/data/road_corridors.json
+frontend/public/data/routes_cost.json
+frontend/public/data/network_plan.json
+
+# Raw OSM/routing-engine inputs for the travel-time-matrix pipeline
+# (frontend/scripts/fetch-osm-extract.mjs, compute-travel-time-matrix.mjs).
+# Large (100MB-1GB+) and regenerable by re-running the fetch script; only
+# the small derived frontend/data-src/travel-time-matrix.json is committed.
+frontend/data-src/raw/
+
+# Ignore .agents/skills directory
+.agents/skills

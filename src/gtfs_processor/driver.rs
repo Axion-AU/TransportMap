@@ -3,6 +3,7 @@ use super::loader::*;
 use super::aggregator::*;
 use super::scoring::*;
 use super::exporter::*;
+use super::cost::{aggregate_route_costs, RouteCost};
 use rayon::prelude::*;
 use geojson;
 use std::collections::{HashMap, HashSet};
@@ -13,63 +14,107 @@ use std::fs;
 use csv;
 use indicatif::{ProgressBar, ProgressStyle};
 
-fn process_mode_internal(mode_id: u32, mode_name: &str, dir: &str) 
+fn process_mode_internal(mode_id: u32, mode_name: &str, dir: &str)
     -> Result<(
-        HashMap<String, StopData>, 
-        HashMap<String, ProcessedRoute>, 
-        HashMap<String, Vec<(f64, f64)>>, 
-        HashMap<String, String>
-    ), Box<dyn Error>> 
+        HashMap<String, StopData>,
+        HashMap<String, ProcessedRoute>,
+        HashMap<String, Vec<(f64, f64)>>,
+        HashMap<String, String>,
+        HashMap<String, RouteCost>,
+    ), Box<dyn Error>>
 {
      // 1. Calendars & Date
-     let (service_days, service_dates) = load_calendar(dir)?;
+     let (service_days, service_dates, service_exceptions) = load_calendar(dir)?;
      
-     // Representative Date Logic
-     let repr_date = if let Some((_, (start, end))) = service_dates.iter()
-        .max_by_key(|(_, (start, end))| (*end - *start).num_days()) {
-        
-        let mut candidate = find_nth_weekday(*start, Weekday::Wed, 2);
-        while candidate <= *end {
-            let month = candidate.month();
-            let day = candidate.day();
-            let is_holiday_period = (month == 12 && day >= 20) || (month == 1 && day <= 5) || (month == 4 && day >= 18 && day <= 22);
-            if !is_holiday_period { break; }
-            candidate = candidate + chrono::Duration::days(7);
-        }
-        if candidate <= *end { candidate } else { *start }
-    } else {
-         NaiveDate::from_ymd_opt(2025, 6, 11).unwrap() 
-    };
-
-    // Pre-calculate active services
-    let mut weekday_services = HashSet::new();
-    let mut weekend_services = HashSet::new();
-    for (sid, days) in &service_days {
-         if days.contains(&0) || days.contains(&1) || days.contains(&2) || days.contains(&3) || days.contains(&4) {
-             weekday_services.insert(sid.clone());
-         }
-         if days.contains(&5) || days.contains(&6) {
-             weekend_services.insert(sid.clone());
-         }
-    }
-
      // 2. Routes
      let (mut routes_map, valid_routes) = load_routes(dir, mode_id)?;
      
      // 3. Trips
      let trip_info = load_trips(dir, &valid_routes, &service_days)?; 
 
+     // Representative Date Logic: among all candidate weekdays of the given
+     // kind across the feed's service range, pick the one with the MEDIAN
+     // active-trip count rather than the maximum. Picking the maximum
+     // systematically selects calendar_dates.txt exception_type=1 "added
+     // service" outliers (one-off specials, extra event services) as the
+     // baseline for every stop's frequency score, inflating them feed-wide.
+     // The median represents a typical day; holiday weeks are excluded from
+     // the pool where possible since they're atypical in the other direction.
+     fn pick_representative_date(
+         candidates: &[NaiveDate],
+         trip_info: &HashMap<String, (String, String, Option<String>, u8)>,
+         service_dates: &HashMap<String, (NaiveDate, NaiveDate)>,
+         service_days: &HashMap<String, HashSet<u8>>,
+         service_exceptions: &HashMap<String, HashMap<NaiveDate, u8>>,
+         fallback: NaiveDate,
+     ) -> NaiveDate {
+         if candidates.is_empty() {
+             return fallback;
+         }
+
+         let mut counts: Vec<(NaiveDate, i32)> = candidates.iter().map(|&date| {
+             let active_count = trip_info.values()
+                 .filter(|(_, service_id, _, _)| is_service_active(service_id, date, service_dates, service_days, service_exceptions))
+                 .count() as i32;
+             (date, active_count)
+         }).collect();
+
+         let is_holiday_week = |d: NaiveDate| (d.month() == 12 && d.day() >= 22) || (d.month() == 1 && d.day() <= 2);
+         let non_holiday: Vec<(NaiveDate, i32)> = counts.iter().cloned().filter(|(d, _)| !is_holiday_week(*d)).collect();
+         if !non_holiday.is_empty() {
+             counts = non_holiday;
+         }
+
+         counts.sort_by_key(|(_, count)| *count);
+         counts[counts.len() / 2].0
+     }
+
+     let (repr_weekday_date, repr_weekend_date) = if !service_dates.is_empty() {
+         let min_date = service_dates.values().map(|(start, _)| *start).min().unwrap();
+         let max_date = service_dates.values().map(|(_, end)| *end).max().unwrap();
+
+         let mut candidate_weds = Vec::new();
+         let mut candidate_sats = Vec::new();
+         let mut curr = min_date;
+         while curr <= max_date {
+             match curr.weekday() {
+                 Weekday::Wed => candidate_weds.push(curr),
+                 Weekday::Sat => candidate_sats.push(curr),
+                 _ => {}
+             }
+             curr = curr + chrono::Duration::days(1);
+         }
+
+         let weekday = pick_representative_date(&candidate_weds, &trip_info, &service_dates, &service_days, &service_exceptions, NaiveDate::from_ymd_opt(2025, 12, 17).unwrap());
+         let weekend = pick_representative_date(&candidate_sats, &trip_info, &service_dates, &service_days, &service_exceptions, NaiveDate::from_ymd_opt(2025, 12, 20).unwrap());
+         (weekday, weekend)
+     } else {
+         (NaiveDate::from_ymd_opt(2025, 12, 17).unwrap(), NaiveDate::from_ymd_opt(2025, 12, 20).unwrap())
+     };
+
+     // Pre-calculate active services
+     let mut weekday_services = HashSet::new();
+     let mut weekend_services = HashSet::new();
+     for (sid, days) in &service_days {
+          if days.contains(&0) || days.contains(&1) || days.contains(&2) || days.contains(&3) || days.contains(&4) {
+              weekday_services.insert(sid.clone());
+          }
+          if days.contains(&5) || days.contains(&6) {
+              weekend_services.insert(sid.clone());
+          }
+     }
+
      // UPDATE ROUTE SHAPES IDs 
      let mut route_shapes: HashMap<String, HashSet<String>> = HashMap::new();
-     for (_, (rid, _, shape_opt)) in &trip_info {
-         if let Some(sid) = shape_opt {
-             route_shapes.entry(rid.clone()).or_default().insert(sid.clone());
-         }
+     for (_, (rid, _, shape_opt, _)) in &trip_info {
+          if let Some(sid) = shape_opt {
+              route_shapes.entry(rid.clone()).or_default().insert(sid.clone());
+          }
      }
      for (rid, route) in routes_map.iter_mut() {
-         if let Some(shapes) = route_shapes.get(rid) {
-             route.shape_ids = shapes.iter().cloned().collect();
-         }
+          if let Some(shapes) = route_shapes.get(rid) {
+              route.shape_ids = shapes.iter().cloned().collect();
+          }
      }
      
      // 4. Shapes
@@ -81,33 +126,39 @@ fn process_mode_internal(mode_id: u32, mode_name: &str, dir: &str)
      // Transform stops
      let mut stops_map = HashMap::new();
      for (id, s) in raw_stops {
-         let pid = format!("{}-{}", mode_id, id);
-         let mut data = StopData::new(s.stop_name, s.stop_lat, s.stop_lon, mode_id, mode_name.to_string());
-         if s.location_type == Some(1) { data.is_parent = true; }
-         stops_map.insert(pid, data);
+          let pid = format!("{}-{}", mode_id, id);
+          let mut data = StopData::new(s.stop_name, s.stop_lat, s.stop_lon, mode_id, mode_name.to_string());
+          if s.location_type == Some(1) { data.is_parent = true; }
+          stops_map.insert(pid, data);
      }
      
      let mut child_to_parent = HashMap::new();
      for (cid, pid) in raw_child_parents {
-         let c_pid = format!("{}-{}", mode_id, cid);
-         let p_pid = format!("{}-{}", mode_id, pid);
-         child_to_parent.insert(c_pid, p_pid);
+          let c_pid = format!("{}-{}", mode_id, cid);
+          let p_pid = format!("{}-{}", mode_id, pid);
+          child_to_parent.insert(c_pid, p_pid);
      }
      
      // 6. Aggregate
      aggregate_stop_times(
-         dir, 
-         mode_id, 
-         &mut stops_map, 
-         &child_to_parent, 
-         &trip_info,
-         &service_days,
-         &weekday_services,
-         &weekend_services,
-         |sid| is_service_active(sid, repr_date, &service_dates, &service_days)
+          dir, 
+          mode_id, 
+          &mut stops_map, 
+          &child_to_parent, 
+          &trip_info,
+          &service_days,
+          &weekday_services,
+          &weekend_services,
+          |sid| is_service_active(sid, repr_weekday_date, &service_dates, &service_days, &service_exceptions),
+          |sid| is_service_active(sid, repr_weekend_date, &service_dates, &service_days, &service_exceptions)
      )?;
-     
-     Ok((stops_map, routes_map, shapes, child_to_parent))
+
+     // Per-route daily operating cost baseline: trip count and vehicle-km
+     // on the same representative day used for scoring, so the network
+     // designer's "current cost" is directly comparable to its proposals.
+     let route_costs = aggregate_route_costs(&trip_info, &shapes, &service_dates, &service_days, &service_exceptions, repr_weekday_date, mode_id);
+
+     Ok((stops_map, routes_map, shapes, child_to_parent, route_costs))
 }
 
 pub fn run_processing(gtfs_root: &str) -> Result<(), Box<dyn Error>> {
@@ -142,22 +193,28 @@ pub fn run_processing(gtfs_root: &str) -> Result<(), Box<dyn Error>> {
     let mut final_routes_map = HashMap::new();
     let mut final_shapes_map = HashMap::new();
     let mut final_child_to_parent = HashMap::new();
-    
+    let mut final_route_costs: HashMap<String, RouteCost> = HashMap::new();
+
     for res in results {
         match res {
-            Ok((sm, rm, shm, ctp)) => {
+            Ok((sm, rm, shm, ctp, rc)) => {
                 final_stops_map.extend(sm);
                 final_routes_map.extend(rm);
                 final_shapes_map.extend(shm);
                 final_child_to_parent.extend(ctp);
+                final_route_costs.extend(rc);
             },
             Err(e) => eprintln!("Error processing mode: {}", e),
         }
     }
-    
+
     println!("Writing routes and shapes...");
     fs::write("frontend/public/data/routes.json", serde_json::to_string(&final_routes_map)?)?;
     fs::write("frontend/public/data/shapes.json", serde_json::to_string(&final_shapes_map)?)?;
+
+    println!("Writing route costs ({} routes)...", final_route_costs.len());
+    let route_costs_list: Vec<&RouteCost> = final_route_costs.values().collect();
+    fs::write("frontend/public/data/routes_cost.json", serde_json::to_string(&route_costs_list)?)?;
     
     // LOAD PATRONAGE
     let mut patronage_map: HashMap<String, u32> = HashMap::new();

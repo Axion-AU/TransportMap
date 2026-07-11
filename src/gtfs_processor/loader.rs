@@ -6,7 +6,11 @@ use std::error::Error;
 use std::path::Path;
 use chrono::NaiveDate;
 
-pub fn load_calendar(dir: &str) -> Result<(HashMap<String, HashSet<u8>>, HashMap<String, (NaiveDate, NaiveDate)>), Box<dyn Error>> {
+pub fn load_calendar(dir: &str) -> Result<(
+    HashMap<String, HashSet<u8>>,
+    HashMap<String, (NaiveDate, NaiveDate)>,
+    HashMap<String, HashMap<NaiveDate, u8>>,
+), Box<dyn Error>> {
     let mut active_days = HashMap::new();
     let mut service_dates = HashMap::new();
     let calendar_path = format!("{}/calendar.txt", dir);
@@ -31,7 +35,22 @@ pub fn load_calendar(dir: &str) -> Result<(HashMap<String, HashSet<u8>>, HashMap
             }
         }
     }
-    Ok((active_days, service_dates))
+
+    let mut exceptions = HashMap::new();
+    let calendar_dates_path = format!("{}/calendar_dates.txt", dir);
+    if Path::new(&calendar_dates_path).exists() {
+        let mut rdr = csv::Reader::from_path(&calendar_dates_path)?;
+        for result in rdr.deserialize() {
+            let record: GtfsCalendarDate = result?;
+            if let Some(date) = parse_gtfs_date(&record.date) {
+                exceptions.entry(record.service_id)
+                    .or_insert_with(HashMap::new)
+                    .insert(date, record.exception_type);
+            }
+        }
+    }
+
+    Ok((active_days, service_dates, exceptions))
 }
 
 pub fn load_routes(dir: &str, mode_id: u32) -> Result<(HashMap<String, ProcessedRoute>, HashSet<String>), Box<dyn Error>> {
@@ -69,8 +88,8 @@ pub fn load_routes(dir: &str, mode_id: u32) -> Result<(HashMap<String, Processed
     Ok((routes_map, valid_routes))
 }
 
-pub fn load_trips(dir: &str, valid_routes: &HashSet<String>, active_days: &HashMap<String, HashSet<u8>>) 
-    -> Result<HashMap<String, (String, String, Option<String>)>, Box<dyn Error>> 
+pub fn load_trips(dir: &str, valid_routes: &HashSet<String>, active_days: &HashMap<String, HashSet<u8>>)
+    -> Result<HashMap<String, (String, String, Option<String>, u8)>, Box<dyn Error>>
 {
     let mut trip_info = HashMap::new();
     let trips_path = format!("{}/trips.txt", dir);
@@ -80,7 +99,8 @@ pub fn load_trips(dir: &str, valid_routes: &HashSet<String>, active_days: &HashM
         for result in rdr.deserialize() {
             let record: GtfsTrip = result?;
             if valid_routes.contains(&record.route_id) && active_days.contains_key(&record.service_id) {
-                trip_info.insert(record.trip_id, (record.route_id, record.service_id, record.shape_id));
+                let direction: u8 = record.direction_id.as_deref().and_then(|d| d.parse().ok()).unwrap_or(0);
+                trip_info.insert(record.trip_id, (record.route_id, record.service_id, record.shape_id, direction));
             }
         }
     }

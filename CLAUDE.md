@@ -1,0 +1,53 @@
+# CLAUDE.md
+
+Context for any coding agent session working on TransportMap (the Transport Inequality Engine / Fusion Transport Score). Read this before making methodology, scoring, or data-pipeline changes.
+
+## What this is
+
+A GTFS-based tool scoring Melbourne (and expanding regional) public transport access, 0-100, at both the individual address level (`catchmentScore`) and the suburb level (`suburbScore`). Public-facing, owned by Fusion Party Australia, used as a membership conversion funnel and as a policy/advocacy tool. Because it's published under the party's "we did the maths" brand, methodological rigor and defensibility matter as much as correctness, expect public and adversarial scrutiny, and treat that as a feature, not friction.
+
+## Active work: methodology refactor in progress
+
+**The scoring methodology is mid-refactor as of 10 July 2026.** Before touching `scoring.ts` or anything in the scoring pipeline, read `tie-methodology-refactor.md` in full, it is the current source of truth for what's being changed, why, and what's already decided vs still open. Do not reintroduce approaches that document explicitly moves away from (see "Root causes" section) without a strong reason, they were replaced for stated reasons after adversarial review.
+
+`tie-investigation-log.md` is superseded and historical only. Do not action items from it directly, check whether they're already resolved or migrated into the refactor doc first.
+
+## Key architectural facts (current, check the refactor doc for what's changing)
+
+- **catchmentScore** (per-address): `best_viable * 0.7 + diversity_bonus * 0.3`. Best-stop-dominant is intentional here, an address score should reflect what's actually walkable from that address.
+- **suburbScore** (per-suburb): as of 2026-07-10, a 250m grid over the suburb's real Vicmap polygon, each populated cell scored like a single address (`catchmentScore` at the cell centre) and averaged weighted by real ABS 2021 Census mesh block **dwelling** counts (not usual-resident population — 2021 undercounts the newest growth estates on people more than on dwellings). The breakdown (frequency/coverage/reliability) is computed the same population-weighted way from the same cells, so headline and breakdown stay mutually reproducible. Falls back to the plain `final_score` stop-mean (`scoreMethod: 'legacy-mean'`) for suburbs outside the metro attribution scope or with zero populated cells — 496 of 762 suburbs use the grid method today, 266 use the fallback. Confirmed directly: this fixed root cause #1 exactly as predicted (St Kilda, Richmond, Fitzroy, South Yarra, North Melbourne, Carlton all moved from suppressed "decent" to real "good").
+- **Suburb attribution**: as of 2026-07-10, real point-in-polygon against Vicmap Admin locality boundaries (`frontend/data-src/vic-localities.geojson`) for the 657 localities within 70km of the Melbourne CBD (Greater Melbourne + commuter corridor). Stops outside that scope still use the old nearest-stop/name-parsing fallback cascade, unchanged and intentionally not touched by this piece — do not extend or patch it, remote-regional polygon coverage is deferred, not abandoned. Unattributed rate: 5.76% (was 7.54%). A real Vicmap locality can have zero stops inside its exact boundary (confirmed for Doreen, Wollert, Toolern Vale, and Melton town centre this session) — that is a real finding, not a bug, and is documented on the methodology page.
+- **block_id**: confirmed unusable for trip-joining. 0% populated in tram/bus GTFS feeds, 65% in metro train. Don't rely on it.
+- **Frequency calculation**: fixed two stacked bugs on 9 July (AM/PM peak pooling creating artificial 7-hour gaps; bidirectional stops pooling both directions under one stop_id, halving apparent headway). Both fixed by computing per-direction and using median representative dates rather than max-trip-count dates. Verify against these known-good reference points if touching frequency code again: Melton ~14.5min (was 34.83min), Watsonia ~5min.
+- **Open question (not a bug, not yet fixed)**: `driver.rs`'s representative-date picker takes the *median* trip-count Wednesday/Saturday across a service's whole calendar span. Investigated 2026-07-10 after a real Cobblebank report: a large enough network-wide service change already encoded in `calendar_dates.txt` (old pattern cancelled from a known future date, replacement not yet published — confirmed real via a Transport Vic news release, not corruption) can drag the median into a mass-cancellation window if more than half the candidate dates fall after the cutoff. Current output isn't affected (the chosen bus weekday, 2026-07-08, is safely before the cutoff), but this is a real structural risk worth addressing before it silently isn't. Candidate fix: bias toward "today" (the run date) rather than a whole-calendar median.
+- **GTFS-realtime**: not yet used. A PTV API key is available (`https://opendata.transport.vic.gov.au/dataset/gtfs-realtime`) for TripUpdates/VehiclePositions/ServiceAlerts, which could directly address the stated "cancelled or ghost services score better than they deserve" limitation on the methodology page. Flagged 2026-07-10, not scoped or started.
+- **Step-table curves**: as of 2026-07-10, `calculate_headway_score`, service-span's hours/night-bonus components, `calculate_reliability_score`, and the shared frequency/catchment penalty multiplier (`src/gtfs_processor/scoring.rs`) are continuous curves, not step tables — see root cause #3. Do not reintroduce a lookup table; if a curve needs recalibrating, adjust its 1-3 named constants and re-run the fixture suite, don't add a branch.
+
+## Data sources to use, not invent
+
+- **Suburb/locality boundaries**: Vicmap Admin (Victorian government, free, authoritative) — in use since 2026-07-10 via `frontend/scripts/fetch-locality-boundaries.mjs` (WFS GeoServer at `opendata.maps.vic.gov.au`), scoped to Greater Melbourne + commuter corridor (70km of the CBD, 657 localities). Do not approximate boundaries computationally; re-run the fetch script (not a computed approximation) if wider geographic scope is needed later.
+- **Population weighting**: ABS 2021 Census mesh block dwelling counts — in use since 2026-07-10 via `frontend/scripts/fetch-mesh-block-population.mjs`, fetched directly from the official ABS mesh-block boundary shapefile and dwelling/population count Excel release (abs.gov.au), not a third-party mirror. Output: `frontend/data-src/vic-mesh-block-population.json` (centroid + counts only, ~8.8MB — full mesh-block polygons are never carried into the runtime pipeline). Weight by `dwellings`, not `population`; see the suburbScore note above for why. Re-run the fetch script (not a synthetic placeholder) if the 2026 Census mesh block data becomes available later and should replace this.
+- **Job/POI counts for accessibility measures**: ABS DZN place-of-work data (free).
+- **Travel time matrices**: r5py or OpenTripPlanner for PT (GTFS + OSM), OSRM for car time (same OSM extract). Both free, no API costs, intended to run locally.
+- **Fare/membership pricing anchors**: must stay in sync with actual party fee tiers (currently Standard $69.08 / Concession $17.27 / Free $0, indexed to Victorian statutory fee units, refreshed ~1 July each year). Do not hardcode prices in components; pull from the shared anchors config. A past bug let "less than a week of fares" go false when it should have been checked against the real fare anchor, don't reintroduce hardcoded comparisons.
+
+## Validation discipline
+
+A validation fixture suite exists as of 2026-07-10: `frontend/scripts/fixtures/suburb-fixtures.json` and `point-fixtures.json`, checked by `frontend/scripts/check-fixtures.mjs` as part of `npm run check` (and therefore `npm run build`). Every fixture asserts a floor (`minBand`) or ceiling (`maxBand`), not an exact band, and carries a citation to a real external source (VAGO growth-areas audit, Infrastructure Victoria reports, or network topology) — never invented consensus. `cargo test` and `npm test` also now run in CI (`.github/workflows/ci.yml`), previously wired to nothing. If you're asked to change scoring weights or curves, run this suite against real data first — a floor/ceiling break is a signal to reconsider the change, not to loosen the fixture.
+
+## Compliance, non-negotiable
+
+- Every page/generated asset must carry the Victorian electoral authorisation line in its footer and baked into any generated share image. No asset renders without it.
+- No user address data at rest anywhere in the stack, geocode client-side or discard immediately.
+- The `/methodology` page must ship in the same release as any scoring change, not after. Every number displayed must be reproducible from that page.
+
+## Design context
+
+- `PRODUCT.md` — register (brand/campaign), platform (web), primary/secondary users, positioning ("costed the fix, not just the problem"), brand personality (insurgent data journalism), anti-references, and accessibility target (WCAG 2.1 AA plus plain-language). Read before any strategic or copy-level frontend decision.
+- `DESIGN.md` — the existing "Reclaim" visual system, documented as "The Ledger of Neglect": dark violet-black base, one shared magenta-to-teal accent spectrum, near-sharp 2-4px corners, condensed uppercase display type, Space Mono for every measured number. Read before any visual/UI change. `.impeccable/design.json` carries the same system's tonal ramps, shadow/motion tokens, and reusable component snippets.
+
+## Where things are tracked
+
+- `tie-methodology-refactor.md` — current methodology work, decisions, changelog (dated to the day). **Primary source of truth.**
+- `tie-investigation-log.md` — historical, superseded, kept for reference only.
+- This file — persistent context for coding agent sessions. Keep it updated when the refactor doc's "Open Decisions" get resolved, or when a new structural decision is made that future sessions need to know about before touching related code.

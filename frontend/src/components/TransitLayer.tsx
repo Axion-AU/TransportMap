@@ -8,6 +8,8 @@ import L from 'leaflet';
 
 interface TransitLayerProps {
     viewMode: 'connectivity' | 'mode';
+    /** Route shapes are sharded by mode; only fetched when the user opts in, and then only the shard(s) a selected stop needs. */
+    showShapes?: boolean;
 }
 
 
@@ -82,10 +84,31 @@ const getIcon = (stop: Stop, viewMode: 'connectivity' | 'mode') => {
 
 
 
-const TransitLayer = ({ viewMode }: TransitLayerProps) => {
+/** Given a selected stop, the shapeIds its routes actually serve. */
+const relevantShapeIdsFor = (stop: Stop, routes: Record<string, Route>): string[] => {
+    const ids: string[] = [];
+    for (const routeId of stop.route_ids) {
+        const route = routes[routeId];
+        if (!route) continue;
+        if (route.shape_ids && stop.shape_ids) {
+            for (const shapeId of route.shape_ids) {
+                if (stop.shape_ids.includes(shapeId)) ids.push(shapeId);
+            }
+        } else {
+            // Legacy fallback: shapes once keyed directly by routeId.
+            ids.push(routeId);
+        }
+    }
+    return ids;
+};
+
+const TransitLayer = ({ viewMode, showShapes = false }: TransitLayerProps) => {
     const map = useMap();
     const [stops, setStops] = useState<Stop[]>([]);
+    // Route line geometry, fetched a shard at a time as stops are selected.
     const [shapes, setShapes] = useState<Record<string, [number, number][]>>({});
+    const [shapeManifest, setShapeManifest] = useState<Record<string, string> | null>(null);
+    const [loadedShards, setLoadedShards] = useState<Set<string>>(new Set());
     const [routes, setRoutes] = useState<Record<string, Route>>({});
     const [loading, setLoading] = useState(true);
     const [visibleStops, setVisibleStops] = useState<Stop[]>([]);
@@ -95,29 +118,13 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
         const fetchData = async () => {
             try {
                 console.log('Fetching transit data...');
-                const [
-                    metroTrainRes,
-                    metroTramRes,
-                    metroBusRes,
-                    regionalTrainRes,
-                    regionalCoachRes,
-                    regionalBusRes,
-                    skybusRes,
-                    shapesRes,
-                    routesRes
-                ] = await Promise.all([
-                    fetch('/data/stops_metro_train.geojson'),
-                    fetch('/data/stops_metro_tram.geojson'),
-                    fetch('/data/stops_metro_bus.geojson'),
-                    fetch('/data/stops_regional_train.geojson'),
-                    fetch('/data/stops_regional_coach.geojson'),
-                    fetch('/data/stops_regional_bus.geojson'),
-                    fetch('/data/stops_skybus.geojson'),
-                    fetch('/data/shapes.json'),
+                const [manifestRes, routesRes] = await Promise.all([
+                    fetch('/data/stops_manifest.json'),
                     fetch('/data/routes.json')
                 ]);
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const manifest = await manifestRes.json() as Record<string, string[]>;
+                
                 const parseGeoJSONStops = async (res: Response): Promise<Stop[]> => {
                     const data = await res.json();
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -168,15 +175,40 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
                     }));
                 };
 
+                const fetchModeStops = async (files: string[]) => {
+                    const results = await Promise.all(files.map(f => fetch(f)));
+                    const stopArrays = await Promise.all(results.map(r => parseGeoJSONStops(r)));
+                    return stopArrays.flat();
+                };
+
+                const [
+                    metroTrainStops,
+                    metroTramStops,
+                    metroBusStops,
+                    regionalTrainStops,
+                    regionalCoachStops,
+                    regionalBusStops,
+                    skybusStops
+                ] = await Promise.all([
+                    fetchModeStops(manifest.metro_train || []),
+                    fetchModeStops(manifest.metro_tram || []),
+                    fetchModeStops(manifest.metro_bus || []),
+                    fetchModeStops(manifest.regional_train || []),
+                    fetchModeStops(manifest.regional_coach || []),
+                    fetchModeStops(manifest.regional_bus || []),
+                    fetchModeStops(manifest.skybus || [])
+                ]);
+
                 const rawStops = [
-                    ...(await parseGeoJSONStops(metroTrainRes)),
-                    ...(await parseGeoJSONStops(metroTramRes)),
-                    ...(await parseGeoJSONStops(metroBusRes)),
-                    ...(await parseGeoJSONStops(regionalTrainRes)),
-                    ...(await parseGeoJSONStops(regionalCoachRes)),
-                    ...(await parseGeoJSONStops(regionalBusRes)),
-                    ...(await parseGeoJSONStops(skybusRes))
+                    ...metroTrainStops,
+                    ...metroTramStops,
+                    ...metroBusStops,
+                    ...regionalTrainStops,
+                    ...regionalCoachStops,
+                    ...regionalBusStops,
+                    ...skybusStops
                 ];
+
 
                 // Deduplicate / Chunk Stops
                 const deduplicateStops = (stops: Stop[]) => {
@@ -282,11 +314,9 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
 
                 const allStops = deduplicateStops(rawStops);
 
-                const shapesData = await shapesRes.json();
                 const routesData = await routesRes.json();
 
                 setStops(allStops);
-                setShapes(shapesData);
                 setRoutes(routesData);
                 setLoading(false);
                 console.log('Data loaded successfully:', allStops.length, 'stops');
@@ -326,53 +356,84 @@ const TransitLayer = ({ viewMode }: TransitLayerProps) => {
         click: () => setSelectedStop(null) // Deselect on map click
     });
 
+    // Shape data is sharded by mode (~10-20MB each) instead of one ~90MB
+    // blob. Fetch the small manifest once the user opts in, then fetch only
+    // the shard(s) a selected stop's routes actually need.
     useEffect(() => {
+        if (!showShapes || shapeManifest !== null) return;
+        fetch('/data/shapes/manifest.json')
+            .then(res => (res.ok ? res.json() : {}))
+            .then(setShapeManifest)
+            .catch(err => {
+                console.error('Error loading shape manifest:', err);
+                setShapeManifest({});
+            });
+    }, [showShapes, shapeManifest]);
+
+    useEffect(() => {
+        if (!showShapes || !selectedStop || !shapeManifest) return;
+
+        const neededShapeIds = relevantShapeIdsFor(selectedStop, routes);
+        const shardsToFetch = new Set<string>();
+        for (const shapeId of neededShapeIds) {
+            const shard = shapeManifest[shapeId];
+            if (shard && !loadedShards.has(shard)) shardsToFetch.add(shard);
+        }
+        if (shardsToFetch.size === 0) return;
+
+        Promise.all(
+            [...shardsToFetch].map(shard =>
+                fetch(`/data/shapes/${shard}`)
+                    .then(res => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+                    .then(data => ({ shard, data, ok: true as const }))
+                    .catch(err => {
+                        console.error(`Error loading shape shard ${shard}:`, err);
+                        return { shard, data: {}, ok: false as const };
+                    }),
+            ),
+        ).then(shardResults => {
+            setShapes(prev => Object.assign({}, prev, ...shardResults.map(r => r.data)));
+            // Only mark shards that actually loaded; a failed fetch stays
+            // eligible for retry next time this stop (or another sharing
+            // the shard) is selected.
+            const succeeded = shardResults.filter(r => r.ok).map(r => r.shard);
+            setLoadedShards(prev => new Set([...prev, ...succeeded]));
+        });
+    }, [showShapes, selectedStop, shapeManifest, routes, loadedShards]);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- recompute viewport stops once data arrives
         updateVisibleStops();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stops, loading]); // Update when data loads
 
     if (loading) return null; // Or a loader component
 
     return (
         <LayerGroup>
-            {/* Render Lines for Selected Stop */}
-            {selectedStop && selectedStop.route_ids.map(routeId => {
-                const route = routes[routeId];
-                if (!route) return null;
+            {/* Render lines for the selected stop, from whichever shards have loaded so far */}
+            {showShapes && selectedStop && relevantShapeIdsFor(selectedStop, routes).map(shapeId => {
+                const positions = shapes[shapeId];
+                if (!positions) return null;
 
-                // Find shapes that belong to this route AND serve the selected stop
-                const relevantShapes: string[] = [];
+                // Matches relevantShapeIdsFor's own fallback: when a route has no
+                // shape_ids, that function pushes the routeId itself as the
+                // "shapeId", so the color lookup has to accept that same fallback.
+                const route = selectedStop.route_ids
+                    .map(rid => ({ rid, r: routes[rid] }))
+                    .find(({ rid, r }) => (r?.shape_ids ? r.shape_ids.includes(shapeId) : rid === shapeId))?.r;
 
-                if (route.shape_ids && selectedStop.shape_ids) {
-                    // New logic: Check distinct shapes
-                    route.shape_ids.forEach(shapeId => {
-                        if (selectedStop.shape_ids?.includes(shapeId)) {
-                            relevantShapes.push(shapeId);
-                        }
-                    });
-                } else {
-                    // Fallback logic using route mapping (legacy)
-                    // If shapes were keyed by routeId (old behavior), this would work. 
-                    // But now shapes are keyed by shapeId. 
-                    // So we try to use the routeId as a shapeId directly just in case.
-                    relevantShapes.push(routeId);
-                }
-
-                return relevantShapes.map(shapeId => {
-                    const positions = shapes[shapeId];
-                    if (!positions) return null;
-
-                    return (
-                        <Polyline
-                            key={shapeId}
-                            positions={positions}
-                            pathOptions={{
-                                color: route.color,
-                                weight: 4,
-                                opacity: 0.8
-                            }}
-                        />
-                    );
-                });
+                return (
+                    <Polyline
+                        key={shapeId}
+                        positions={positions}
+                        pathOptions={{
+                            color: route?.color ?? '#999',
+                            weight: 4,
+                            opacity: 0.8
+                        }}
+                    />
+                );
             })}
 
             {visibleStops.map(stop => (

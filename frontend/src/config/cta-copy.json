@@ -1,0 +1,31 @@
+{
+  "_comment": "Join CTA copy keyed by score band. {suburb}, {score}, {membershipStandard}, {membershipConcession}, {weeklyFares} are replaced at render. Voice rules apply: plain, specific, sourced, no em-dashes, no negate-then-correct constructions.",
+  "bands": {
+    "stranded": {
+      "heading": "CAR OWNERSHIP IS COMPULSORY HERE",
+      "body": "{suburb} scored {score}/100 because successive state governments chose to ignore it. Fusion costed the fix. Membership is {membershipStandard} a year, or {membershipConcession} on the concession rate.",
+      "button": "Join Fusion and fix it"
+    },
+    "poor": {
+      "heading": "FULL FARE FOR A FRACTION OF THE SERVICE",
+      "body": "A week of metro commuting costs about {weeklyFares}. {suburb} receives {score}/100 service in return. Fusion membership is {membershipStandard} a year ({membershipConcession} concession) and includes a costed transport plan.",
+      "bodyRegional": "{suburb} receives {score}/100 service, and regional fares run higher than the metro myki cap. Fusion membership is {membershipStandard} a year ({membershipConcession} concession) and includes a costed transport plan.",
+      "button": "Join Fusion"
+    },
+    "patchy": {
+      "heading": "PATCHY SERVICE RUNS BY CHANCE, NOT CHOICE",
+      "body": "{suburb} scores only {score}/100. We costed the plan to bring high-frequency transit to your address. Join Fusion for {membershipStandard} a year ({membershipConcession} concession) to make it happen.",
+      "button": "Join Fusion"
+    },
+    "decent": {
+      "heading": "DECENT BUT NOT COMPLETE",
+      "body": "{suburb} scores {score}/100. While this is better than most of Melbourne, service still drops off at night and on weekends. Join Fusion for {membershipStandard} a year ({membershipConcession} concession) to fund the campaign for a complete timetable.",
+      "button": "Join Fusion"
+    },
+    "good": {
+      "heading": "THE STANDARD EVERY SUBURB DESERVES",
+      "body": "{suburb} scores {score}/100, proving that high-quality public transport is possible. Join Fusion for {membershipStandard} a year ({membershipConcession} concession) to campaign for this standard across Victoria.",
+      "button": "Join Fusion"
+    }
+  }
+}

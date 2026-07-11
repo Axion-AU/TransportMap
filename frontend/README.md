@@ -1,73 +1,38 @@
-# React + TypeScript + Vite
+# Transport Score frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Vite + React + Tailwind 4 site for the Fusion Transport Score funnel.
 
-Currently, two official plugins are available:
+## Commands
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- `npm run dev` starts the dev server. If scored stop data is missing it generates a labelled sample dataset first.
+- `npm run build` runs the full production pipeline: data derivation, typecheck, client build, SSR build, share image generation, prerender of every suburb page, then voice and compliance checks. The build fails when a page or share image lacks the authorisation line.
+- `npm run test` runs the golden scoring tests. They recompute suburb aggregates from stop inputs using only the formulas printed on the methodology page.
+- `npm run check` runs the voice lint and compliance scan on their own.
 
-## React Compiler
+## Environment
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `VITE_SITE_ORIGIN` production origin, required for a non-sample build (absolute `og:image` URLs).
+- `VITE_ANALYTICS_DOMAIN` Plausible domain. Unset means the analytics adapter logs to the console and sends nothing.
 
-## Expanding the ESLint configuration
+## Where things live
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- `src/config/` every campaign-tunable value: brand tokens, join URL and UTM tagging, authorisation line, price anchors (refreshed each July 1), CTA copy variants.
+- `src/lib/scoring.ts` the one implementation of the catchment and suburb formulas, shared by the browser and the build scripts.
+- `scripts/` build-time pipeline: data derivation, fixture generation, prerender, share images, checks.
+- `public/data/` generated stop and suburb data. Regenerate with the Rust processor plus `npm run build:data`; never hand-edit.
+- `data-src/shapes.json` the committed source for the /map route lines. `npm run build:shapes` shards it into `public/data/shapes/` (each shard under 25MB); if the Rust processor drops a fresh `shapes.json` into `public/data/`, the sharding script promotes it into `data-src/` automatically and removes the oversized copy from the public dir.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Deploy to Cloudflare Workers
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+The production build is fully static (`dist/client`), so it deploys as a static-assets Worker: no server-side Worker script, Wrangler just serves the prerendered output.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. `npx wrangler login` once, if this machine hasn't authenticated before.
+2. Set the build-time environment before building. These are **Vite env vars baked in at build time**, not Workers runtime vars, because nothing here reads them per-request:
+   ```
+   VITE_SITE_ORIGIN=https://your-domain.example
+   VITE_ANALYTICS_DOMAIN=your-plausible-domain.example
+   ```
+3. `npm run deploy:workers` builds (via its `predeploy:workers` hook) and runs `wrangler deploy`.
+4. Confirm `wrangler.toml`'s `name` matches the Worker you want in your account, and attach a custom domain in the Cloudflare dashboard if `VITE_SITE_ORIGIN` points at one.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Every static asset must be under Cloudflare's 25 MiB per-file limit. The only file in this repo that ever approached it, the route-line geometry, is pre-sharded by `npm run build:shapes` into per-mode files well under that cap; nothing else in the build comes close.

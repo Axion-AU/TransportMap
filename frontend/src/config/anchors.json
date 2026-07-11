@@ -1,0 +1,48 @@
+{
+  "_comment": "Every price and cost anchor the site displays. Refresh each July 1 when fee units and fares change. Components must import from here; the compliance check fails the build on hardcoded dollar figures elsewhere.",
+  "refreshed": "2026-07-01",
+  "anchors": {
+    "mykiDailyCapZone12": {
+      "value": 11.6,
+      "display": "$11.60",
+      "label": "myki daily cap, zone 1 and 2",
+      "source": "PTV fares page, 2026 fare schedule. Confirm before launch."
+    },
+    "mykiWeeklyCommute": {
+      "value": 58,
+      "display": "$58",
+      "label": "five weekday daily caps",
+      "source": "Derived: 5 x mykiDailyCapZone12."
+    },
+    "avgAnnualCarCost": {
+      "value": 15000,
+      "display": "$15,000",
+      "label": "average annual cost of running a car",
+      "source": "RACV vehicle running costs survey. Confirm current figure before launch."
+    },
+    "membershipStandard": {
+      "value": 69.08,
+      "display": "$69.08",
+      "label": "Fusion membership, one year, standard rate",
+      "source": "Membership team fee schedule, 2026. TODO(launch): link canonical source."
+    },
+    "membershipConcession": {
+      "value": 17.27,
+      "display": "$17.27",
+      "label": "Fusion membership, one year, concession rate",
+      "source": "Membership team fee schedule, 2026. TODO(launch): link canonical source."
+    },
+    "membershipFree": {
+      "value": 0,
+      "display": "$0",
+      "label": "Fusion membership, one year, free tier",
+      "source": "Membership team fee schedule, 2026. TODO(launch): link canonical source."
+    },
+    "busOperatingCostPerKm": {
+      "value": 6.5,
+      "display": "$6.50",
+      "label": "metropolitan bus operating cost per service kilometre",
+      "source": "TODO(confirm): midpoint of a $6 to $7 per km figure derived from Victorian state budget papers by a transit-planning blog, not a primary DTP/PTV source. Replace with an official figure before this number is used in a public claim."
+    }
+  }
+}
