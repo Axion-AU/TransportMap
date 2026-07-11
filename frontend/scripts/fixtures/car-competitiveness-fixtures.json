@@ -1,0 +1,26 @@
+[
+    {
+        "slug": "truganina",
+        "minRatio": 5,
+        "currentScoreAtWriting": 7.44,
+        "citation": "Network topology: Truganina is a Wyndham-area growth corridor suburb with no direct passenger rail line (nearest stations are Williams Landing/Tarneit, several km away) and PT access is bus-only for most of the suburb -- a real structural gap, not a data artifact. Its gravity-weighted ratio should stay clearly above inner/middle suburbs served by tram or train even as the uncalibrated decay constant is tuned."
+    },
+    {
+        "slug": "deanside",
+        "minRatio": 5,
+        "currentScoreAtWriting": 7.23,
+        "citation": "Network topology: Deanside is a Melton-area growth corridor suburb without a rail station inside it (nearest is Rockbank/Cobblebank), served predominantly by bus -- consistent with this session's real GTFS-derived Cobblebank-area finding (see docs/methodology_refactor.md changelog, 2026-07-10) that this corridor's rail-adjacent service is still expanding."
+    },
+    {
+        "slug": "carlton",
+        "maxRatio": 6,
+        "currentScoreAtWriting": 3.97,
+        "citation": "Network topology: Carlton has dense inner-city tram coverage (multiple routes) and is a short walk from the CBD's train hub -- it should stay materially more car-competitive than outer growth-corridor suburbs with bus-only access, even though the gravity-weighted average across many destinations (not just the CBD) still shows public transport as slower than driving overall, which is a real, expected feature of a radial network for non-CBD trips, not a bug."
+    },
+    {
+        "slug": "croydon",
+        "maxRatio": 6,
+        "currentScoreAtWriting": 2.96,
+        "citation": "Network topology: Croydon sits directly on the Belgrave/Lilydale train line with a station in the suburb -- it should stay clearly more car-competitive than growth-corridor suburbs with no rail access at all (Truganina, Deanside above), even as the uncalibrated decay constant is tuned."
+    }
+]

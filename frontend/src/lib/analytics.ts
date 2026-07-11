@@ -15,7 +15,8 @@ export type FunnelEvent =
     | 'share_clicked'
     | 'link_copied'
     | 'cta_clicked'
-    | 'embed_loaded';
+    | 'embed_loaded'
+    | 'compare_viewed';
 
 type EventProps = Record<string, string | number | boolean>;
 

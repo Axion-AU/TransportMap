@@ -113,6 +113,7 @@ for (const s of suburbIndex.suburbs) {
             score: detail.score,
             scoreColor: BAND_COLORS[detail.band],
             verdict: detail.verdict,
+            band: detail.band,
         },
     });
 }

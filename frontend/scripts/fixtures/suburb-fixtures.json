@@ -82,5 +82,17 @@
     "maxBand": "patchy",
     "currentScoreAtWriting": 50,
     "citation": "VAGO report: Whittlesea council area named for inadequate coverage. NOTE: Mernda shows only 1 attributed stop today, itself very likely a suburb-attribution artifact (same failure mode as the Carlton fragment) rather than a true reflection of the area's real stop count -- re-verify this fixture's stop count once item 6 (polygon attribution) ships, not just its score."
+  },
+  {
+    "slug": "melbourne-airport",
+    "minBand": "patchy",
+    "currentScoreAtWriting": 52,
+    "citation": "Real Skybus (85, 78/100) and SmartBus-style routes (up to 74/100) serve the terminal precinct. Suburb has exactly 1 populated ABS mesh-block dwelling cell (14 dwellings), sitting 798.9m from the nearest stop -- just outside the 800m CATCHMENT_RADIUS_M cutoff, making the single-cell grid score a coin-flip artifact rather than a real area-weighted average (was 0/grid before the fix). Fixed 2026-07-11: suburbs with fewer than MIN_GRID_CELLS=3 populated cells now fall back to the legacy stop-mean, scoring Melbourne Airport 52/patchy, reflecting the genuinely good terminal-area service."
+  },
+  {
+    "slug": "avalon",
+    "maxBand": "stranded",
+    "currentScoreAtWriting": 0,
+    "citation": "Real finding, not a bug: Avalon's 4 populated dwelling cells (residential area near Lara/Little River) sit 4.4-7.5km from the suburb's only 4 stops, all clustered at Avalon Airport terminal serving passengers/staff. No populated cell is within the 800m catchment radius of any stop, so the population-weighted grid score is genuinely 0 -- confirmed 2026-07-11, has 4 populated cells (above MIN_GRID_CELLS=3) so this is not the single-cell coin-flip that affected Melbourne Airport. Documented as an editorial note on the suburb page (SUBURB_NOTES in build-data.mjs) since bestScore (53, from the airport-area stops) would otherwise read as inconsistent with a 0/100 headline."
   }
 ]

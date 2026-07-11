@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import LookupInput from '../components/LookupInput';
-import TransitMeshVisual from '../components/TransitMeshVisual';
+import TrainMapVisual from '../components/TrainMapVisual';
 import suburbIndex from '../data/generated/suburb-index.json';
 import anchorsConfig from '../config/anchors.json';
 import type { SuburbIndex } from '../types/data';
@@ -57,7 +57,7 @@ const LandingPage = () => {
                     </div>
                 </header>
                 <div className="md:col-span-5 animate-fade-in-up stagger-5 relative z-10">
-                    <TransitMeshVisual />
+                    <TrainMapVisual />
                 </div>
             </div>
 

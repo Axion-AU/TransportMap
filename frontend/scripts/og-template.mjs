@@ -12,7 +12,7 @@ export const OG_HEIGHT = 630;
 
 const el = (type, style, children) => ({ type, props: { style, children } });
 
-export function ogTemplate({ heading, score, scoreColor, verdict, authLine, expectedAuthLine, fixture, siteLabel, logoDataUrl }) {
+export function ogTemplate({ heading, score, scoreColor, verdict, authLine, expectedAuthLine, fixture, siteLabel, logoDataUrl, band }) {
     if (!authLine || authLine !== expectedAuthLine) {
         throw new Error('OG render blocked: authorisation line missing or does not match site config.');
     }
@@ -73,6 +73,21 @@ export function ogTemplate({ heading, score, scoreColor, verdict, authLine, expe
                     paddingBottom: 14,
                     display: 'flex',
                 }, '/100'),
+                ...(band ? [
+                    el('div', {
+                        display: 'flex',
+                        backgroundColor: scoreColor,
+                        color: '#1A0029',
+                        fontFamily: 'Barlow Condensed',
+                        fontWeight: 900,
+                        fontSize: 36,
+                        padding: '4px 16px',
+                        borderRadius: 4,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        marginBottom: 18,
+                    }, band)
+                ] : [])
             ]),
             el('div', {
                 fontFamily: 'Barlow Condensed',

@@ -7,6 +7,42 @@ import { initAnalytics } from './lib/analytics';
 
 initAnalytics();
 
+// Global handler for dynamic import chunk load errors (Vite)
+if (typeof window !== 'undefined') {
+    window.addEventListener('error', (event) => {
+        const isChunkError = 
+            event.message?.includes('Failed to fetch dynamically imported module') ||
+            event.message?.includes('Loading chunk') ||
+            event.message?.includes('Failed to fetch');
+            
+        if (isChunkError) {
+            const hasReloaded = sessionStorage.getItem('chunk-error-reload');
+            if (!hasReloaded) {
+                sessionStorage.setItem('chunk-error-reload', 'true');
+                window.location.reload();
+            }
+        }
+    }, true);
+
+    window.addEventListener('unhandledrejection', (event) => {
+        const isChunkError = 
+            event.reason?.message?.includes('Failed to fetch dynamically imported module') ||
+            event.reason?.message?.includes('Loading chunk') ||
+            event.reason?.message?.includes('Failed to fetch');
+            
+        if (isChunkError) {
+            const hasReloaded = sessionStorage.getItem('chunk-error-reload');
+            if (!hasReloaded) {
+                sessionStorage.setItem('chunk-error-reload', 'true');
+                window.location.reload();
+            }
+        }
+    });
+
+    // Clear reload flag if the application loads successfully
+    sessionStorage.removeItem('chunk-error-reload');
+}
+
 const root = document.getElementById('root')!;
 const app = (
     <React.StrictMode>

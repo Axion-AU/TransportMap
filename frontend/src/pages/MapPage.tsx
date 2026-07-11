@@ -20,14 +20,15 @@ const MapPage = () => {
                 <AddressSearch />
             </Map>
             <Controls viewMode={viewMode} setViewMode={setViewMode} />
-            <div className="absolute bottom-4 left-4 z-[2000]">
-                <label className="flex items-center gap-2 bg-surface-raised border border-border-strong rounded-[4px] px-3 py-2 text-sm cursor-pointer">
+            <div className="absolute bottom-4 left-4 z-[2000] max-w-[calc(100vw-32px)]">
+                <label className="flex items-center gap-2 bg-surface-raised border border-border-strong rounded-[4px] px-3 py-2 text-xs md:text-sm cursor-pointer select-none">
                     <input
                         type="checkbox"
                         checked={showShapes}
                         onChange={(e) => setShowShapes(e.target.checked)}
                     />
-                    Show route lines for the selected stop
+                    <span className="hidden md:inline">Show route lines for the selected stop</span>
+                    <span className="inline md:hidden">Show route lines</span>
                 </label>
             </div>
             <Legend viewMode={viewMode} onInfoClick={() => { }} />

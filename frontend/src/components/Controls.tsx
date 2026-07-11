@@ -7,12 +7,12 @@ interface ControlsProps {
 
 const Controls = ({ viewMode, setViewMode }: ControlsProps) => {
     return (
-        <div className="absolute top-20 left-6 z-[1000] flex flex-col gap-3">
+        <div className="absolute top-[76px] left-1/2 -translate-x-1/2 md:left-6 md:translate-x-0 z-[1000] flex flex-col gap-3 w-[90%] md:w-auto max-w-md md:max-w-none">
             {/* View Mode Switcher */}
-            <div className="bg-surface-raised/95 backdrop-blur-md p-1 rounded-[4px] border border-border-strong shadow-2xl flex gap-1">
+            <div className="bg-surface-raised/95 backdrop-blur-md p-1 rounded-[4px] border border-border-strong shadow-2xl flex gap-1 w-full">
                 <button
                     onClick={() => setViewMode('connectivity')}
-                    className={`px-4 py-2 rounded-[4px] text-xs font-bold type-overline transition-all flex items-center gap-2.5 pressable ${
+                    className={`flex-1 md:flex-none px-4 py-2 rounded-[4px] text-xs font-bold type-overline transition-all flex items-center justify-center gap-2.5 pressable ${
                         viewMode === 'connectivity'
                             ? 'bg-violet text-ink border border-border-strong shadow-lg shadow-violet/20'
                             : 'text-ink-soft hover:text-ink hover:bg-purple-900/60'
@@ -23,7 +23,7 @@ const Controls = ({ viewMode, setViewMode }: ControlsProps) => {
                 </button>
                 <button
                     onClick={() => setViewMode('mode')}
-                    className={`px-4 py-2 rounded-[4px] text-xs font-bold type-overline transition-all flex items-center gap-2.5 pressable ${
+                    className={`flex-1 md:flex-none px-4 py-2 rounded-[4px] text-xs font-bold type-overline transition-all flex items-center justify-center gap-2.5 pressable ${
                         viewMode === 'mode'
                             ? 'bg-violet text-ink border border-border-strong shadow-lg shadow-violet/20'
                             : 'text-ink-soft hover:text-ink hover:bg-purple-900/60'
@@ -35,7 +35,7 @@ const Controls = ({ viewMode, setViewMode }: ControlsProps) => {
             </div>
 
             {/* Instruction Card */}
-            <div className="bg-surface-raised/95 backdrop-blur-md px-4 py-3.5 rounded-[4px] border border-border-subtle shadow-xl max-w-[300px]">
+            <div className="hidden md:block bg-surface-raised/95 backdrop-blur-md px-4 py-3.5 rounded-[4px] border border-border-subtle shadow-xl max-w-[300px]">
                 <div className="text-xs font-bold text-ink mb-1.5 flex items-center gap-1.5 type-overline">
                     <div className="w-1.5 h-1.5 rounded-full bg-cyan"></div>
                     Click anywhere on the map

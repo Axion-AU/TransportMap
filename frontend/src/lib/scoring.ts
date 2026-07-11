@@ -51,14 +51,38 @@ export interface SuburbBreakdown {
     reliability: number;
 }
 
+/** Per-mode summary within a suburb, used to notice when one mode carries the score and another drags it down. */
+export interface ModeBreakdown {
+    /** Raw mode_name from the GTFS processor, e.g. "metro_train", "metro_bus". */
+    modeName: string;
+    /** How many stops of this mode exist in the suburb -- how many residents this mode actually reaches. */
+    stopCount: number;
+    /** Best final_score of any single stop of this mode (can be an outlier one or two isolated stops reach). */
+    bestScore: number;
+    /** Mean final_score across all of this mode's stops -- what a typical stop of this mode looks like. */
+    avgScore: number;
+    /** Count of stops of this mode above VIABILITY_THRESHOLD. */
+    viableCount: number;
+}
+
 export interface SuburbResult {
     score: number;
     breakdown: SuburbBreakdown;
     viableCount: number;
     bestScore: number;
-    /** Median peak wait in minutes across stops that report one. */
+    /** Median peak wait in minutes across the primary mode's stops (see suburbScore). */
     medianWaitMinutes: number | null;
     stopCount: number;
+    /**
+     * Per-mode summaries, sorted by stopCount (prevalence) first, not by
+     * score: a suburb's "typical" experience is the mode most stops belong
+     * to, not whichever mode happens to have the single best isolated stop
+     * (confirmed wrong on Thomastown: 2 excellent train stops vs. 20
+     * mediocre bus stops -- residents mostly get the buses, so the verdict
+     * must describe the buses, not the trains). Always has at least one
+     * entry when stopCount > 0.
+     */
+    modeBreakdown: ModeBreakdown[];
     /**
      * 'grid': population-weighted average of per-cell address-style scores
      * (methodology refactor item 1). 'legacy-mean': plain mean of stop
@@ -66,6 +90,20 @@ export interface SuburbResult {
      * populated grid cells (e.g. outside the metro attribution scope).
      */
     scoreMethod: 'grid' | 'legacy-mean';
+}
+
+/** Raw GTFS processor mode_name (src/gtfs_processor/driver.rs) to rider-facing plural noun. */
+export function friendlyModeName(modeName: string): string {
+    switch (modeName) {
+        case 'regional_train': return 'Regional trains';
+        case 'metro_train': return 'Trains';
+        case 'metro_tram': return 'Trams';
+        case 'metro_bus': return 'Buses';
+        case 'regional_coach': return 'Coaches';
+        case 'regional_bus': return 'Regional buses';
+        case 'skybus': return 'SkyBus';
+        default: return 'Services';
+    }
 }
 
 /**
@@ -90,13 +128,21 @@ export interface GridCell {
  * Population-weighted mean of a suburb's grid cells -- the address-style
  * score and its breakdown, both computed the same way so the published
  * headline and its 3-part breakdown stay mutually reproducible (unlike a
- * headline computed one way and a breakdown computed another). Returns
- * null if there are no cells or their total population weight is zero,
- * so the caller can fall back to the legacy stop-mean.
+ * headline computed one way and a breakdown computed another). Returns null
+ * if there are too few cells or their total population weight is zero, so
+ * the caller can fall back to the legacy stop-mean. Below MIN_GRID_CELLS, a
+ * single (or handful of) populated cell makes the score a coin-flip on
+ * whether that one point's 800m catchment happens to reach a nearby stop,
+ * rather than a real area-weighted average -- confirmed on Melbourne
+ * Airport (one populated cell, 798.9m from its nearest stop, scoring 0/100
+ * despite genuinely good Skybus/SmartBus service ~800m-1km away) and Avalon
+ * (also single-cell, scoring 0 despite having some real service).
  */
+export const MIN_GRID_CELLS = 3;
+
 export function gridScore(cells: GridCell[]): { score: number; avgFrequency: number; avgCoverage: number; avgReliability: number } | null {
     const totalPopulation = cells.reduce((sum, c) => sum + c.population, 0);
-    if (cells.length === 0 || totalPopulation <= 0) return null;
+    if (cells.length < MIN_GRID_CELLS || totalPopulation <= 0) return null;
 
     const weightedMean = (pick: (c: GridCell) => number) =>
         cells.reduce((sum, c) => sum + pick(c) * c.population, 0) / totalPopulation;
@@ -235,7 +281,34 @@ function typicalStopScore(stops: StopLite[]): number {
  */
 export function suburbScore(stops: StopLite[], gridCells?: GridCell[]): SuburbResult {
     const agg = aggregateStops(stops);
+
+    // Group by real mode_name (regional_train/metro_train/metro_tram/...)
+    // rather than a single pooled sample: a suburb's "Trains" headline noun
+    // can otherwise blend e.g. hourly V/Line with turn-up-and-go Metro, or
+    // trains with a much worse local bus network, into one misleading number.
+    const modeStats = new Map<string, { stopCount: number; scoreSum: number; bestScore: number; viableCount: number }>();
+    for (const s of stops) {
+        const cur = modeStats.get(s.mode_name) ?? { stopCount: 0, scoreSum: 0, bestScore: 0, viableCount: 0 };
+        cur.stopCount++;
+        cur.scoreSum += s.final_score;
+        cur.bestScore = Math.max(cur.bestScore, s.final_score);
+        if (s.final_score > VIABILITY_THRESHOLD) cur.viableCount++;
+        modeStats.set(s.mode_name, cur);
+    }
+    // Sorted by stopCount: the primary mode is whichever one most stops (and
+    // so most residents) actually get, not whichever has the single best
+    // isolated stop -- see the ModeBreakdown/SuburbResult doc comments.
+    const modeBreakdown: ModeBreakdown[] = [...modeStats.entries()]
+        .map(([modeName, v]) => ({ modeName, stopCount: v.stopCount, bestScore: v.bestScore, avgScore: v.scoreSum / v.stopCount, viableCount: v.viableCount }))
+        .sort((a, b) => b.stopCount - a.stopCount);
+
+    // The verdict's headway describes the primary (most prevalent) mode
+    // only, so the quoted number matches what most residents actually
+    // experience, rather than an isolated outlier stop or a median across
+    // mixed regional/metro/other-mode stops.
+    const primaryModeName = modeBreakdown.length > 0 ? modeBreakdown[0].modeName : null;
     const waits = stops
+        .filter(s => primaryModeName === null || s.mode_name === primaryModeName)
         .map(s => s.average_wait_time)
         .filter(w => Number.isFinite(w) && w > 0)
         .sort((a, b) => a - b);
@@ -252,6 +325,7 @@ export function suburbScore(stops: StopLite[], gridCells?: GridCell[]): SuburbRe
         bestScore: agg.bestScore,
         medianWaitMinutes,
         stopCount: stops.length,
+        modeBreakdown,
         scoreMethod: grid ? 'grid' : 'legacy-mean',
     };
 }

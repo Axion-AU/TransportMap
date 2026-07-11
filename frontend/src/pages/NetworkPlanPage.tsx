@@ -1,6 +1,6 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { Share2, Link as LinkIcon, Check } from 'lucide-react';
+import { Share2, Link as LinkIcon, Check, AlertTriangle } from 'lucide-react';
 import ClientOnly from '../components/ClientOnly';
 import anchorsConfig from '../config/anchors.json';
 import { joinHref, site } from '../config/site';
@@ -99,6 +99,18 @@ const NetworkPlanPage = () => {
             <header className="space-y-4">
                 <p className="type-overline text-magenta">We costed the fix</p>
                 <h1 className="type-display text-5xl md:text-6xl">A costed plan to fix the timetable</h1>
+                
+                <div className="bg-band-poor/10 border border-band-poor/30 border-l-4 border-l-band-poor rounded-[4px] p-5 max-w-2xl space-y-2">
+                    <div className="flex items-center gap-2 text-band-poor font-semibold">
+                        <AlertTriangle className="h-5 w-5 shrink-0" />
+                        <span className="type-overline tracking-wider text-xs">UNDER ACTIVE DEVELOPMENT / SYNTHETIC DATA</span>
+                    </div>
+                    <p className="text-sm text-ink-soft leading-relaxed">
+                        <strong>Important:</strong> This page is an active work-in-progress and runs on <strong>highly imperfect, synthetic test data</strong>. 
+                        The routes mapped below currently show straight point-to-point connections by design to test our network generation algorithm, rather than finalised road-following routes. We are actively refining both the algorithm and the underlying datasets.
+                    </p>
+                </div>
+
                 <p className="text-lg text-ink-soft max-w-2xl leading-relaxed">
                     We mapped a feeder bus network connecting residents directly to high-frequency transit.
                     The routes thread through schools, hospitals, and shopping centres.
@@ -193,7 +205,12 @@ const NetworkPlanPage = () => {
 
             {plan.proposed_routes.length > 0 && (
                 <section className="space-y-3">
-                    <h2 className="type-display text-2xl">The map</h2>
+                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
+                        <h2 className="type-display text-2xl">The map</h2>
+                        <span className="text-xs text-band-poor flex items-center gap-1 font-semibold">
+                            <AlertTriangle className="h-3.5 w-3.5" /> Algorithm test-bed: straight point-to-point lines only (imperfect data)
+                        </span>
+                    </div>
                     <div className="h-[420px] rounded-[4px] overflow-hidden border border-border-subtle">
                         <ClientOnly fallback={<div className="h-full w-full flex items-center justify-center text-ink-faint">Loading map…</div>}>
                             <Suspense fallback={<div className="h-full w-full flex items-center justify-center text-ink-faint">Loading map…</div>}>

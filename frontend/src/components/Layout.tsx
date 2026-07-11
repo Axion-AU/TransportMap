@@ -29,6 +29,7 @@ const Layout = ({ children }: LayoutProps) => {
 
     // Close menu when location changes (in case navigation happens without click)
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsMenuOpen(false);
     }, [location.pathname]);
 

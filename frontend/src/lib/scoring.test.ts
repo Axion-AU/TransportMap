@@ -126,10 +126,11 @@ describe('suburbScore', () => {
         const cells: GridCell[] = [
             { score: 80, avgFrequency: 80, avgCoverage: 80, avgReliability: 80, population: 100 },
             { score: 20, avgFrequency: 20, avgCoverage: 20, avgReliability: 20, population: 10 },
+            { score: 20, avgFrequency: 20, avgCoverage: 20, avgReliability: 20, population: 0 },
         ];
         const result = suburbScore(stops, cells);
         expect(result.scoreMethod).toBe('grid');
-        // Population-weighted mean: (80*100 + 20*10) / 110 = 74.545...
+        // Population-weighted mean: (80*100 + 20*10 + 20*0) / 110 = 74.545...
         expect(result.score).toBeCloseTo(74.5455, 3);
         expect(result.breakdown.frequency).toBeCloseTo(74.5455, 3);
     });
@@ -151,6 +152,7 @@ describe('gridScore', () => {
         const cells: GridCell[] = [
             { score: 100, avgFrequency: 90, avgCoverage: 80, avgReliability: 70, population: 1 },
             { score: 0, avgFrequency: 10, avgCoverage: 20, avgReliability: 30, population: 3 },
+            { score: 0, avgFrequency: 10, avgCoverage: 20, avgReliability: 30, population: 0 },
         ];
         const result = gridScore(cells)!;
         // Weighted mean, weight 1 vs 3 (total 4): (100*1 + 0*3)/4 = 25.
@@ -198,19 +200,73 @@ describe('verdict', () => {
         expect(modeNounFor([])).toBe('Services');
     });
 
+    const flatBreakdown = { frequency: 40, coverage: 40, reliability: 40 };
+
     it('includes the headway in low-band verdicts', () => {
-        const line = verdictFor('stranded', { medianWaitMinutes: 20, modeNoun: 'Trains' });
-        expect(line).toContain('Trains every 40 minutes');
+        const line = verdictFor('stranded', {
+            medianWaitMinutes: 20,
+            modeNoun: 'Trains',
+            breakdown: flatBreakdown,
+            modeBreakdown: [{ modeName: 'metro_train', stopCount: 5, bestScore: 40, avgScore: 40, viableCount: 0 }],
+        });
+        expect(line).toContain('Trains run about every 40 minutes');
     });
 
     it('never emits an em-dash or banned constructions', () => {
         const bands = ['stranded', 'poor', 'patchy', 'decent', 'good'] as const;
         for (const b of bands) {
             for (const wait of [null, 8, 20, 45]) {
-                const line = verdictFor(b, { medianWaitMinutes: wait, modeNoun: 'Buses' });
+                const line = verdictFor(b, {
+                    medianWaitMinutes: wait,
+                    modeNoun: 'Buses',
+                    breakdown: flatBreakdown,
+                    modeBreakdown: [{ modeName: 'metro_bus', stopCount: 5, bestScore: 40, avgScore: 40, viableCount: 0 }],
+                });
                 expect(line).not.toMatch(new RegExp('\\u2014'));
                 expect(line).not.toMatch(new RegExp('not\\x20just', 'i'));
             }
         }
+    });
+
+    it('calls out a real mode split when most residents get the good mode', () => {
+        const line = verdictFor('poor', {
+            medianWaitMinutes: 9,
+            modeNoun: 'Trains',
+            breakdown: { frequency: 49, coverage: 47, reliability: 42 },
+            modeBreakdown: [
+                { modeName: 'metro_train', stopCount: 9, bestScore: 90, avgScore: 85, viableCount: 9 },
+                { modeName: 'metro_bus', stopCount: 2, bestScore: 30, avgScore: 25, viableCount: 0 },
+            ],
+        });
+        expect(line).toContain('trains are good');
+        expect(line).toContain('buses are bad');
+    });
+
+    it('calls out a lucky-few split when only a minority mode is good', () => {
+        // Thomastown-shaped: 2 excellent train stops, 20 mediocre bus stops.
+        // Most residents get the buses, so the verdict must say so, not
+        // borrow the trains' good headway for the headline.
+        const line = verdictFor('stranded', {
+            medianWaitMinutes: 20,
+            modeNoun: 'Buses',
+            breakdown: { frequency: 27, coverage: 19, reliability: 24 },
+            modeBreakdown: [
+                { modeName: 'metro_bus', stopCount: 20, bestScore: 73, avgScore: 45, viableCount: 1 },
+                { modeName: 'metro_train', stopCount: 2, bestScore: 88, avgScore: 85, viableCount: 2 },
+            ],
+        });
+        expect(line).toContain('trains nearby are good');
+        expect(line).toContain('most of this suburb relies on the buses');
+    });
+
+    it('names a coverage bottleneck instead of implying unreliability', () => {
+        const line = verdictFor('poor', {
+            medianWaitMinutes: 33,
+            modeNoun: 'Buses',
+            breakdown: { frequency: 30, coverage: 5, reliability: 32 },
+            modeBreakdown: [{ modeName: 'metro_bus', stopCount: 3, bestScore: 53, avgScore: 40, viableCount: 1 }],
+        });
+        expect(line).not.toContain('if they show up');
+        expect(line).toMatch(/out of reach|800m walk/);
     });
 });

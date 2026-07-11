@@ -260,6 +260,16 @@ if (fs.existsSync(networkPlanPath)) {
 
 const worstSlugs = new Set([...(suburbIndex.worst20 ?? []), ...(suburbIndex.worst20Regional ?? [])]);
 
+const allScores = suburbIndex.suburbs.map(s => s.score).sort((a, b) => a - b);
+const melbourneMedian = allScores[Math.floor(allScores.length / 2)] ?? 50;
+const BAND_LABELS = {
+    stranded: 'STRANDED',
+    poor: 'POOR',
+    patchy: 'PATCHY',
+    decent: 'DECENT',
+    good: 'GOOD',
+};
+
 for (const s of suburbIndex.suburbs) {
     const detailPath = path.resolve(__dirname, `../public/data/suburbs/${s.slug}.json`);
     const detail = JSON.parse(fs.readFileSync(detailPath, 'utf8'));
@@ -267,6 +277,11 @@ for (const s of suburbIndex.suburbs) {
     // Append data vintage to description: AI engines weight freshness signals.
     const vintageNote = ` Scored from ${manifest.dataVintageLabel} PTV timetable data.`;
     const description = detail.verdict.replace(/\.$/, '') + vintageNote;
+    
+    const diff = Math.abs(detail.score - melbourneMedian);
+    const direction = detail.score >= melbourneMedian ? 'above' : 'below';
+    const bandLabel = BAND_LABELS[detail.band] ?? detail.band;
+
     routes.push({
         urlPath: `/score/${s.slug}`,
         title: `${detail.name} scores ${detail.score}/100 for public transport | Transport Score`,
@@ -296,6 +311,101 @@ for (const s of suburbIndex.suburbs) {
                     { '@type': 'ListItem', position: 1, name: 'Transport Score', item: SITE_ORIGIN },
                     { '@type': 'ListItem', position: 2, name: 'All suburbs', item: `${SITE_ORIGIN}/suburbs` },
                     { '@type': 'ListItem', position: 3, name: detail.name, item: `${SITE_ORIGIN}/score/${s.slug}` },
+                ],
+            },
+            {
+                '@context': 'https://schema.org',
+                '@type': 'FAQPage',
+                mainEntity: [
+                    {
+                        '@type': 'Question',
+                        name: `What is ${detail.name}'s public transport score?`,
+                        acceptedAnswer: {
+                            '@type': 'Answer',
+                            text: `${detail.name} scores ${detail.score}/100 for public transport, placing it in the ${bandLabel} band. ${detail.verdict}`,
+                        },
+                    },
+                    {
+                        '@type': 'Question',
+                        name: `How does ${detail.name} compare to the Melbourne average?`,
+                        acceptedAnswer: {
+                            '@type': 'Answer',
+                            text: `${detail.name} is ${diff} point${diff !== 1 ? 's' : ''} ${direction} the Melbourne median of ${melbourneMedian}/100. ${
+                                detail.score < melbourneMedian
+                                    ? 'Most Melbourne suburbs score higher.'
+                                    : 'Most Melbourne suburbs score lower.'
+                            }`,
+                        },
+                    },
+                    {
+                        '@type': 'Question',
+                        name: `What modes serve ${detail.name}?`,
+                        acceptedAnswer: {
+                            '@type': 'Answer',
+                            text: `${detail.name} is served by ${detail.modeNoun}. Scores are computed across all modes that stop within the suburb, using the published PTV GTFS timetable.`,
+                        },
+                    },
+                ],
+            },
+        ]),
+    });
+
+    routes.push({
+        urlPath: `/embed/score/${s.slug}`,
+        title: `${detail.name} Public Transport Scorecard | Embed`,
+        description: `Live embeddable public transport scorecard widget for ${detail.name}, Victoria.`,
+        ogImage: 'default.png',
+        island: `<script type="application/json" id="suburb-data">${JSON.stringify(detail).replace(/</g, '\\u003c')}</script>`,
+        extra: schemaTag([
+            {
+                '@context': 'https://schema.org',
+                '@type': 'Dataset',
+                name: `${detail.name} Public Transport Scorecard Embed`,
+                description: detail.verdict,
+                url: `${SITE_ORIGIN}/embed/score/${s.slug}`,
+                creator: fusionOrg,
+            }
+        ]),
+    });
+}
+
+
+const comparisons = [
+    ['carlton', 'werribee'],
+    ['richmond', 'melton'],
+    ['fitzroy', 'point-cook'],
+    ['st-kilda', 'clyde'],
+    ['south-yarra', 'tarneit'],
+    ['brunswick', 'wollert'],
+    ['coburg', 'craigieburn'],
+    ['north-melbourne', 'truganina'],
+    ['footscray', 'doncaster-east'],
+    ['preston', 'epping-north'],
+];
+
+for (const [slugA, slugB] of comparisons) {
+    const detailAPath = path.resolve(__dirname, `../public/data/suburbs/${slugA}.json`);
+    const detailBPath = path.resolve(__dirname, `../public/data/suburbs/${slugB}.json`);
+    if (!fs.existsSync(detailAPath) || !fs.existsSync(detailBPath)) continue;
+
+    const detailA = JSON.parse(fs.readFileSync(detailAPath, 'utf8'));
+    const detailB = JSON.parse(fs.readFileSync(detailBPath, 'utf8'));
+
+    const routePath = `/compare/${slugA}-vs-${slugB}`;
+    routes.push({
+        urlPath: routePath,
+        title: `${detailA.name} vs ${detailB.name} Public Transport Comparison | Transport Score`,
+        description: `Compare public transport scores, wait times, and coverage between ${detailA.name} (${detailA.score}/100) and ${detailB.name} (${detailB.score}/100).`,
+        ogImage: 'default.png',
+        island: `<script type="application/json" id="compare-data">${JSON.stringify({ detailA, detailB }).replace(/</g, '\\u003c')}</script>`,
+        extra: schemaTag([
+            {
+                '@context': 'https://schema.org',
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                    { '@type': 'ListItem', position: 1, name: 'Transport Score', item: SITE_ORIGIN },
+                    { '@type': 'ListItem', position: 2, name: 'All suburbs', item: `${SITE_ORIGIN}/suburbs` },
+                    { '@type': 'ListItem', position: 3, name: `${detailA.name} vs ${detailB.name}`, item: `${SITE_ORIGIN}${routePath}` },
                 ],
             },
         ]),

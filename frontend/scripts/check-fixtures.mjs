@@ -84,7 +84,40 @@ function main() {
         checkBand(`point '${fixture.label}' (score ${result.score.toFixed(1)})`, actualBand, fixture, failures);
     }
 
-    console.log(`[check-fixtures] checked ${suburbFixtures.length} suburb fixtures, ${pointFixtures.length} point fixtures.`);
+    // Tier C: car competitiveness (Stage 2, docs/methodology_refactor.md items 2 & 7).
+    // Ratio fixtures assert a floor (minRatio) or ceiling (maxRatio) on
+    // ratioFreeFlow -- same floor/ceiling discipline as bands above, not an
+    // exact match, since the gravity-decay constant isn't calibrated yet
+    // (see the methodology page). Skipped for suburbs the matrix doesn't
+    // cover yet, reported as skipped rather than silently passing.
+    const carCompPath = path.join(FIXTURES_DIR, 'car-competitiveness-fixtures.json');
+    let carCompChecked = 0;
+    let carCompSkipped = 0;
+    if (fs.existsSync(carCompPath)) {
+        const carCompFixtures = JSON.parse(fs.readFileSync(carCompPath, 'utf8'));
+        for (const fixture of carCompFixtures) {
+            const detailPath = path.join(__dirname, '../public/data/suburbs', `${fixture.slug}.json`);
+            if (!fs.existsSync(detailPath)) {
+                failures.push(`car-competitiveness '${fixture.slug}': suburb detail not found -- ${fixture.citation}`);
+                continue;
+            }
+            const detail = JSON.parse(fs.readFileSync(detailPath, 'utf8'));
+            const ratio = detail.carCompetitiveness?.ratioFreeFlow;
+            if (ratio === undefined || ratio === null) {
+                carCompSkipped++;
+                continue; // not covered by the travel-time matrix yet -- not a failure
+            }
+            if (fixture.minRatio !== undefined && ratio < fixture.minRatio) {
+                failures.push(`car-competitiveness '${fixture.slug}' (ratio ${ratio}): expected at least ${fixture.minRatio} -- ${fixture.citation}`);
+            }
+            if (fixture.maxRatio !== undefined && ratio > fixture.maxRatio) {
+                failures.push(`car-competitiveness '${fixture.slug}' (ratio ${ratio}): expected at most ${fixture.maxRatio} -- ${fixture.citation}`);
+            }
+            carCompChecked++;
+        }
+    }
+
+    console.log(`[check-fixtures] checked ${suburbFixtures.length} suburb fixtures, ${pointFixtures.length} point fixtures, ${carCompChecked} car-competitiveness fixtures (${carCompSkipped} skipped, not yet covered by the travel-time matrix).`);
 
     if (failures.length > 0) {
         console.error(`[check-fixtures] ${failures.length} fixture(s) failed:`);

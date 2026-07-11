@@ -160,6 +160,7 @@ const LeagueTablePage = () => {
         if (focus) {
             const sub = index.suburbs.find(s => s.slug === focus);
             if (sub) {
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setRegion(sub.isRegional ? 'regional' : 'metro');
                 setListType('rankings');
                 setFocusSlug(focus);

@@ -15,10 +15,10 @@ pub const ANCHOR_RADIUS_M: f64 = 1500.0;
 /// "decent" band boundary already shown on every score page.
 pub const HIGH_QUALITY_THRESHOLD: f32 = 70.0;
 
-pub const PEAK_HEADWAY_MIN: f64 = 15.0;
-pub const OFFPEAK_HEADWAY_MIN: f64 = 30.0;
-pub const SPAN_START_HOUR: f64 = 7.0;
-pub const SPAN_END_HOUR: f64 = 21.0;
+pub const PEAK_HEADWAY_MIN: f64 = 10.0;
+pub const OFFPEAK_HEADWAY_MIN: f64 = 15.0;
+pub const SPAN_START_HOUR: f64 = 4.0;
+pub const SPAN_END_HOUR: f64 = 24.0;
 /// Weekday morning + evening peak, 7-9am and 4-6pm.
 pub const PEAK_HOURS_TOTAL: f64 = 4.0;
 
@@ -36,7 +36,7 @@ mod tests {
 
     #[test]
     fn trips_per_day_matches_hand_calculation() {
-        // (4h*60/15 + 10h*60/30) * 2 directions = (16 + 20) * 2 = 72
-        assert_eq!(trips_per_day(), 72.0);
+        // (4h*60/10 + 16h*60/15) * 2 directions = (24 + 64) * 2 = 176
+        assert_eq!(trips_per_day(), 176.0);
     }
 }

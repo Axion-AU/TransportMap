@@ -19,8 +19,30 @@ class ErrorBoundary extends Component<Props, State> {
         return { hasError: true, error };
     }
 
+    public componentDidMount() {
+        // Clear reload flag if the application renders and mounts successfully
+        if (typeof window !== 'undefined') {
+            sessionStorage.removeItem('chunk-error-reload');
+        }
+    }
+
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.error('Uncaught error:', error, errorInfo);
+
+        // Handle chunk loading errors (Vite dynamic import failures)
+        const isChunkError = 
+            error.message?.includes('Failed to fetch dynamically imported module') ||
+            error.message?.includes('Loading chunk') ||
+            error.message?.includes('Failed to fetch') ||
+            error.name === 'ChunkLoadError';
+            
+        if (isChunkError && typeof window !== 'undefined') {
+            const hasReloaded = sessionStorage.getItem('chunk-error-reload');
+            if (!hasReloaded) {
+                sessionStorage.setItem('chunk-error-reload', 'true');
+                window.location.reload();
+            }
+        }
     }
 
     public render() {

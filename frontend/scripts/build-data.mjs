@@ -38,8 +38,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import simplify from '@turf/simplify';
-import { suburbScore, catchmentScore, band, LEAGUE_TABLE_MIN_STOPS, CATCHMENT_RADIUS_M, distanceMeters, VIABILITY_THRESHOLD } from '../src/lib/scoring.ts';
-import { verdictFor, modeNounFor } from '../src/lib/verdict.ts';
+import { suburbScore, catchmentScore, band, LEAGUE_TABLE_MIN_STOPS, CATCHMENT_RADIUS_M, distanceMeters, friendlyModeName } from '../src/lib/scoring.ts';
+import { verdictFor } from '../src/lib/verdict.ts';
 import { geohashEncode, tilesFor, GRID_STEP_DEG } from '../src/lib/geo.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -47,6 +47,23 @@ const DATA_DIR = path.resolve(__dirname, '../public/data');
 const OUT_SUBURBS = path.join(DATA_DIR, 'suburbs');
 const OUT_TILES = path.join(DATA_DIR, 'tiles');
 const OUT_GENERATED = path.resolve(__dirname, '../src/data/generated');
+
+/**
+ * Editorial notes for suburbs whose real, verified score would otherwise
+ * read as a data error. Keyed by slug. Almost every suburb has none --
+ * only add an entry here for a confirmed real-world finding (see
+ * CLAUDE.md's "Suburb attribution" note for the Doreen/Wollert precedent).
+ *
+ * Avalon: 4 populated dwelling cells sit 4.4-7.5km from the suburb's only
+ * 4 stops, which are clustered at Avalon Airport terminal (serving
+ * passengers/staff, not the residential pockets near Lara/Little River).
+ * The 0/100 grid score is correct -- those residents have no stop within
+ * catchment range -- even though the airport terminal itself is served
+ * (bestScore reflects that). Confirmed 2026-07-11.
+ */
+const SUBURB_NOTES = {
+    avalon: "Avalon's residential streets sit 4.4-7.5km from the suburb's only stops, which are clustered at Avalon Airport and serve passengers and staff, not nearby homes. The 0/100 score reflects genuine distance from the airport's bus stops, not a data gap -- someone living in Avalon can't walk to a service that exists to shuttle flyers to the terminal.",
+};
 
 const STOP_FILES = [
     'stops_metro_train.geojson',
@@ -94,6 +111,21 @@ const VIC_LOCALITIES = fs.existsSync(LOCALITIES_PATH)
     : [];
 if (VIC_LOCALITIES.length === 0) {
     console.warn('[build-data] data-src/vic-localities.geojson missing or empty; run scripts/fetch-locality-boundaries.mjs. Falling back to name-parsing attribution for all stops.');
+}
+
+// Stage 2 methodology-refactor measures (docs/methodology_refactor.md items
+// 2 & 7: cumulative accessibility + car competitiveness), computed offline by
+// scripts/compute-travel-time-matrix.mjs + scripts/compute-car-competitiveness.mjs
+// (Docker-based OSRM/r5py routing, not run at build time). Read defensively,
+// same pattern as the other data-src/*.json reads above -- most suburbs will
+// have no entry here until the full-coverage OSM extract finishes and the
+// matrix is recomputed against it (see that script's coverage note).
+const CAR_COMPETITIVENESS_PATH = path.resolve(__dirname, '../data-src/car-competitiveness.json');
+const CAR_COMPETITIVENESS = fs.existsSync(CAR_COMPETITIVENESS_PATH)
+    ? JSON.parse(fs.readFileSync(CAR_COMPETITIVENESS_PATH, 'utf8'))
+    : null;
+if (!CAR_COMPETITIVENESS) {
+    console.warn('[build-data] data-src/car-competitiveness.json missing; run scripts/compute-travel-time-matrix.mjs + scripts/compute-car-competitiveness.mjs. carCompetitiveness/accessibility will be null for every suburb.');
 }
 
 // Suburb name -> locality entry, for the grid aggregation step (item 1)
@@ -485,13 +517,12 @@ function main() {
             lat: suburbStops.reduce((s, x) => s + x.lat, 0) / suburbStops.length,
             lon: suburbStops.reduce((s, x) => s + x.lon, 0) / suburbStops.length,
         };
-        const viableModeIds = [...new Set(
-            suburbStops.filter(s => s.final_score > VIABILITY_THRESHOLD).map(s => s.mode_id),
-        )];
-        const modeNoun = modeNounFor(viableModeIds.length > 0 ? viableModeIds : [...new Set(suburbStops.map(s => s.mode_id))]);
+        const modeNoun = result.modeBreakdown.length > 0 ? friendlyModeName(result.modeBreakdown[0].modeName) : 'Services';
         const verdict = verdictFor(scoreBand, {
             medianWaitMinutes: result.medianWaitMinutes,
             modeNoun,
+            breakdown: result.breakdown,
+            modeBreakdown: result.modeBreakdown,
         });
 
         const stopList = [...suburbStops]
@@ -544,6 +575,7 @@ function main() {
         ];
         const isRegional = distKm > 55.0 || regionalExceptions.includes(suburbName.toLowerCase());
 
+        const stage2 = CAR_COMPETITIVENESS?.bySlug?.[slug] ?? null;
 
         const detail = {
             name: suburbName,
@@ -568,6 +600,9 @@ function main() {
             boundary,
             gridCells: gridCellSummary,
             stops: stopList,
+            carCompetitiveness: stage2?.carCompetitiveness ?? null,
+            accessibility: stage2?.accessibility ?? null,
+            note: SUBURB_NOTES[slug] ?? null,
         };
 
         fs.writeFileSync(path.join(OUT_SUBURBS, `${slug}.json`), JSON.stringify(detail));
@@ -644,6 +679,13 @@ function main() {
         suburbCount: index.length,
         unattributedCount,
         unattributedPct: Math.round(unattributedPct * 100) / 100,
+        // Stage 2 (car competitiveness / cumulative accessibility) coverage --
+        // honest count, not every suburb has this yet (see CAR_COMPETITIVENESS
+        // read above). Null betaCalibrated flags the gravity-decay constant as
+        // not yet fitted against real journey-to-work data.
+        carCompetitivenessCoverageCount: CAR_COMPETITIVENESS ? Object.keys(CAR_COMPETITIVENESS.bySlug).length : 0,
+        carCompetitivenessBetaCalibrated: CAR_COMPETITIVENESS?.betaCalibrated ?? null,
+        carCompetitivenessCongestionAvailable: false, // see Stage 2 plan: no working DTP traffic API key yet
     };
     fs.writeFileSync(path.join(OUT_GENERATED, 'manifest.json'), JSON.stringify(manifest, null, 2));
 

@@ -40,6 +40,25 @@ export interface SuburbDetail {
     gridCells: { lat: number; lon: number; score: number }[];
     /** Every scored stop in the suburb, sorted by score descending. */
     stops: { name: string; mode_name: string; final_score: number; lat: number; lon: number }[];
+    /**
+     * Stage 2 methodology-refactor measures (docs/methodology_refactor.md items 2 & 7).
+     * Both null when the suburb's centroid falls outside the current OSM extract's
+     * coverage (see frontend/data-src/travel-time-matrix.json's `bbox`) -- not
+     * approximated or interpolated when missing.
+     */
+    carCompetitiveness: CarCompetitiveness | null;
+    accessibility: { jobsWithin45MinPt: number } | null;
+    /** Editorial note for a real, verified finding that would otherwise read as a data error (e.g. a suburb's dwellings sitting far from its only stops). Null for almost every suburb. */
+    note: string | null;
+}
+
+export interface CarCompetitiveness {
+    /** Gravity-weighted composite pt_time/car_time ratio across all destination suburbs (Hansen-accessibility style), free-flow car time. Higher = PT less competitive. */
+    ratioFreeFlow: number;
+    /** Same ratio against peak-congested car time. Null until a working DTP traffic API key is available -- see the Stage 2 plan's "Peak-congested car_time source" status. */
+    ratioCongested: number | null;
+    /** A real, illustrative single-destination pair for share-card narrative text -- not the scored metric itself, which is the gravity composite above. */
+    exampleDestination: { slug: string; name: string; ptMinutes: number; carFreeFlowMinutes: number } | null;
 }
 
 
@@ -54,6 +73,10 @@ export interface DataManifest {
     suburbCount: number;
     unattributedCount: number;
     unattributedPct: number;
+    /** Stage 2 (car competitiveness / cumulative accessibility, docs/methodology_refactor.md items 2 & 7). */
+    carCompetitivenessCoverageCount: number;
+    carCompetitivenessBetaCalibrated: boolean | null;
+    carCompetitivenessCongestionAvailable: boolean;
 }
 
 export interface ProposedRoute {

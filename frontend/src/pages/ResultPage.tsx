@@ -3,8 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import ScoreCard from '../components/ScoreCard';
 import JoinCta from '../components/JoinCta';
 import LookupInput from '../components/LookupInput';
-import { catchmentScore, band, distanceMeters, type StopLite } from '../lib/scoring';
-import { verdictFor, modeNounFor } from '../lib/verdict';
+import { catchmentScore, band, distanceMeters, friendlyModeName, VIABILITY_THRESHOLD, type StopLite, type ModeBreakdown } from '../lib/scoring';
+import { verdictFor } from '../lib/verdict';
 import { tilesFor } from '../lib/geo';
 import suburbIndex from '../data/generated/suburb-index.json';
 import type { SuburbIndex } from '../types/data';
@@ -80,13 +80,39 @@ const ResultPage = () => {
     }
 
     const scoreBand = band(result.score);
+    const modeStats = new Map<string, { stopCount: number; scoreSum: number; bestScore: number; viableCount: number }>();
+    for (const s of result.nearbyStops) {
+        const cur = modeStats.get(s.mode_name) ?? { stopCount: 0, scoreSum: 0, bestScore: 0, viableCount: 0 };
+        cur.stopCount++;
+        cur.scoreSum += s.final_score;
+        cur.bestScore = Math.max(cur.bestScore, s.final_score);
+        if (s.final_score > VIABILITY_THRESHOLD) cur.viableCount++;
+        modeStats.set(s.mode_name, cur);
+    }
+    // Sorted by prevalence (stopCount), not best single stop: the primary
+    // mode is whichever one most nearby stops belong to, matching
+    // suburbScore's per-suburb logic (see scoring.ts's ModeBreakdown doc).
+    const modeBreakdown: ModeBreakdown[] = [...modeStats.entries()]
+        .map(([modeName, v]) => ({ modeName, stopCount: v.stopCount, bestScore: v.bestScore, avgScore: v.scoreSum / v.stopCount, viableCount: v.viableCount }))
+        .sort((a, b) => b.stopCount - a.stopCount);
+    const primaryModeName = modeBreakdown.length > 0 ? modeBreakdown[0].modeName : null;
     const waits = result.nearbyStops
+        .filter(s => primaryModeName === null || s.mode_name === primaryModeName)
         .map(s => s.average_wait_time)
         .filter(w => Number.isFinite(w) && w > 0)
         .sort((a, b) => a - b);
     const medianWait = waits.length ? waits[Math.floor(waits.length / 2)] : null;
-    const modeNoun = modeNounFor([...new Set(result.nearbyStops.filter(s => s.final_score > 50).map(s => s.mode_id))]);
-    const verdict = verdictFor(scoreBand, { medianWaitMinutes: medianWait, modeNoun });
+    const modeNoun = primaryModeName ? friendlyModeName(primaryModeName) : 'Services';
+    const verdict = verdictFor(scoreBand, {
+        medianWaitMinutes: medianWait,
+        modeNoun,
+        breakdown: {
+            frequency: result.avgFrequency,
+            coverage: result.avgCoverage,
+            reliability: result.avgReliability,
+        },
+        modeBreakdown,
+    });
     const roundedScore = Math.round(result.score);
 
     return (

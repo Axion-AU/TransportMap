@@ -37,6 +37,7 @@ const useCountUp = (target: number, durationMs = 700) => {
     const [value, setValue] = useState(target);
     useEffect(() => {
         if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setValue(target);
             return;
         }
@@ -51,7 +52,6 @@ const useCountUp = (target: number, durationMs = 700) => {
         };
         raf = requestAnimationFrame(tick);
         return () => cancelAnimationFrame(raf);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [target, durationMs]);
     return value;
 };

@@ -1,10 +1,12 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { Check, Code } from 'lucide-react';
 import ScoreCard from '../components/ScoreCard';
 import ShareBar from '../components/ShareBar';
 import JoinCta from '../components/JoinCta';
 import LookupInput from '../components/LookupInput';
 import ClientOnly from '../components/ClientOnly';
+import { CarCompetitivenessSection } from '../components/CarCompetitivenessSection';
 import type { SuburbDetail, SuburbIndex, SuburbIndexEntry } from '../types/data';
 import { usePageMeta } from '../lib/meta';
 import { track } from '../lib/analytics';
@@ -192,6 +194,20 @@ const SuburbScorePage = () => {
     const { slug = '' } = useParams();
     const [detail, setDetail] = useState<SuburbDetail | null>(() => islandData(slug));
     const [missing, setMissing] = useState(false);
+    const [embedCopied, setEmbedCopied] = useState(false);
+
+    const copyEmbed = async () => {
+        if (!detail) return;
+        const origin = typeof window !== 'undefined' ? window.location.origin : 'https://transportscore.fusionparty.org.au';
+        const embedCode = `<iframe src="${origin}/embed/score/${detail.slug}" width="100%" height="320" style="border:0;background:transparent;" title="${detail.name} Transport Score"></iframe>`;
+        try {
+            await navigator.clipboard.writeText(embedCode);
+            setEmbedCopied(true);
+            setTimeout(() => setEmbedCopied(false), 2000);
+        } catch {
+            /* clipboard unavailable */
+        }
+    };
 
     useEffect(() => {
         const island = islandData(slug);
@@ -258,7 +274,11 @@ const SuburbScorePage = () => {
                 subtitle={`${detail.stopCount} stops scored. Best route ${detail.bestScore}/100. ${detail.viableCount} routes above the 50 point viability line.`}
             />
 
-            <ShareBar slug={detail.slug} suburbName={detail.name} score={detail.score} verdict={detail.verdict} />
+            {detail.note && (
+                <p className="border border-magenta rounded-[4px] p-3 text-sm">{detail.note}</p>
+            )}
+
+            <ShareBar slug={detail.slug} suburbName={detail.name} score={detail.score} verdict={detail.verdict} breakdown={detail.breakdown} />
 
             <JoinCta slug={detail.slug} suburbName={detail.name} score={detail.score} band={detail.band} isRegional={detail.isRegional} />
 
@@ -268,6 +288,23 @@ const SuburbScorePage = () => {
             </div>
 
             <SuburbMapSection detail={detail} />
+
+            <CarCompetitivenessSection detail={detail} />
+
+            <section className="border border-border-subtle rounded-[4px] p-5 md:p-6 space-y-3 bg-surface-raised">
+                <h2 className="type-display text-2xl text-ink">Embed this scorecard</h2>
+                <p className="text-sm text-ink-soft">
+                    Display this live scorecard on your own website or local community portal.
+                </p>
+                <pre className="bg-purple-900 border border-border-subtle rounded-[4px] p-3 text-xs overflow-x-auto text-ink-soft"><code>{`<iframe src="${typeof window !== 'undefined' ? window.location.origin : 'https://transportscore.fusionparty.org.au'}/embed/score/${detail.slug}" width="100%" height="320" style="border:0;background:transparent;" title="${detail.name} Transport Score"></iframe>`}</code></pre>
+                <button
+                    onClick={copyEmbed}
+                    className="pressable flex items-center gap-1.5 px-3 py-2 bg-purple-900 border border-border-strong text-sm font-semibold rounded-[4px]"
+                >
+                    {embedCopied ? <Check className="h-4 w-4 text-teal" /> : <Code className="h-4 w-4" />}
+                    {embedCopied ? 'Copied code' : 'Copy embed code'}
+                </button>
+            </section>
 
             <SuburbFaq detail={detail} />
 

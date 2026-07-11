@@ -21,6 +21,8 @@ fn process_mode_internal(mode_id: u32, mode_name: &str, dir: &str)
         HashMap<String, Vec<(f64, f64)>>,
         HashMap<String, String>,
         HashMap<String, RouteCost>,
+        NaiveDate,
+        NaiveDate,
     ), Box<dyn Error>>
 {
      // 1. Calendars & Date
@@ -158,7 +160,7 @@ fn process_mode_internal(mode_id: u32, mode_name: &str, dir: &str)
      // designer's "current cost" is directly comparable to its proposals.
      let route_costs = aggregate_route_costs(&trip_info, &shapes, &service_dates, &service_days, &service_exceptions, repr_weekday_date, mode_id);
 
-     Ok((stops_map, routes_map, shapes, child_to_parent, route_costs))
+     Ok((stops_map, routes_map, shapes, child_to_parent, route_costs, repr_weekday_date, repr_weekend_date))
 }
 
 pub fn run_processing(gtfs_root: &str) -> Result<(), Box<dyn Error>> {
@@ -194,18 +196,45 @@ pub fn run_processing(gtfs_root: &str) -> Result<(), Box<dyn Error>> {
     let mut final_shapes_map = HashMap::new();
     let mut final_child_to_parent = HashMap::new();
     let mut final_route_costs: HashMap<String, RouteCost> = HashMap::new();
+    let mut representative_dates: HashMap<String, (NaiveDate, NaiveDate)> = HashMap::new();
 
-    for res in results {
+    for (res, (_, mode_name, _)) in results.into_iter().zip(modes.iter()) {
         match res {
-            Ok((sm, rm, shm, ctp, rc)) => {
+            Ok((sm, rm, shm, ctp, rc, repr_weekday, repr_weekend)) => {
                 final_stops_map.extend(sm);
                 final_routes_map.extend(rm);
                 final_shapes_map.extend(shm);
                 final_child_to_parent.extend(ctp);
                 final_route_costs.extend(rc);
+                representative_dates.insert(mode_name.to_string(), (repr_weekday, repr_weekend));
             },
             Err(e) => eprintln!("Error processing mode: {}", e),
         }
+    }
+
+    // Written for frontend/scripts/r5py/compute_pt_matrix.py (Stage 2 travel-time
+    // matrix, docs/methodology_refactor.md item 2 & 7) so the PT accessibility/car
+    // competitiveness matrix runs on the same representative day already used for
+    // per-stop scoring, rather than re-deriving a possibly-different date. metro_train
+    // is used as the single whole-network date for the multimodal matrix run (it's
+    // the network backbone connecting most origin-destination pairs); all per-mode
+    // dates are included here too since they can differ slightly by feed.
+    if let Some((primary_weekday, primary_weekend)) = representative_dates.get("metro_train").cloned() {
+        #[derive(serde::Serialize)]
+        struct RepresentativeDates {
+            primary_weekday: String,
+            primary_weekend: String,
+            #[serde(rename = "byMode")]
+            by_mode: HashMap<String, (String, String)>,
+        }
+        let payload = RepresentativeDates {
+            primary_weekday: primary_weekday.to_string(),
+            primary_weekend: primary_weekend.to_string(),
+            by_mode: representative_dates.iter()
+                .map(|(k, (wd, we))| (k.clone(), (wd.to_string(), we.to_string())))
+                .collect(),
+        };
+        fs::write("frontend/public/data/representative_dates.json", serde_json::to_string_pretty(&payload)?)?;
     }
 
     println!("Writing routes and shapes...");
