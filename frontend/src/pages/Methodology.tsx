@@ -463,8 +463,13 @@ suburb_score      = sum(cell_score * cell_dwellings) / sum(cell_dwellings)`}</Fo
                             option" is a different question to "typical access here".
                         </p>
                         <p>
-                            The headline wait in verdict lines is the median peak wait across the suburb's
-                            stops, doubled into the gap between services.
+                            The headline wait in verdict lines is the population-weighted median peak wait
+                            among the same 250m grid cells behind the score, counting only cells whose best
+                            viable route a resident can actually walk to, doubled into the gap between
+                            services. Verdicts also cite reach, the share of the suburb's dwellings living in
+                            a cell with at least one viable route within 800m: when that share drops below
+                            40%, the verdict says so directly rather than describing only the reached
+                            minority's experience as if it were the whole suburb's.
                         </p>
                         <p>
                             The league table ranks suburbs by this score, lowest first, and requires at
