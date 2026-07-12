@@ -1,0 +1,26 @@
+[
+    {
+        "slug": "thomastown",
+        "mustMatch": ["\\d+% of this suburb can't walk"],
+        "mustNotMatch": ["buses every 16 minutes", "which street you live on"],
+        "citation": "Verdict refactor spec (docs/methodology_refactor.md, verdict piece): Thomastown's stop-level mode split previously quoted a bus headway most residents cannot walk to (reachShare ~7%) while calling the suburb STRANDED, a self-contradiction the population-weighted reach gate replaces."
+    },
+    {
+        "slug": "deanside",
+        "mustMatch": ["beyond an 800m walk|can't walk"],
+        "mustNotMatch": ["if (it|they) shows? up"],
+        "citation": "Verdict refactor spec: Deanside's binding constraint is unreachable stops (a coverage/reach problem), not unreliable service once reached -- the reliability qualifier must not fire here."
+    },
+    {
+        "slug": "pakenham",
+        "mustMatch": ["every \\d+ minutes"],
+        "mustNotMatch": ["\\d+ minutes.*V/?Line"],
+        "citation": "Verdict refactor spec: Pakenham mixes hourly V/Line-style bus feeders with turn-up-and-go metro trains; the quoted headway must describe one population-weighted mode group, not a blended average across both."
+    },
+    {
+        "slug": "fitzroy",
+        "mustMatch": [],
+        "mustNotMatch": ["can't walk", "beyond an 800m walk"],
+        "citation": "Healthy inner-Melbourne control (GOOD band, reachShare 1.0 as generated) to catch REACH_CRITICAL overfiring on well-served suburbs."
+    }
+]

@@ -117,7 +117,37 @@ function main() {
         }
     }
 
-    console.log(`[check-fixtures] checked ${suburbFixtures.length} suburb fixtures, ${pointFixtures.length} point fixtures, ${carCompChecked} car-competitiveness fixtures (${carCompSkipped} skipped, not yet covered by the travel-time matrix).`);
+    // Tier D: verdict sentence content (methodology refactor, verdict piece).
+    // Regex fixtures against the baked verdict string -- mustMatch/mustNotMatch,
+    // not band checks, since the point here is the story the sentence tells,
+    // not the number behind it.
+    const verdictFixturesPath = path.join(FIXTURES_DIR, 'verdict-fixtures.json');
+    let verdictChecked = 0;
+    if (fs.existsSync(verdictFixturesPath)) {
+        const verdictFixtures = JSON.parse(fs.readFileSync(verdictFixturesPath, 'utf8'));
+        for (const fixture of verdictFixtures) {
+            const detailPath = path.join(__dirname, '../public/data/suburbs', `${fixture.slug}.json`);
+            if (!fs.existsSync(detailPath)) {
+                failures.push(`verdict '${fixture.slug}': suburb detail not found -- ${fixture.citation}`);
+                continue;
+            }
+            const detail = JSON.parse(fs.readFileSync(detailPath, 'utf8'));
+            const verdict = detail.verdict ?? '';
+            for (const pattern of fixture.mustMatch ?? []) {
+                if (!new RegExp(pattern).test(verdict)) {
+                    failures.push(`verdict '${fixture.slug}': expected to match /${pattern}/, got "${verdict}" -- ${fixture.citation}`);
+                }
+            }
+            for (const pattern of fixture.mustNotMatch ?? []) {
+                if (new RegExp(pattern).test(verdict)) {
+                    failures.push(`verdict '${fixture.slug}': expected NOT to match /${pattern}/, got "${verdict}" -- ${fixture.citation}`);
+                }
+            }
+            verdictChecked++;
+        }
+    }
+
+    console.log(`[check-fixtures] checked ${suburbFixtures.length} suburb fixtures, ${pointFixtures.length} point fixtures, ${carCompChecked} car-competitiveness fixtures (${carCompSkipped} skipped, not yet covered by the travel-time matrix), ${verdictChecked} verdict fixtures.`);
 
     if (failures.length > 0) {
         console.error(`[check-fixtures] ${failures.length} fixture(s) failed:`);

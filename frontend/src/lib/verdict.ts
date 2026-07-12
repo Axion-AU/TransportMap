@@ -53,7 +53,7 @@ export function headwayMinutes(medianWaitMinutes: number): number {
     return Math.round(medianWaitMinutes * 2);
 }
 
-/** avgScore gap large enough that "depends which street you live on" is a fair read, not noise from one or two stops. */
+/** avgScore gap large enough that "depends which street you live on" is a fair read, not noise from one or two stops. Reused for the population-weighted mode-share gap (gate 2). */
 const MODE_SPLIT_GAP = 25;
 /** Gap between a suburb's weakest and second-weakest breakdown dimension needed to call the weakest one "the" binding constraint. Below this, treat every dimension as equally broken. */
 const CLEAR_WEAKEST_GAP = 12;
@@ -61,6 +61,12 @@ const CLEAR_WEAKEST_GAP = 12;
 const COVERAGE_CRITICAL = 15;
 /** Reliability below this is worth naming explicitly ("if it shows up"); above it, don't imply a cancellation problem that isn't there. */
 const RELIABILITY_POOR = 40;
+/** Below this reachShare, most of the suburb can't walk to any viable route -- that's the story, not the mode split or the weakest dimension. */
+const REACH_CRITICAL = 0.4;
+/** A minority mode must carry at least this share of the reached population to headline a population mode split; smaller pockets aren't the suburb's story. */
+const SPLIT_MIN_SHARE = 0.2;
+/** A stop-level mode with bestScore at or above this is worth crediting as "genuinely good" in the reach verdict, even though most of the suburb can't reach it. */
+const STRONG_ANCHOR = 70;
 
 /**
  * A suburb's transit access can depend entirely on which mode reaches your
@@ -143,7 +149,29 @@ function bindingIssueLine(dim: WeakDimension, breakdown: SuburbBreakdown, noun: 
     }
 }
 
-export function verdictFor(bandValue: Band, ctx: VerdictContext): string {
+/** The band-severity closing line, shared by the legacy path and the grid reach/weakest-dimension gates. `decent`/`good` ignore `issue`, matching current behaviour. */
+function bandClosingLine(bandValue: Band, issue: string): string {
+    switch (bandValue) {
+        case 'stranded':
+            return `${issue}. A car is compulsory here because state budgets ignore this suburb.`;
+        case 'poor':
+            return `${issue}. You pay full fare for a tiny fraction of the service.`;
+        case 'patchy':
+            return `Usable only if your plans match the timetable. ${issue} leaves zero room for spontaneous trips.`;
+        case 'decent':
+            return `Solid service through the day. The gaps show up at night and on weekends, and the fare stays the same.`;
+        case 'good':
+            return `Turn up and go. This is the standard every suburb pays for and few receive.`;
+    }
+}
+
+/**
+ * Stop-based verdict path: today's logic, kept unchanged for legacy-mean
+ * suburbs (no populated grid cells) and for every address-level caller
+ * (ResultPage, ConnectivityPin), where a single address has no internal
+ * gradient for a population-weighted reach/mode-share story to describe.
+ */
+function legacyVerdictFor(bandValue: Band, ctx: VerdictContext): string {
     const noun = ctx.modeNoun || 'Services';
     const wait = ctx.medianWaitMinutes;
     const headway = wait !== null && wait > 0 ? headwayMinutes(wait) : null;
@@ -159,19 +187,87 @@ export function verdictFor(bandValue: Band, ctx: VerdictContext): string {
 
     const dim = weakestDimension(ctx.breakdown);
     const issue = bindingIssueLine(dim, ctx.breakdown, noun, headway);
+    return bandClosingLine(bandValue, issue);
+}
 
-    switch (bandValue) {
-        case 'stranded':
-            return `${issue}. A car is compulsory here because state budgets ignore this suburb.`;
-        case 'poor':
-            return `${issue}. You pay full fare for a tiny fraction of the service.`;
-        case 'patchy':
-            return `Usable only if your plans match the timetable. ${issue} leaves zero room for spontaneous trips.`;
-        case 'decent':
-            return `Solid service through the day. The gaps show up at night and on weekends, and the fare stays the same.`;
-        case 'good':
-            return `Turn up and go. This is the standard every suburb pays for and few receive.`;
+/**
+ * Gate 1: most of the suburb can't walk to any viable route at all. That's
+ * the story, ahead of any mode split or weakest-dimension read, which would
+ * otherwise describe only the reached minority's experience as if it were
+ * the suburb's.
+ */
+function reachLine(ctx: VerdictContext): string {
+    const { reachShare, fallbackWaitMinutes, fallbackModeName } = ctx.verdictInputs!;
+    const excludedPct = Math.round((1 - reachShare) * 100);
+    const anchor = ctx.modeBreakdown.find(m => m.bestScore >= STRONG_ANCHOR);
+
+    if (anchor) {
+        const anchorNoun = friendlyModeName(anchor.modeName).toLowerCase();
+        const fallbackNoun = fallbackModeName ? friendlyModeName(fallbackModeName).toLowerCase() : null;
+        const fallbackClause = fallbackWaitMinutes !== null && fallbackNoun
+            ? `, and the ${fallbackNoun} filling the gap run every ${headwayMinutes(fallbackWaitMinutes)} minutes`
+            : '';
+        return `The ${anchorNoun} here are genuinely good. ${excludedPct}% of this suburb can't walk to them${fallbackClause}`;
     }
+
+    return `The service that exists isn't bad, it's just out of reach. ${excludedPct}% of this suburb is beyond an 800m walk of a stop worth using`;
+}
+
+/**
+ * Gate 2: a genuine population-level mode split -- a minority mode reaches a
+ * real share of the suburb and clearly outscores the primary mode, not just
+ * a pocket too small to be the suburb's actual story (SPLIT_MIN_SHARE) or
+ * noise from one or two stops (MODE_SPLIT_GAP). Only the "lucky minority"
+ * direction is modelled: a primary mode dragging down an unlucky minority is
+ * already covered by that minority's own low reach/score, not a distinct
+ * story worth a second template.
+ */
+function populationModeSplitLine(verdictInputs: VerdictInputs): string | null {
+    const { modeShares } = verdictInputs;
+    if (modeShares.length < 2) return null;
+    const [primary, lucky] = modeShares;
+    if (lucky.share < SPLIT_MIN_SHARE) return null;
+    if (lucky.avgScore - primary.avgScore < MODE_SPLIT_GAP) return null;
+    if (primary.medianWaitMinutes === null) return null;
+
+    const luckyNoun = friendlyModeName(lucky.modeName).toLowerCase();
+    const primaryNoun = friendlyModeName(primary.modeName).toLowerCase();
+    const luckyPct = Math.round(lucky.share * 100);
+    const restPct = 100 - luckyPct;
+    const primaryHeadway = headwayMinutes(primary.medianWaitMinutes);
+
+    return `The ${luckyNoun} serve the ${luckyPct}% of this suburb lucky enough to live near them. The other ${restPct}% rely on the ${primaryNoun} every ${primaryHeadway} minutes.`;
+}
+
+/**
+ * Grid (population-weighted) verdict path: reach first, then a genuine
+ * population mode split, then the usual weakest-dimension read -- but with
+ * headway and mode noun both drawn from the population-weighted grid inputs
+ * instead of stop counts, so the sentence describes what the median resident
+ * actually experiences.
+ */
+function gridVerdictFor(bandValue: Band, ctx: VerdictContext): string {
+    const verdictInputs = ctx.verdictInputs!;
+
+    if (verdictInputs.reachShare < REACH_CRITICAL) {
+        return bandClosingLine(bandValue, reachLine(ctx));
+    }
+
+    const split = populationModeSplitLine(verdictInputs);
+    if (split) return split;
+
+    const noun = verdictInputs.modeShares.length > 0 ? friendlyModeName(verdictInputs.modeShares[0].modeName) : (ctx.modeNoun || 'Services');
+    const wait = verdictInputs.medianWaitMinutes;
+    const headway = wait !== null && wait > 0 ? headwayMinutes(wait) : null;
+
+    const dim = weakestDimension(ctx.breakdown);
+    const issue = bindingIssueLine(dim, ctx.breakdown, noun, headway);
+    return bandClosingLine(bandValue, issue);
+}
+
+export function verdictFor(bandValue: Band, ctx: VerdictContext): string {
+    if (!ctx.verdictInputs) return legacyVerdictFor(bandValue, ctx);
+    return gridVerdictFor(bandValue, ctx);
 }
 
 /** Mode id to plural noun, matching the Rust processor's mode ids. Kept for callers without a full ModeBreakdown. */
