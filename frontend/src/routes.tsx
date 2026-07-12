@@ -8,6 +8,7 @@ import EmbedLeagueTable from './pages/EmbedLeagueTable';
 import EmbedSuburbScore from './pages/EmbedSuburbScore';
 import ComparePage from './pages/ComparePage';
 import Methodology from './pages/Methodology';
+import ChangelogPage from './pages/ChangelogPage';
 import NetworkPlanPage from './pages/NetworkPlanPage';
 import ClientOnly from './components/ClientOnly';
 import CompareIndexPage from './pages/CompareIndexPage';
@@ -27,6 +28,7 @@ const AppRoutes = () => (
         <Route path="/compare" element={<CompareIndexPage />} />
         <Route path="/compare/:slugA_vs_slugB" element={<ComparePage />} />
         <Route path="/methodology" element={<Methodology />} />
+        <Route path="/changelog" element={<ChangelogPage />} />
         <Route path="/the-plan" element={<NetworkPlanPage />} />
         <Route
             path="/map"

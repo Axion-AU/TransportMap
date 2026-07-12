@@ -225,6 +225,13 @@ routes.push({
 });
 
 routes.push({
+    urlPath: '/changelog',
+    title: 'Changelog: Every Scoring and Data Change | Transport Score',
+    description: 'Every dated change to the scoring formula, data sources, and site, newest first. Every methodology change ships with its measured effect on real suburbs.',
+    ogImage: 'default.png',
+});
+
+routes.push({
     urlPath: '/result',
     title: 'Your result | Transport Score',
     description: 'Public transport score for the 800m around a point. Addresses never leave your browser.',
