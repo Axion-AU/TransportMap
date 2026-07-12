@@ -147,7 +147,61 @@ function main() {
         }
     }
 
-    console.log(`[check-fixtures] checked ${suburbFixtures.length} suburb fixtures, ${pointFixtures.length} point fixtures, ${carCompChecked} car-competitiveness fixtures (${carCompSkipped} skipped, not yet covered by the travel-time matrix), ${verdictChecked} verdict fixtures.`);
+    // Tier E: route-level (docs/route-scoring.md). Band fixtures + the
+    // canonicalisation/eligibility invariants from the change sheet's
+    // "Fixture seed set" -- exactly one canonical route per short name per
+    // mode, and no route below the league-table population/trip floor
+    // appears in any table.
+    const routeFixturesPath = path.join(FIXTURES_DIR, 'route-fixtures.json');
+    const routeIndexPath = path.join(GENERATED_DIR, 'route-index.json');
+    let routeFixturesChecked = 0;
+    if (fs.existsSync(routeFixturesPath) && fs.existsSync(routeIndexPath)) {
+        const routeFixtures = JSON.parse(fs.readFileSync(routeFixturesPath, 'utf8'));
+        const routeIndex = JSON.parse(fs.readFileSync(routeIndexPath, 'utf8'));
+        const routeBySlug = new Map(routeIndex.routes.map(r => [r.slug, r]));
+
+        for (const fixture of routeFixtures) {
+            const route = routeBySlug.get(fixture.slug);
+            if (!route) {
+                failures.push(`route '${fixture.slug}': not found in route-index.json (expected to exist) -- ${fixture.citation}`);
+                continue;
+            }
+            checkBand(`route '${fixture.slug}' (score ${route.score})`, route.band, fixture, failures);
+            routeFixturesChecked++;
+        }
+
+        // Canonicalisation invariant: exactly one canonical route per
+        // (short name, mode) -- i.e. no duplicate slugs, since the slug is
+        // derived from that same key.
+        const seenSlugs = new Set();
+        for (const r of routeIndex.routes) {
+            if (seenSlugs.has(r.slug)) {
+                failures.push(`route slug '${r.slug}' appears more than once in route-index.json -- canonicalisation merge is broken.`);
+            }
+            seenSlugs.add(r.slug);
+        }
+
+        // Eligibility invariant: no route below the population/trip floor,
+        // or flagged school_special/rail_replacement, appears in any
+        // league table.
+        const allTableSlugs = [
+            ...Object.values(routeIndex.worst20ByMode ?? {}).flat(),
+            ...Object.values(routeIndex.best20ByMode ?? {}).flat(),
+        ];
+        for (const slug of allTableSlugs) {
+            const r = routeBySlug.get(slug);
+            if (!r) {
+                failures.push(`league table references route slug '${slug}' with no matching entry in route-index.json (dead cross-link).`);
+                continue;
+            }
+            if (r.schoolSpecial) failures.push(`route '${slug}' is school_special but appears in a league table.`);
+            if (r.railReplacementOrSpecial) failures.push(`route '${slug}' is rail_replacement_or_special but appears in a league table.`);
+            if (r.catchmentPopulation < 5000) failures.push(`route '${slug}' has catchmentPopulation ${r.catchmentPopulation} (< 5,000) but appears in a league table.`);
+            if (r.weekdayTrips < 6) failures.push(`route '${slug}' has weekdayTrips ${r.weekdayTrips} (< 6) but appears in a league table.`);
+        }
+    }
+
+    console.log(`[check-fixtures] checked ${suburbFixtures.length} suburb fixtures, ${pointFixtures.length} point fixtures, ${carCompChecked} car-competitiveness fixtures (${carCompSkipped} skipped, not yet covered by the travel-time matrix), ${verdictChecked} verdict fixtures, ${routeFixturesChecked} route fixtures.`);
 
     if (failures.length > 0) {
         console.error(`[check-fixtures] ${failures.length} fixture(s) failed:`);

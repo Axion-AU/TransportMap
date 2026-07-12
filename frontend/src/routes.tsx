@@ -12,6 +12,8 @@ import ChangelogPage from './pages/ChangelogPage';
 import NetworkPlanPage from './pages/NetworkPlanPage';
 import ClientOnly from './components/ClientOnly';
 import CompareIndexPage from './pages/CompareIndexPage';
+import RoutePage from './pages/RoutePage';
+import RouteLeagueTablePage from './pages/RouteLeagueTablePage';
 
 // Leaflet stays out of every funnel chunk: the map page is lazy and
 // mounts only in the browser.
@@ -21,6 +23,8 @@ const AppRoutes = () => (
     <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/score/:slug" element={<SuburbScorePage />} />
+        <Route path="/route/:slug" element={<RoutePage />} />
+        <Route path="/routes" element={<RouteLeagueTablePage />} />
         <Route path="/result" element={<ResultPage />} />
         <Route path="/suburbs" element={<LeagueTablePage />} />
         <Route path="/embed/suburbs" element={<EmbedLeagueTable />} />

@@ -278,3 +278,71 @@ export function modeNounFor(modeIds: number[]): string {
     if (has(4) || has(6) || has(5)) return 'Buses';
     return 'Services';
 }
+
+// --- Route verdicts (docs/route-scoring.md) ---
+// Route verdicts may quote the route's own headway freely -- unlike suburb
+// verdicts, the number genuinely is the route's, not inherited from
+// surrounding stops. Same voice rules (check-voice.mjs), same
+// uniform/weakest-component + band-closer pattern as weakestDimension above.
+
+import type { RouteScoreComponents } from './scoring';
+
+type WeakRouteComponent = 'uniform' | 'frequency' | 'catchment' | 'connectivity' | 'directness';
+
+export interface RouteVerdictContext {
+    number: string;
+    mode: string;
+    breakdown: RouteScoreComponents;
+    peakWaitMinutes: number;
+    circuityRatio: number | null;
+    interchangeCount: number;
+}
+
+/** Which of the four route components is clearly the binding constraint, or 'uniform' when none stands out (mirrors weakestDimension). Directness is excluded for loop routes, matching their weight redistribution. */
+function weakestRouteComponent(breakdown: RouteScoreComponents): WeakRouteComponent {
+    const entries: [WeakRouteComponent, number][] = [
+        ['frequency', breakdown.frequency],
+        ['catchment', breakdown.catchment],
+        ['connectivity', breakdown.connectivity],
+    ];
+    if (!breakdown.isLoop) entries.push(['directness', breakdown.directness]);
+    entries.sort((a, b) => a[1] - b[1]);
+    const [worstDim, worstVal] = entries[0];
+    const [, secondVal] = entries[1];
+    if (secondVal - worstVal < CLEAR_WEAKEST_GAP) return 'uniform';
+    return worstDim;
+}
+
+function routeBindingIssueLine(dim: WeakRouteComponent, ctx: RouteVerdictContext): string {
+    const headway = ctx.peakWaitMinutes > 0 ? headwayMinutes(ctx.peakWaitMinutes) : null;
+    switch (dim) {
+        case 'frequency':
+            return headway !== null
+                ? `The ${ctx.number} runs every ${headway} minutes at peak, and that's the thing holding it back`
+                : `Long waits between services are what's holding the ${ctx.number} back`;
+        case 'catchment':
+            return `The ${ctx.number} runs fine, it just doesn't pass many homes`;
+        case 'connectivity':
+            return ctx.interchangeCount > 0
+                ? `The ${ctx.number} only connects to ${ctx.interchangeCount} other genuinely useful service${ctx.interchangeCount === 1 ? '' : 's'}, so one missed link stalls the whole trip`
+                : `The ${ctx.number} doesn't connect to another genuinely useful service, so one missed link stalls the whole trip`;
+        case 'directness':
+            return ctx.circuityRatio !== null
+                ? `The ${ctx.number} travels ${ctx.circuityRatio.toFixed(1)}km for every 1km of progress. Frequency isn't the problem, the routing is`
+                : `The ${ctx.number} takes a long way round. Frequency isn't the problem, the routing is`;
+        case 'uniform':
+            return headway !== null
+                ? `The ${ctx.number} runs about every ${headway} minutes at peak, and catchment, connectivity, and directness are all just as weak`
+                : `Frequency, catchment, connectivity, and directness are all weak on the ${ctx.number}, there's no single fix`;
+    }
+}
+
+export function routeVerdictFor(bandValue: Band, ctx: RouteVerdictContext): string {
+    const dim = weakestRouteComponent(ctx.breakdown);
+    const issue = routeBindingIssueLine(dim, ctx);
+    const closer = bandClosingLine(bandValue, issue);
+    if (ctx.breakdown.isLoop) {
+        return `${closer} Orbital route, directness not scored.`;
+    }
+    return closer;
+}

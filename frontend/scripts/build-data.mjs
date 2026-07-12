@@ -38,15 +38,22 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import simplify from '@turf/simplify';
-import { suburbScore, catchmentScore, computeVerdictInputs, band, LEAGUE_TABLE_MIN_STOPS, CATCHMENT_RADIUS_M, distanceMeters, friendlyModeName } from '../src/lib/scoring.ts';
-import { verdictFor } from '../src/lib/verdict.ts';
+import {
+    suburbScore, catchmentScore, computeVerdictInputs, band, LEAGUE_TABLE_MIN_STOPS, CATCHMENT_RADIUS_M, distanceMeters, friendlyModeName,
+    routeScore, catchmentPopulationScore, connectivityCountScore, directnessScore,
+    ROUTE_CATCHMENT_RADIUS_M, ROUTE_CONNECTIVITY_RADIUS_M, LEAGUE_TABLE_MIN_CATCHMENT_POPULATION, LEAGUE_TABLE_MIN_WEEKDAY_TRIPS,
+} from '../src/lib/scoring.ts';
+import { verdictFor, routeVerdictFor } from '../src/lib/verdict.ts';
 import { geohashEncode, tilesFor, GRID_STEP_DEG } from '../src/lib/geo.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.resolve(__dirname, '../public/data');
 const OUT_SUBURBS = path.join(DATA_DIR, 'suburbs');
 const OUT_TILES = path.join(DATA_DIR, 'tiles');
+const OUT_ROUTES = path.join(DATA_DIR, 'routes-detail');
 const OUT_GENERATED = path.resolve(__dirname, '../src/data/generated');
+const ROUTE_FACTS_PATH = path.join(DATA_DIR, 'route_facts.json');
+const SHAPES_PATH = path.join(DATA_DIR, 'shapes.json');
 
 /**
  * Editorial notes for suburbs whose real, verified score would otherwise
@@ -205,6 +212,43 @@ function loadPopulationByCell() {
         }
     }
     return byCell;
+}
+
+/**
+ * Raw mesh blocks (not the 250m-cell aggregate used by suburb grid scoring),
+ * kept as individual {code, lat, lon, population, dwellings} records and
+ * bucketed into geohash tiles, so route catchment (docs/route-scoring.md)
+ * can dedup "unique mesh blocks within 400m of any stop" by `code` --
+ * something the cell-aggregated `loadPopulationByCell` map above can't do
+ * since it already lost individual mesh-block identity.
+ */
+function loadMeshBlockTileIndex() {
+    if (!fs.existsSync(MESH_BLOCK_POPULATION_PATH)) return new Map();
+    const meshBlocks = JSON.parse(fs.readFileSync(MESH_BLOCK_POPULATION_PATH, 'utf8'));
+    const index = new Map();
+    for (const mb of meshBlocks) {
+        const key = geohashEncode(mb.lat, mb.lon);
+        if (!index.has(key)) index.set(key, []);
+        index.get(key).push(mb);
+    }
+    return index;
+}
+
+function meshBlocksNear(lat, lon, radiusM, meshBlockTileIndex) {
+    const keys = tilesFor(lat, lon, radiusM);
+    const out = [];
+    for (const key of keys) {
+        const bucket = meshBlockTileIndex.get(key);
+        if (bucket) out.push(...bucket);
+    }
+    return out;
+}
+
+const MODE_SLUG_BY_ID = { 1: 'train', 2: 'train', 3: 'tram', 4: 'bus', 5: 'coach', 6: 'bus', 11: 'skybus' };
+
+function routeSlugPartFor(routeFacts) {
+    const isTrain = routeFacts.mode_id === 1 || routeFacts.mode_id === 2;
+    return slugify(isTrain ? routeFacts.long_name : routeFacts.short_name);
 }
 
 /** Stops within radiusM of a point, using the tile index instead of scanning every stop. */
@@ -453,6 +497,216 @@ function attributeSuburbs(stops) {
     };
 }
 
+/**
+ * Route pages (docs/route-scoring.md). Reads route_facts.json (Rust
+ * canonicalisation + per-route trip facts, no scores), composes the four
+ * score components purely from the route's own trips/stops/geometry plus
+ * the mesh-block population file, and writes one detail JSON per canonical
+ * route plus a route-index.json for league tables and cross-linking.
+ *
+ * `rail_replacement_or_special` routes get no page and no table entry at
+ * all, per the spec. `school_special` routes get a page but are excluded
+ * from league tables only.
+ */
+function buildRoutes(stops, attributed, suburbNameToSlug, tileIndex, meshBlockTileIndex) {
+    if (!fs.existsSync(ROUTE_FACTS_PATH)) {
+        console.warn('[build-data] public/data/route_facts.json missing; skipping route pages (run the Rust processor).');
+        return { routeIndexEntries: [], suburbRoutesMap: new Map(), worst20ByMode: {}, best20ByMode: {} };
+    }
+    const allRouteFacts = JSON.parse(fs.readFileSync(ROUTE_FACTS_PATH, 'utf8'));
+    // shapes.json: shape_id -> [[lon, lat], ...] (Rust stores lon,lat), for the route map.
+    const allShapes = fs.existsSync(SHAPES_PATH) ? JSON.parse(fs.readFileSync(SHAPES_PATH, 'utf8')) : {};
+
+    const stopById = new Map(stops.map((s, i) => [s.id, { ...s, suburbName: attributed.get(i) ?? null }]));
+
+    // Canonical key -> headway_score / member_route_id -> canonical key,
+    // needed for the connectivity component (other canonical routes with
+    // headway_score >= 60 sharing a nearby stop).
+    const headwayScoreByCanonicalKey = new Map(allRouteFacts.map(r => [r.canonical_key, r.headway_score]));
+    const canonicalKeyByMemberRouteId = new Map();
+    for (const r of allRouteFacts) {
+        for (const rid of r.member_route_ids) canonicalKeyByMemberRouteId.set(rid, r.canonical_key);
+    }
+
+    fs.rmSync(OUT_ROUTES, { recursive: true, force: true });
+    fs.mkdirSync(OUT_ROUTES, { recursive: true });
+
+    const routeIndexEntries = [];
+    const suburbRoutesMap = new Map(); // suburb slug -> [{slug, number, mode, score, band}]
+    const slugSeen = new Map();
+
+    const routable = allRouteFacts.filter(r => !r.rail_replacement_or_special);
+    for (const r of [...routable].sort((a, b) => a.canonical_key.localeCompare(b.canonical_key))) {
+        const modeSlug = MODE_SLUG_BY_ID[r.mode_id] ?? 'bus';
+        let part = routeSlugPartFor(r);
+        if (!part) continue;
+        let slug = `${modeSlug}-${part}`;
+        if (slugSeen.has(slug)) {
+            const n = slugSeen.get(slug) + 1;
+            slugSeen.set(slug, n);
+            slug = `${slug}-${n}`;
+        } else {
+            slugSeen.set(slug, 1);
+        }
+
+        const routeStops = r.stop_ids.map(id => stopById.get(id)).filter(Boolean);
+
+        // Catchment (0.25): unique mesh blocks (deduped by code) within 400m
+        // of any stop, summed population.
+        const seenMeshBlocks = new Set();
+        let catchmentPopulation = 0;
+        for (const s of routeStops) {
+            for (const mb of meshBlocksNear(s.lat, s.lon, ROUTE_CATCHMENT_RADIUS_M, meshBlockTileIndex)) {
+                if (seenMeshBlocks.has(mb.code)) continue;
+                if (distanceMeters(mb.lat, mb.lon, s.lat, s.lon) < ROUTE_CATCHMENT_RADIUS_M) {
+                    seenMeshBlocks.add(mb.code);
+                    catchmentPopulation += mb.population;
+                }
+            }
+        }
+        const catchmentComponent = catchmentPopulationScore(catchmentPopulation);
+
+        // Connectivity (0.20): distinct train stations + distinct other
+        // canonical routes with headway_score >= 60, sharing a stop within
+        // 150m of any of this route's stops.
+        const distinctStations = new Set();
+        const distinctRoutes = new Set();
+        for (const s of routeStops) {
+            for (const n of stopsNearPoint(s.lat, s.lon, ROUTE_CONNECTIVITY_RADIUS_M, tileIndex)) {
+                if (n.id === s.id) continue;
+                if (n.mode_name === 'metro_train' || n.mode_name === 'regional_train') distinctStations.add(n.name);
+                for (const rid of n.route_ids ?? []) {
+                    const ck = canonicalKeyByMemberRouteId.get(rid);
+                    if (!ck || ck === r.canonical_key) continue;
+                    const hw = headwayScoreByCanonicalKey.get(ck);
+                    if (hw !== undefined && hw >= 60) distinctRoutes.add(ck);
+                }
+            }
+        }
+        const interchangeCount = distinctStations.size + distinctRoutes.size;
+        const connectivityComponent = connectivityCountScore(interchangeCount);
+
+        // Directness (0.10): circuity ratio, exempt for loops (weight
+        // redistribution happens inside routeScore()).
+        let circuityRatio = null;
+        if (!r.is_loop && r.terminus_a && r.terminus_b && r.shape_length_km > 0) {
+            const straightKm = distanceMeters(r.terminus_a[0], r.terminus_a[1], r.terminus_b[0], r.terminus_b[1]) / 1000;
+            if (straightKm > 0.05) circuityRatio = r.shape_length_km / straightKm;
+        }
+        const directnessComponent = circuityRatio !== null ? directnessScore(circuityRatio) : 100;
+
+        const components = {
+            frequency: r.frequency_score,
+            catchment: catchmentComponent,
+            connectivity: connectivityComponent,
+            directness: directnessComponent,
+            isLoop: r.is_loop,
+        };
+        const scored = routeScore(components);
+        const scoreBand = band(scored.score);
+
+        const suburbsServedSlugs = new Set();
+        for (const s of routeStops) {
+            if (s.suburbName) suburbsServedSlugs.add(suburbNameToSlug.get(s.suburbName) ?? null);
+        }
+        suburbsServedSlugs.delete(null);
+
+        const verdict = routeVerdictFor(scoreBand, {
+            number: modeSlug === 'train' ? r.long_name : r.short_name,
+            mode: modeSlug,
+            breakdown: components,
+            peakWaitMinutes: r.peak_wait_minutes,
+            circuityRatio,
+            interchangeCount,
+        });
+
+        const populationPerServiceKm = r.shape_length_km > 0 ? Math.round(catchmentPopulation / r.shape_length_km) : 0;
+
+        const detail = {
+            slug,
+            number: modeSlug === 'train' ? r.long_name : r.short_name,
+            longName: r.long_name,
+            mode: modeSlug,
+            score: Math.round(scored.score),
+            scoreExact: Math.round(scored.score * 100) / 100,
+            band: scoreBand,
+            breakdown: {
+                frequency: Math.round(components.frequency),
+                catchment: Math.round(components.catchment),
+                connectivity: Math.round(components.connectivity),
+                directness: Math.round(components.directness),
+                isLoop: r.is_loop,
+            },
+            weights: scored.weights,
+            peakWaitMinutes: Math.round(r.peak_wait_minutes * 10) / 10,
+            offpeakWaitMinutes: Math.round(r.offpeak_wait_minutes * 10) / 10,
+            weekendWaitMinutes: Math.round(r.weekend_wait_minutes * 10) / 10,
+            spanHours: Math.round(r.span_hours * 10) / 10,
+            activeDays: r.active_days,
+            weekdayTrips: r.trips_per_weekday,
+            catchmentPopulation,
+            populationPerServiceKm,
+            circuityRatio: circuityRatio !== null ? Math.round(circuityRatio * 100) / 100 : null,
+            interchangeCount,
+            isLoop: r.is_loop,
+            schoolSpecial: r.school_special,
+            railReplacementOrSpecial: r.rail_replacement_or_special,
+            suburbsServed: [...suburbsServedSlugs].sort(),
+            verdict,
+            shape: (r.representative_shape_id && allShapes[r.representative_shape_id]
+                ? allShapes[r.representative_shape_id].map(([lon, lat]) => [+lat.toFixed(5), +lon.toFixed(5)])
+                : []),
+            termini: r.terminus_a && r.terminus_b ? [{ lat: r.terminus_a[0], lon: r.terminus_a[1] }, { lat: r.terminus_b[0], lon: r.terminus_b[1] }] : null,
+            memberRouteIds: r.member_route_ids,
+            stops: routeStops.map(s => ({
+                name: s.name,
+                mode_name: s.mode_name,
+                final_score: Math.round(s.final_score),
+                lat: +s.lat.toFixed(5),
+                lon: +s.lon.toFixed(5),
+            })),
+        };
+
+        fs.writeFileSync(path.join(OUT_ROUTES, `${slug}.json`), JSON.stringify(detail));
+
+        const indexEntry = {
+            slug,
+            number: detail.number,
+            longName: r.long_name,
+            mode: modeSlug,
+            score: detail.score,
+            band: scoreBand,
+            schoolSpecial: r.school_special,
+            railReplacementOrSpecial: r.rail_replacement_or_special,
+            catchmentPopulation,
+            weekdayTrips: r.trips_per_weekday,
+        };
+        routeIndexEntries.push(indexEntry);
+
+        for (const sSlug of suburbsServedSlugs) {
+            if (!suburbRoutesMap.has(sSlug)) suburbRoutesMap.set(sSlug, []);
+            suburbRoutesMap.get(sSlug).push({ slug, number: detail.number, mode: modeSlug, score: detail.score, band: scoreBand });
+        }
+    }
+
+    // League table eligibility: not school_special, not rail_replacement/special
+    // (already filtered out entirely above), catchmentPopulation >= 5,000,
+    // >= 6 weekday trips. Without this the worst-20 is a list of school runs
+    // and flexi-routes.
+    const eligible = routeIndexEntries.filter(r =>
+        !r.schoolSpecial && r.catchmentPopulation >= LEAGUE_TABLE_MIN_CATCHMENT_POPULATION && r.weekdayTrips >= LEAGUE_TABLE_MIN_WEEKDAY_TRIPS
+    );
+    const worst20ByMode = {};
+    const best20ByMode = {};
+    for (const modeSlug of new Set(eligible.map(r => r.mode))) {
+        const forMode = eligible.filter(r => r.mode === modeSlug);
+        worst20ByMode[modeSlug] = [...forMode].sort((a, b) => a.score - b.score).slice(0, 20).map(r => r.slug);
+        best20ByMode[modeSlug] = [...forMode].sort((a, b) => b.score - a.score).slice(0, 20).map(r => r.slug);
+    }
+
+    return { routeIndexEntries, suburbRoutesMap, worst20ByMode, best20ByMode };
+}
+
 function main() {
     const { stops, fixture, generatedAt, methodologyVersion } = loadStops();
     console.log(`[build-data] loaded ${stops.length} stops (fixture: ${fixture})`);
@@ -498,18 +752,32 @@ function main() {
     const populationByCell = loadPopulationByCell();
     console.log(`[build-data] population grid: ${populationByCell.size} populated 250m cells from real ABS mesh-block dwelling counts${populationByCell.size === 0 ? ' (none loaded -- see warning above)' : ''}`);
 
+    // Suburb name -> slug, assigned once up front (same dedup logic as the
+    // detail-writing loop below) so route processing can resolve
+    // suburbs-served before suburb detail JSON is written.
+    const suburbNameToSlug = new Map();
+    {
+        const slugSeen = new Map();
+        for (const suburbName of [...bySuburb.keys()].sort((a, b) => a.localeCompare(b))) {
+            let slug = slugify(suburbName);
+            if (!slug) continue;
+            if (slugSeen.has(slug)) slug = `${slug}-${slugSeen.get(slug) + 1}`;
+            slugSeen.set(slugify(suburbName), (slugSeen.get(slugify(suburbName)) ?? 0) + 1);
+            suburbNameToSlug.set(suburbName, slug);
+        }
+    }
+
+    const meshBlockTileIndex = loadMeshBlockTileIndex();
+    const { routeIndexEntries, suburbRoutesMap, worst20ByMode, best20ByMode } = buildRoutes(stops, attributed, suburbNameToSlug, tileIndex, meshBlockTileIndex);
+    console.log(`[build-data] routes: ${routeIndexEntries.length} canonical routes scored, ${Object.values(worst20ByMode).reduce((s, a) => s + a.length, 0)} league-eligible (worst side)`);
+
     const index = [];
-    const slugSeen = new Map();
     let gridScored = 0;
     let legacyScored = 0;
 
     for (const [suburbName, suburbStops] of [...bySuburb.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
-        let slug = slugify(suburbName);
+        const slug = suburbNameToSlug.get(suburbName);
         if (!slug) continue;
-        if (slugSeen.has(slug)) {
-            slug = `${slug}-${slugSeen.get(slug) + 1}`;
-        }
-        slugSeen.set(slugify(suburbName), (slugSeen.get(slugify(suburbName)) ?? 0) + 1);
 
         const gridCells = computeGridCellsForSuburb(suburbName, populationByCell, tileIndex);
         const result = suburbScore(suburbStops, gridCells);
@@ -608,6 +876,7 @@ function main() {
             carCompetitiveness: stage2?.carCompetitiveness ?? null,
             accessibility: stage2?.accessibility ?? null,
             note: SUBURB_NOTES[slug] ?? null,
+            routes: (suburbRoutesMap.get(slug) ?? []).sort((a, b) => b.score - a.score),
         };
 
         fs.writeFileSync(path.join(OUT_SUBURBS, `${slug}.json`), JSON.stringify(detail));
@@ -663,6 +932,9 @@ function main() {
 
     const indexBody = JSON.stringify(suburbIndex);
     fs.writeFileSync(path.join(OUT_GENERATED, 'suburb-index.json'), indexBody);
+
+    const routeIndex = { routes: routeIndexEntries, worst20ByMode, best20ByMode };
+    fs.writeFileSync(path.join(OUT_GENERATED, 'route-index.json'), JSON.stringify(routeIndex));
 
     const planPath = path.join(DATA_DIR, 'network_plan.json');
     // /the-plan runs on separate population/POI/road datasets to the GTFS

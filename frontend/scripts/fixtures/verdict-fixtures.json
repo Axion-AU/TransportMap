@@ -1,9 +1,9 @@
 [
     {
         "slug": "thomastown",
-        "mustMatch": ["\\d+% of this suburb can't walk"],
-        "mustNotMatch": ["buses every 16 minutes", "which street you live on"],
-        "citation": "Verdict refactor spec (docs/methodology_refactor.md, verdict piece): Thomastown's stop-level mode split previously quoted a bus headway most residents cannot walk to (reachShare ~7%) while calling the suburb STRANDED, a self-contradiction the population-weighted reach gate replaces."
+        "mustMatch": ["\\d+% .*buses every \\d+ minutes"],
+        "mustNotMatch": ["which street you live on"],
+        "citation": "2026-07-12 representative-date fix (see CLAUDE.md changelog): Thomastown's reachShare ~7% figure this fixture previously asserted was itself a symptom of the single-representative-date bug (most of Thomastown's real 559/561/566 bus stops were being zeroed out by a calendar_dates.txt exception on the one date sampled). With the multi-date median fix, real bus coverage reaches ~73% of the suburb at a genuine ~19min headway, so the old 'can't walk to it' framing is no longer accurate and the self-contradiction it guarded against no longer applies."
     },
     {
         "slug": "deanside",

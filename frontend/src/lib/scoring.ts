@@ -488,3 +488,93 @@ export const BAND_COLORS: Record<Band, string> = {
     decent: '#4A7AEB',
     good: '#00DDB8',
 };
+
+// --- Route scoring (docs/route-scoring.md) ---
+// A route score measures what the route itself does, not what its stops
+// inherit from their surroundings -- see the doc's "Design principle". All
+// four components are continuous curves, reusing the same band vocabulary
+// as suburbs/addresses above.
+
+export const ROUTE_CATCHMENT_RADIUS_M = 400;
+export const ROUTE_CONNECTIVITY_RADIUS_M = 150;
+/** A canonical route needs at least this weekly-catchment population to appear in a league table. */
+export const LEAGUE_TABLE_MIN_CATCHMENT_POPULATION = 5000;
+export const LEAGUE_TABLE_MIN_WEEKDAY_TRIPS = 6;
+
+export interface RouteScoreComponents {
+    frequency: number;
+    catchment: number;
+    connectivity: number;
+    directness: number;
+    /** Loop routes are exempt from directness; its weight redistributes proportionally across the other three. */
+    isLoop: boolean;
+}
+
+export interface RouteScoreResult {
+    score: number;
+    breakdown: RouteScoreComponents;
+    /** Weights actually used after any loop-route redistribution, for display/verification. */
+    weights: { frequency: number; catchment: number; connectivity: number; directness: number };
+}
+
+const ROUTE_WEIGHTS = { frequency: 0.45, catchment: 0.25, connectivity: 0.20, directness: 0.10 };
+
+/**
+ * Saturating log-scale curve on raw population count, so a 40k-catchment
+ * orbital and a 15k-catchment feeder can both score well for their role.
+ * Calibrated so ~5k (league-table floor) sits around a "patchy" score and
+ * ~60k reaches "good".
+ */
+export function catchmentPopulationScore(population: number): number {
+    if (population <= 0) return 0;
+    const score = 100 * (Math.log10(population + 1) / Math.log10(80000));
+    return Math.max(0, Math.min(100, score));
+}
+
+/** Saturating curve on count of distinct high-quality interchanges (train stations + headway>=60 routes within 150m). */
+export function connectivityCountScore(count: number): number {
+    if (count <= 0) return 0;
+    if (count === 1) return 35;
+    if (count === 2) return 55;
+    if (count === 3) return 70;
+    if (count === 4) return 82;
+    if (count <= 6) return 90 + (count - 4) * 3;
+    return 100;
+}
+
+/** Circuity ratio (shape length / straight-line terminus distance): 100 at <=1.2, sliding to ~15 at >=2.5. */
+export function directnessScore(circuityRatio: number): number {
+    if (!Number.isFinite(circuityRatio) || circuityRatio <= 1.2) return 100;
+    if (circuityRatio >= 2.5) return 15;
+    const t = (circuityRatio - 1.2) / (2.5 - 1.2);
+    return 100 - t * 85;
+}
+
+/**
+ * Composes the four route components into a single 0-100 score. Loop routes
+ * (spec: termini within 1km) are exempt from directness -- its weight
+ * redistributes proportionally across frequency/catchment/connectivity
+ * rather than silently scoring the loop's directness at 0 or 100.
+ */
+export function routeScore(components: RouteScoreComponents): RouteScoreResult {
+    const { frequency, catchment, connectivity, directness, isLoop } = components;
+
+    let weights = { ...ROUTE_WEIGHTS };
+    if (isLoop) {
+        const remaining = weights.frequency + weights.catchment + weights.connectivity;
+        const scale = (weights.frequency + weights.catchment + weights.connectivity + weights.directness) / remaining;
+        weights = {
+            frequency: weights.frequency * scale,
+            catchment: weights.catchment * scale,
+            connectivity: weights.connectivity * scale,
+            directness: 0,
+        };
+    }
+
+    const score = frequency * weights.frequency
+        + catchment * weights.catchment
+        + connectivity * weights.connectivity
+        + directness * weights.directness;
+
+    return { score: Math.max(0, Math.min(100, score)), breakdown: components, weights };
+}

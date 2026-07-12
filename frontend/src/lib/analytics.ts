@@ -12,6 +12,7 @@ import { site } from '../config/site';
 export type FunnelEvent =
     | 'lookup_performed'
     | 'score_viewed'
+    | 'route_score_viewed'
     | 'share_clicked'
     | 'link_copied'
     | 'cta_clicked'

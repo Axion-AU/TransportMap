@@ -27,7 +27,12 @@ frontend/public/data/*.geojson
 # Generated build-time data (derived from stops_*.geojson by frontend/scripts/build-data.mjs)
 frontend/public/data/suburbs/
 frontend/public/data/tiles/
+frontend/public/data/routes-detail/
 frontend/src/data/generated/
+
+# Route facts (docs/route-scoring.md): written by process_gtfs every run,
+# same as routes_cost.json/network_plan.json below.
+frontend/public/data/route_facts.json
 
 # Generated route-line shards (derived from frontend/data-src/shapes.json by
 # frontend/scripts/split-shapes.mjs). The Rust processor may also drop a

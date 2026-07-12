@@ -1,4 +1,4 @@
-import type { Band, VerdictInputs } from '../lib/scoring';
+import type { Band, VerdictInputs, RouteScoreComponents } from '../lib/scoring';
 
 export interface SuburbIndexEntry {
     name: string;
@@ -52,6 +52,64 @@ export interface SuburbDetail {
     accessibility: { jobsWithin45MinPt: number } | null;
     /** Editorial note for a real, verified finding that would otherwise read as a data error (e.g. a suburb's dwellings sitting far from its only stops). Null for almost every suburb. */
     note: string | null;
+    /** Canonical routes serving this suburb (piece 2 attribution), for the reciprocal pSEO cross-link -- see docs/route-scoring.md. */
+    routes: { slug: string; number: string; mode: string; score: number; band: Band }[];
+}
+
+// --- Route pages (docs/route-scoring.md) ---
+
+export interface RouteIndexEntry {
+    slug: string;
+    number: string;
+    longName: string;
+    mode: string;
+    score: number;
+    band: Band;
+    schoolSpecial: boolean;
+    railReplacementOrSpecial: boolean;
+    catchmentPopulation: number;
+    weekdayTrips: number;
+}
+
+export interface RouteIndex {
+    routes: RouteIndexEntry[];
+    /** Eligibility: not school_special, not rail_replacement/special, catchmentPopulation >= 5,000, >= 6 weekday trips. */
+    worst20ByMode: Record<string, string[]>;
+    best20ByMode: Record<string, string[]>;
+}
+
+export interface RouteDetail {
+    slug: string;
+    number: string;
+    longName: string;
+    mode: string;
+    score: number;
+    scoreExact: number;
+    band: Band;
+    breakdown: RouteScoreComponents;
+    weights: { frequency: number; catchment: number; connectivity: number; directness: number };
+    peakWaitMinutes: number;
+    offpeakWaitMinutes: number;
+    weekendWaitMinutes: number;
+    spanHours: number;
+    activeDays: number;
+    weekdayTrips: number;
+    catchmentPopulation: number;
+    populationPerServiceKm: number;
+    circuityRatio: number | null;
+    interchangeCount: number;
+    isLoop: boolean;
+    schoolSpecial: boolean;
+    railReplacementOrSpecial: boolean;
+    /** Suburb slugs (piece 2 attribution) containing >=1 of the route's stops, for the bidirectional pSEO link. */
+    suburbsServed: string[];
+    verdict: string;
+    /** Representative shape geometry as [lat, lon] pairs, for the route map. Empty if the route has no shape data. */
+    shape: [number, number][];
+    termini: { lat: number; lon: number }[] | null;
+    memberRouteIds: string[];
+    /** Every stop on the route (union across merged route_ids), for the route map. */
+    stops: { name: string; mode_name: string; final_score: number; lat: number; lon: number }[];
 }
 
 export interface CarCompetitiveness {

@@ -164,6 +164,30 @@ const StopList = ({ detail }: { detail: SuburbDetail }) => {
     );
 };
 
+/** Routes serving this suburb (piece 2 attribution), reciprocal to each route page's "suburbs served" list. */
+const RoutesServed = ({ detail }: { detail: SuburbDetail }) => {
+    if (!detail.routes || detail.routes.length === 0) return null;
+    return (
+        <section className="space-y-3">
+            <h2 className="type-display text-2xl text-ink">Routes serving {detail.name}</h2>
+            <div className="border border-border-subtle rounded-[4px] divide-y divide-border-subtle">
+                {detail.routes.map(r => (
+                    <Link
+                        key={r.slug}
+                        to={`/route/${r.slug}`}
+                        className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm hover:bg-magenta/5"
+                    >
+                        <span className="text-ink font-semibold">{r.number}</span>
+                        <span className="type-data text-xs font-bold px-2 py-0.5 rounded-[2px]" style={{ backgroundColor: BAND_COLORS[r.band] + '20', color: BAND_COLORS[r.band] }}>
+                            {r.score}/100
+                        </span>
+                    </Link>
+                ))}
+            </div>
+        </section>
+    );
+};
+
 /** Nearby suburbs: cross-links to geographically adjacent pages for internal linking. */
 const NearbySuburbs = ({ detail }: { detail: SuburbDetail }) => {
     const nearby = getNearby(detail.slug, detail.centroid.lat, detail.centroid.lon);
@@ -309,6 +333,8 @@ const SuburbScorePage = () => {
             <SuburbFaq detail={detail} />
 
             <StopList detail={detail} />
+
+            <RoutesServed detail={detail} />
 
             <NearbySuburbs detail={detail} />
         </div>

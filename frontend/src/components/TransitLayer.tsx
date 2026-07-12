@@ -413,8 +413,11 @@ const TransitLayer = ({ viewMode, showShapes = false }: TransitLayerProps) => {
         <LayerGroup>
             {/* Render lines for the selected stop, from whichever shards have loaded so far */}
             {showShapes && selectedStop && relevantShapeIdsFor(selectedStop, routes).map(shapeId => {
-                const positions = shapes[shapeId];
-                if (!positions) return null;
+                const rawPositions = shapes[shapeId];
+                if (!rawPositions) return null;
+                // Shape shards store points as [lon, lat] (GeoJSON convention);
+                // Leaflet's Polyline expects [lat, lon].
+                const positions: [number, number][] = rawPositions.map(([lon, lat]) => [lat, lon]);
 
                 // Matches relevantShapeIdsFor's own fallback: when a route has no
                 // shape_ids, that function pushes the routeId itself as the

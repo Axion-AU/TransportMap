@@ -161,7 +161,7 @@ const Methodology = () => {
                                 <strong className="text-ink">Real Timetables:</strong> We use the official Public Transport Victoria (PTV) scheduling data. This includes all trains, trams, buses, and coaches.
                             </li>
                             <li>
-                                <strong className="text-ink">Representative Day:</strong> We score the network based on a standard school-term Wednesday. We don't skew the results using public holidays, school holidays, or weekend-only timetables (though we do measure weekend service separately for the frequency score).
+                                <strong className="text-ink">Representative Day:</strong> We score the network against five near-term Wednesdays (and five Saturdays for weekend service), not one single date -- a stop's service count is the median across that sample. This means a single upcoming timetable change affecting one of those dates can't wipe out a stop's whole score; it only counts if the stop is genuinely inactive on most of the sample. We don't skew the results using public holidays or school holidays.
                             </li>
                             <li>
                                 <strong className="text-ink">Dwelling Count:</strong> We look at where homes actually exist using the ABS Census. This helps us weight the scores by real population distribution.
@@ -285,6 +285,22 @@ const Methodology = () => {
                             peak-hour traffic comparisons are coming once we have the right data access in place.
                         </p>
                     </Section>
+
+                    <Section title="Route Scores" part="Part 08" accent="teal">
+                        <p>
+                            Alongside every suburb page, we also score individual routes: "how good is the 901", not just "how
+                            good is the suburb it passes through". A route score measures what the route itself does &mdash; its
+                            own frequency, how many homes it passes, how well it connects to other good services, and how direct
+                            its path is &mdash; not what its stops inherit from a good station or shopping strip nearby.
+                        </p>
+                        <p>
+                            Routes with the same number but different GTFS variants (a city-bound trip vs. a return trip, a
+                            branch, a night-network version) are merged into one canonical route first, so the "901" page
+                            reflects the whole route, not one direction of it. Worst-20 and best-20 tables per mode exclude
+                            school-run and rail-replacement services and require a real catchment population, so the list isn't
+                            dominated by flexi-routes that were never meant to carry many people.
+                        </p>
+                    </Section>
                 </>
             ) : (
                 <>
@@ -302,9 +318,13 @@ const Methodology = () => {
                                 Methodology version <span className="type-data text-ink">{manifest.methodologyVersion}</span>.
                             </li>
                             <li>
-                                <strong className="text-ink">Representative day:</strong> scores are computed for
-                                the second Wednesday of the feed's longest calendar span, skipping school and
-                                public holiday windows. Weekend metrics use the same feed's weekend services.
+                                <strong className="text-ink">Representative day:</strong> scores use the median
+                                service count across five near-term Wednesdays (five Saturdays for weekend
+                                metrics), sampled forward from the processor's run date and skipping public and
+                                school holiday windows. Sampling several near-term dates rather than one date from
+                                anywhere in the feed's calendar means a single already-scheduled future timetable
+                                change can't zero out a stop's score on its own -- a stop only drops out if it's
+                                inactive on most of the sample.
                             </li>
                             <li>
                                 <strong className="text-ink">Scale of this build:</strong>{' '}
@@ -626,6 +646,80 @@ ratioFreeFlow(i) = sum_j[ weight(j) * decay(i,j) * ratio(i,j) ] / sum_j[ weight(
                             have it so far, limited to whichever OSM road extract the travel-time matrix was last computed
                             against. Suburbs without it show a plain "not available yet" message rather than an approximated
                             number. Coverage expands as the underlying extract does.
+                        </p>
+                    </Section>
+
+                    <Section title="Route scores" part="Part 10" accent="teal">
+                        <p>
+                            A route score measures what the route itself does &mdash; it must not average its stops'
+                            <code className="text-xs bg-purple-900 px-1 py-0.5 rounded-[2px]">final_score</code>s, since stop scores
+                            inherit coverage components (hub reachability, walk catchment, intermodal bonuses) from their
+                            surroundings that the route didn't earn and can't fix. Every component is computable from the
+                            route's own trips, stops, and geometry plus the mesh-block population file.
+                        </p>
+                        <h3 className="type-display text-2xl text-ink pt-2">Canonicalisation</h3>
+                        <p>
+                            GTFS route identity is fragmented: one public route number maps to multiple <code className="text-xs bg-purple-900 px-1 py-0.5 rounded-[2px]">route_id</code>s
+                            (direction variants, branches, night-network versions, seasonal timetables). Routes are merged
+                            into one canonical route by <code className="text-xs bg-purple-900 px-1 py-0.5 rounded-[2px]">(normalised route_short_name, mode)</code> --
+                            trimmed, uppercased, zero-padding stripped. Train lines key on <code className="text-xs bg-purple-900 px-1 py-0.5 rounded-[2px]">route_long_name</code> instead
+                            (they have no meaningful short name). Trips are unioned for frequency; stops are unioned for
+                            catchment and suburbs-served. The representative geometry (used for directness and the page map
+                            only) is the shape variant with the greatest stop count, ties broken by shape length.
+                        </p>
+                        <p>
+                            Routes are flagged <code className="text-xs bg-purple-900 px-1 py-0.5 rounded-[2px]">school_special</code> when
+                            the name matches school patterns, or trips per weekday fall under 6, or the route serves fewer than
+                            4 days a week -- these get a page but are excluded from league tables.{' '}
+                            <code className="text-xs bg-purple-900 px-1 py-0.5 rounded-[2px]">rail_replacement</code> and{' '}
+                            <code className="text-xs bg-purple-900 px-1 py-0.5 rounded-[2px]">special_event</code> services get no page
+                            and no table entry at all. <code className="text-xs bg-purple-900 px-1 py-0.5 rounded-[2px]">loop</code> routes
+                            (termini within 1km of each other) are exempt from directness.
+                        </p>
+                        <h3 className="type-display text-2xl text-ink pt-2">The formula</h3>
+                        <Formula>{`route_score = frequency * 0.45
+            + catchment * 0.25
+            + connectivity * 0.20
+            + directness * 0.10`}</Formula>
+                        <p>
+                            <strong className="text-ink">Frequency (0.45).</strong> The same frequency key used everywhere else on
+                            this site (headway, span, days), computed from the canonical route's own trips only: peak wait
+                            weighted 60%, off-peak 25%, weekend 15%, then service span (30%) and reliability (10%) on top.
+                        </p>
+                        <p>
+                            <strong className="text-ink">Catchment (0.25).</strong> Residents within 400m of any of the route's
+                            stops, counted by unique ABS mesh block (deduplicated by mesh-block code so overlapping stop
+                            buffers never double-count), scored on a saturating log-scale curve so a 40k-catchment orbital and a
+                            15k-catchment feeder can both score well for their own role.
+                        </p>
+                        <p>
+                            <strong className="text-ink">Connectivity (0.20).</strong> A saturating curve on the count of distinct
+                            high-quality interchanges within 150m of any stop: train stations, plus other canonical routes
+                            whose own headway score is 60 or higher (the same 150m radius as the existing intermodal bonus
+                            elsewhere on the site).
+                        </p>
+                        <p>
+                            <strong className="text-ink">Directness (0.10).</strong> Circuity ratio: representative shape length
+                            divided by the cosine-corrected straight-line distance between termini. 100 at a ratio of 1.2 or
+                            below, sliding to about 15 at 2.5 or above. Loop routes are exempt -- the directness weight
+                            redistributes proportionally across the other three components rather than silently scoring a
+                            loop's directness at 0 or 100, and the page states this explicitly.
+                        </p>
+                        <h3 className="type-display text-2xl text-ink pt-2">League table eligibility</h3>
+                        <p>
+                            Worst-20 and best-20 tables are computed per mode. A route must not be{' '}
+                            <code className="text-xs bg-purple-900 px-1 py-0.5 rounded-[2px]">school_special</code> or{' '}
+                            <code className="text-xs bg-purple-900 px-1 py-0.5 rounded-[2px]">rail_replacement</code>, must have a
+                            catchment population of at least 5,000, and must run at least 6 weekday trips. Without these
+                            filters the worst-20 is a list of school runs and flexi-routes, and the story dies with an easy
+                            rebuttal.
+                        </p>
+                        <h3 className="type-display text-2xl text-ink pt-2">Overlapping corridors</h3>
+                        <p>
+                            Two hourly routes on one road give residents an effective 30-minute service; each route alone still
+                            scores hourly. That's correct for a route page (the page describes the route itself), and the
+                            suburb grid score already captures the combined effect for residents. This is a documented modelling
+                            choice, not a data gap.
                         </p>
                     </Section>
                 </>

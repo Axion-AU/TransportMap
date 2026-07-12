@@ -1,0 +1,27 @@
+[
+    {
+        "slug": "train-mernda-city",
+        "minBand": "decent",
+        "citation": "Metro Mernda line: turn-up-and-go peak Metro frequency (published PTV timetable). If a metro trunk line doesn't clear 'decent', the route frequency curve is miscalibrated."
+    },
+    {
+        "slug": "bus-901",
+        "minBand": "patchy",
+        "citation": "SmartBus orbital 901 (Frankston - Melbourne Airport): a 7-day, high-catchment orbital route. High circuity is intrinsic to an orbital's job -- if it lands 'stranded' the directness weight/curve is wrong, not the route."
+    },
+    {
+        "slug": "bus-903",
+        "minBand": "patchy",
+        "citation": "SmartBus orbital 903 (Mordialloc - Altona): same orbital-directness caveat as 901."
+    },
+    {
+        "slug": "bus-19",
+        "maxBand": "patchy",
+        "citation": "Real school-special service (Bannockburn - Geelong Station, 2 weekday trips): a known school_special=true route. Should stay out of league tables and not score as a turn-up-and-go trunk route."
+    },
+    {
+        "slug": "bus-838",
+        "maxBand": "patchy",
+        "citation": "Emerald - Fountain Gate SC: real hourly outer feeder route (published PTV timetable, ~6 weekday trips). Should not score above a low-mid band."
+    }
+]

@@ -169,12 +169,7 @@ pub struct StopData {
     pub weekday_midday_departures: Vec<(f32, u8)>,
     pub weekday_evening_departures: Vec<(f32, u8)>,
     pub weekend_departures: Vec<(f32, u8)>,
-    
-    // Track which trips we've already recorded (to avoid duplicates across days)
-    pub recorded_peak_trips: HashSet<String>,
-    pub recorded_offpeak_trips: HashSet<String>,
-    pub recorded_weekend_trips: HashSet<String>,
-    
+
     pub active_days: HashSet<u8>,
 }
 
@@ -195,9 +190,6 @@ impl StopData {
             weekday_midday_departures: Vec::new(),
             weekday_evening_departures: Vec::new(),
             weekend_departures: Vec::new(),
-            recorded_peak_trips: HashSet::new(),
-            recorded_offpeak_trips: HashSet::new(),
-            recorded_weekend_trips: HashSet::new(),
             active_days: HashSet::new(),
         }
     }

@@ -6,5 +6,6 @@ pub mod exporter;
 pub mod cost;
 pub mod driver;
 pub mod extractor;
+pub mod routes;
 
 

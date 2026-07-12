@@ -420,6 +420,59 @@ for (const [slugA, slugB] of comparisons) {
 }
 
 
+// Route pages (docs/route-scoring.md), same static-then-fetch pattern as
+// suburb pages above. route-index.json is optional -- absent (no Rust
+// route_facts.json in this build) means no route pages, not a build failure.
+const routeIndexPath = path.join(GENERATED, 'route-index.json');
+if (fs.existsSync(routeIndexPath)) {
+    const routeIndex = JSON.parse(fs.readFileSync(routeIndexPath, 'utf8'));
+    for (const r of routeIndex.routes) {
+        if (r.railReplacementOrSpecial) continue; // no page, no table -- see docs/route-scoring.md
+        const detailPath = path.resolve(__dirname, `../public/data/routes-detail/${r.slug}.json`);
+        if (!fs.existsSync(detailPath)) continue;
+        const detail = JSON.parse(fs.readFileSync(detailPath, 'utf8'));
+        const vintageNote = ` Scored from ${manifest.dataVintageLabel} PTV timetable data.`;
+        routes.push({
+            urlPath: `/route/${r.slug}`,
+            title: `The ${detail.number} scores ${detail.score}/100 | Transport Score`,
+            description: detail.verdict.replace(/\.$/, '') + vintageNote,
+            ogImage: 'default.png',
+            island: `<script type="application/json" id="route-data">${JSON.stringify(detail).replace(/</g, '\\u003c')}</script>`,
+            extra: schemaTag([
+                {
+                    '@context': 'https://schema.org',
+                    '@type': 'Dataset',
+                    name: `${detail.number} Route Score`,
+                    description: detail.verdict,
+                    url: `${SITE_ORIGIN}/route/${r.slug}`,
+                    creator: fusionOrg,
+                    temporalCoverage: manifest.dataVintageLabel,
+                    measurementTechnique: 'PTV GTFS timetable frequency, catchment, connectivity, and directness scoring (0–100 scale)',
+                    variableMeasured: 'Route-level public transport service quality',
+                },
+                {
+                    '@context': 'https://schema.org',
+                    '@type': 'BreadcrumbList',
+                    itemListElement: [
+                        { '@type': 'ListItem', position: 1, name: 'Transport Score', item: SITE_ORIGIN },
+                        { '@type': 'ListItem', position: 2, name: 'Routes', item: `${SITE_ORIGIN}/routes` },
+                        { '@type': 'ListItem', position: 3, name: detail.number, item: `${SITE_ORIGIN}/route/${r.slug}` },
+                    ],
+                },
+            ]),
+        });
+    }
+    routes.push({
+        urlPath: '/routes',
+        title: 'Route league tables | Transport Score',
+        description: 'Melbourne bus, tram, train, and SkyBus routes ranked by frequency, catchment, connectivity, and directness.',
+        ogImage: 'default.png',
+    });
+    console.log(`[prerender] wrote ${routeIndex.routes.filter(r => !r.railReplacementOrSpecial).length} route pages.`);
+} else {
+    console.warn('[prerender] route-index.json missing; /route pages will not be prerendered.');
+}
+
 let count = 0;
 for (const route of routes) {
     let appHtml;
